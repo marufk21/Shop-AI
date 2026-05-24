@@ -219,7 +219,7 @@ export default function AIGeneratorPage() {
                 <ClockCounterClockwise className="size-4" />
                 <h3 className="text-sm font-medium">History</h3>
               </div>
-              <ScrollArea className="h-[400px]">
+              <ScrollArea className="h-100">
                 {history.length === 0 ? (
                   <p className="py-8 text-center text-sm text-muted-foreground">
                     No generations yet.

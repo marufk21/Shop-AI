@@ -53,7 +53,7 @@ export default function StorePage() {
           </Badge>
           <h1 className="font-heading text-4xl leading-tight font-semibold md:text-6xl">
             Sell smarter with{" "}
-            <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary to-purple-500 bg-clip-text text-transparent">
               AI
             </span>
           </h1>
