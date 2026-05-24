@@ -11,7 +11,6 @@ class ProductBase(BaseModel):
     category: str = Field(min_length=1, max_length=100)
     inventory: int = Field(ge=0, default=0)
     status: str = Field(default="draft", pattern="^(draft|active|archived)$")
-    image_url: str | None = Field(default=None, max_length=500)
 
 
 class ProductCreate(ProductBase):
@@ -25,12 +24,12 @@ class ProductUpdate(BaseModel):
     category: str | None = Field(default=None, min_length=1, max_length=100)
     inventory: int | None = Field(default=None, ge=0)
     status: str | None = Field(default=None, pattern="^(draft|active|archived)$")
-    image_url: str | None = Field(default=None, max_length=500)
 
 
 class ProductResponse(ProductBase):
     id: uuid.UUID
     slug: str
+    image_url: str | None = None
     created_at: datetime
     updated_at: datetime
 

@@ -1,10 +1,9 @@
-import { axiosClient } from "@/server/axios-client"
+import { axiosClient, axiosMultipart } from "@/server/axios-client"
 import type {
   Product,
   ProductCreateInput,
   ProductListParams,
   ProductListResponse,
-  ProductUpdateInput,
 } from "@/types/product"
 
 export async function fetchAdminProducts(params: ProductListParams = {}) {
@@ -24,21 +23,37 @@ export async function fetchAdminProduct(productId: string) {
   return data
 }
 
-export async function createAdminProduct(payload: ProductCreateInput) {
-  const { data } = await axiosClient.post<Product>("/api/v1/products", payload)
+export function buildProductFormData(
+  productData: ProductCreateInput,
+  imageFile?: File | null,
+  removeImage?: boolean
+): FormData {
+  const formData = new FormData()
+  formData.append("data", JSON.stringify(productData))
+  if (imageFile) {
+    formData.append("image", imageFile)
+  }
+  if (removeImage) {
+    formData.append("remove_image", "true")
+  }
+  return formData
+}
 
+export async function createAdminProduct(payload: FormData) {
+  const client = axiosMultipart()
+  const { data } = await client.post<Product>("/api/v1/products", payload)
   return data
 }
 
 export async function updateAdminProduct(
   productId: string,
-  payload: ProductUpdateInput
+  payload: FormData
 ) {
-  const { data } = await axiosClient.put<Product>(
+  const client = axiosMultipart()
+  const { data } = await client.put<Product>(
     `/api/v1/products/${productId}`,
     payload
   )
-
   return data
 }
 

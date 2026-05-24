@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import {
+  buildProductFormData,
   createAdminProduct,
   deleteAdminProduct,
   fetchAdminProduct,
@@ -10,7 +11,6 @@ import {
 import type {
   ProductCreateInput,
   ProductListParams,
-  ProductUpdateInput,
 } from "@/types/product"
 
 export const adminProductKeys = {
@@ -41,7 +41,16 @@ export function useCreateAdminProduct() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: ProductCreateInput) => createAdminProduct(payload),
+    mutationFn: ({
+      productData,
+      imageFile,
+    }: {
+      productData: ProductCreateInput
+      imageFile?: File | null
+    }) => {
+      const formData = buildProductFormData(productData, imageFile)
+      return createAdminProduct(formData)
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminProductKeys.all })
       void queryClient.invalidateQueries({ queryKey: ["store-products"] })
@@ -55,11 +64,18 @@ export function useUpdateAdminProduct() {
   return useMutation({
     mutationFn: ({
       productId,
-      payload,
+      productData,
+      imageFile,
+      removeImage,
     }: {
       productId: string
-      payload: ProductUpdateInput
-    }) => updateAdminProduct(productId, payload),
+      productData: ProductCreateInput
+      imageFile?: File | null
+      removeImage?: boolean
+    }) => {
+      const formData = buildProductFormData(productData, imageFile, removeImage)
+      return updateAdminProduct(productId, formData)
+    },
     onSuccess: (product) => {
       void queryClient.invalidateQueries({ queryKey: adminProductKeys.all })
       void queryClient.invalidateQueries({ queryKey: ["store-products"] })

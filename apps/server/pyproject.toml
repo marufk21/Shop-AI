@@ -10,6 +10,8 @@ dependencies = [
     "pydantic>=2.9.0",
     "pydantic-settings>=2.6.0",
     "python-dotenv>=1.0.1",
+    "cloudinary>=1.42.0",
+    "python-multipart>=0.0.18",
 ]
 
 [dependency-groups]
@@ -48,3 +50,7 @@ python_version = "3.12"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = "cloudinary.*"
+ignore_missing_imports = true

@@ -10,15 +10,20 @@ from schemas import (
     ProductResponse,
     ProductUpdate,
 )
+from utils.cloudinary import CloudinaryUploader
 from utils.slug import slugify
 
 
 class ProductController:
-    def __init__(self, repo: ProductRepository) -> None:
+    def __init__(self, repo: ProductRepository, uploader: CloudinaryUploader) -> None:
         self.repo = repo
+        self.uploader = uploader
 
-    async def create_product(self, data: ProductCreate) -> Product:
+    async def create_product(
+        self, data: ProductCreate, image_bytes: bytes | None = None
+    ) -> Product:
         slug = await self._generate_unique_slug(data.name)
+        image_url = await self._upload_image(image_bytes) if image_bytes else None
         product = Product(
             name=data.name,
             slug=slug,
@@ -27,7 +32,7 @@ class ProductController:
             category=data.category,
             inventory=data.inventory,
             status=data.status,
-            image_url=data.image_url,
+            image_url=image_url,
         )
         return await self.repo.create(product)
 
@@ -56,7 +61,11 @@ class ProductController:
         )
 
     async def update_product(
-        self, product_id: uuid.UUID, data: ProductUpdate
+        self,
+        product_id: uuid.UUID,
+        data: ProductUpdate,
+        image_bytes: bytes | None = None,
+        remove_image: bool = False,
     ) -> Product:
         product = await self.get_product(product_id)
 
@@ -66,6 +75,12 @@ class ProductController:
             update_dict["slug"] = await self._generate_unique_slug(
                 update_dict["name"], exclude_id=product_id
             )
+
+        if remove_image:
+            update_dict["image_url"] = None
+        elif image_bytes is not None:
+            image_url = await self._upload_image(image_bytes)
+            update_dict["image_url"] = image_url
 
         return await self.repo.update(product, update_dict)
 
@@ -103,3 +118,7 @@ class ProductController:
             counter += 1
 
         return slug
+
+    async def _upload_image(self, image_bytes: bytes) -> str:
+        result = await self.uploader.upload_image(image_bytes)
+        return str(result["url"])

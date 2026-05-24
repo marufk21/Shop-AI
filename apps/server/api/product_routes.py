@@ -1,6 +1,15 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    UploadFile,
+    status,
+)
 
 from controllers import ProductController
 from core.dependencies import get_product_controller
@@ -16,10 +25,19 @@ router = APIRouter(prefix="/api/v1/products", tags=["products"])
 
 @router.post("", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
 async def create_product(
-    data: ProductCreate,
+    data: str = Form(..., description="JSON string of ProductCreate"),
+    image: UploadFile | None = File(None),
     controller: ProductController = Depends(get_product_controller),
 ) -> ProductResponse:
-    product = await controller.create_product(data)
+    try:
+        product_data = ProductCreate.model_validate_json(data)
+    except Exception as e:
+        raise HTTPException(
+            status_code=422, detail=f"Invalid product data: {e}"
+        ) from e
+
+    image_bytes = await image.read() if image else None
+    product = await controller.create_product(product_data, image_bytes)
     return ProductResponse.model_validate(product)
 
 
@@ -48,10 +66,22 @@ async def get_product(
 @router.put("/{product_id}", response_model=ProductResponse)
 async def update_product(
     product_id: uuid.UUID,
-    data: ProductUpdate,
+    data: str = Form(..., description="JSON string of ProductUpdate"),
+    image: UploadFile | None = File(None),
+    remove_image: bool = Form(False),
     controller: ProductController = Depends(get_product_controller),
 ) -> ProductResponse:
-    product = await controller.update_product(product_id, data)
+    try:
+        update_data = ProductUpdate.model_validate_json(data)
+    except Exception as e:
+        raise HTTPException(
+            status_code=422, detail=f"Invalid product data: {e}"
+        ) from e
+
+    image_bytes = await image.read() if image else None
+    product = await controller.update_product(
+        product_id, update_data, image_bytes, remove_image=remove_image
+    )
     return ProductResponse.model_validate(product)
 
 

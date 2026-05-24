@@ -86,11 +86,14 @@ export default function ProductDetailPage() {
 
       <div className="grid gap-8 xl:grid-cols-2">
         <div className="space-y-4">
-          <div className="aspect-square rounded-2xl bg-muted" />
-          <div className="grid grid-cols-3 gap-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="aspect-square rounded-xl bg-muted" />
-            ))}
+          <div className="aspect-square overflow-hidden rounded-2xl bg-muted">
+            {product.image_url && (
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="h-full w-full object-cover"
+              />
+            )}
           </div>
         </div>
 

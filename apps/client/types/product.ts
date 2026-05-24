@@ -26,7 +26,6 @@ export interface ProductCreateInput {
   category: string
   inventory: number
   status: ProductStatus
-  image_url: string | null
 }
 
 export type ProductUpdateInput = Partial<ProductCreateInput>

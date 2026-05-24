@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import product_routes, store_routes
+from api import product_routes, store_routes, upload_routes
 from core.database import Base, engine
 
 
@@ -33,6 +33,7 @@ app.add_middleware(
 
 app.include_router(product_routes.router)
 app.include_router(store_routes.router)
+app.include_router(upload_routes.router)
 
 
 @app.get("/health")

@@ -61,8 +61,7 @@ class ProductRepository:
 
     async def update(self, product: Product, update_data: dict[str, object]) -> Product:
         for key, value in update_data.items():
-            if value is not None:
-                setattr(product, key, value)
+            setattr(product, key, value)
         await self.db.flush()
         await self.db.refresh(product)
         return product

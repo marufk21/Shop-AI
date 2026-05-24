@@ -135,7 +135,15 @@ export default function StorePage() {
                 href={`/store/product/${product.slug}`}
                 className="rounded-2xl border bg-card p-4 transition-colors hover:border-primary/30"
               >
-                <div className="aspect-square rounded-xl bg-muted" />
+                <div className="aspect-square overflow-hidden rounded-xl bg-muted">
+                  {product.image_url && (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
                 <div className="mt-3">
                   <p className="text-xs text-muted-foreground">
                     {product.category}

@@ -13,6 +13,7 @@ class Settings(BaseSettings):
         "env_file": ".env",
         "env_file_encoding": "utf-8",
         "case_sensitive": False,
+        "extra": "ignore",
     }
 
     @field_validator("database_url", mode="before")
@@ -34,4 +35,19 @@ class Settings(BaseSettings):
         return v
 
 
+class CloudinarySettings(BaseSettings):
+    next_public_cloudinary_cloud_name: str = ""
+    next_public_cloudinary_api_key: str = ""
+    next_public_cloudinary_upload_preset: str = ""
+    cloudinary_api_secret: str = ""
+
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": False,
+        "extra": "ignore",
+    }
+
+
 settings = Settings()
+cloudinary_settings = CloudinarySettings()

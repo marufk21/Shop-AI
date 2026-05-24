@@ -143,7 +143,14 @@ export default function StoreProductsPage() {
                 href={`/store/product/${product.slug}`}
                 className="group rounded-2xl border bg-card transition-colors hover:border-primary/30"
               >
-                <div className="relative aspect-square rounded-t-2xl bg-muted">
+                <div className="relative aspect-square overflow-hidden rounded-t-2xl bg-muted">
+                  {product.image_url && (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
                   <Button
                     variant="ghost"
                     size="icon-sm"
@@ -187,7 +194,15 @@ export default function StoreProductsPage() {
                 key={product.id}
                 className="flex items-center gap-4 overflow-hidden"
               >
-                <div className="size-24 shrink-0 bg-muted" />
+                <div className="size-24 shrink-0 overflow-hidden bg-muted">
+                  {product.image_url && (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
                 <CardContent className="flex flex-1 items-center justify-between p-3">
                   <div>
                     <p className="text-xs text-muted-foreground">

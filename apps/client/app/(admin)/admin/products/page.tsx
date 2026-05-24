@@ -52,7 +52,15 @@ export default function ProductsPage() {
       sortable: true,
       cell: (row: Product) => (
         <div className="flex items-center gap-3">
-          <div className="size-8 rounded-lg bg-muted" />
+          {row.image_url ? (
+            <img
+              src={row.image_url}
+              alt={row.name}
+              className="size-8 rounded-lg object-cover"
+            />
+          ) : (
+            <div className="size-8 rounded-lg bg-muted" />
+          )}
           <div>
             <p className="text-sm font-medium">{row.name}</p>
             <p className="text-xs text-muted-foreground">{row.slug}</p>
@@ -133,7 +141,7 @@ export default function ProductsPage() {
             />
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onSelect={() => {
+                onClick={() => {
                   setEditing(row)
                   setFormOpen(true)
                 }}
@@ -141,13 +149,18 @@ export default function ProductsPage() {
                 <Pencil className="mr-2 size-3.5" />
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setEditing(row)
+                  setFormOpen(true)
+                }}
+              >
                 <Eye className="mr-2 size-3.5" />
                 View
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-destructive"
-                onSelect={() => deleteProduct.mutate(row.id)}
+                variant="destructive"
+                onClick={() => deleteProduct.mutate(row.id)}
               >
                 <Trash className="mr-2 size-3.5" />
                 Delete
@@ -170,16 +183,21 @@ export default function ProductsPage() {
                 category: editing.category,
                 status: editing.status,
                 inventory: editing.inventory,
-                image_url: editing.image_url ?? "",
               } satisfies ProductFormData)
             : undefined
         }
+        existingImageUrl={editing?.image_url}
         isSubmitting={isSubmitting}
-        onSubmit={async (data) => {
+        onSubmit={async (productData, imageFile, removeImage) => {
           if (editing) {
-            await updateProduct.mutateAsync({ productId: editing.id, payload: data })
+            await updateProduct.mutateAsync({
+              productId: editing.id,
+              productData,
+              imageFile,
+              removeImage,
+            })
           } else {
-            await createProduct.mutateAsync(data)
+            await createProduct.mutateAsync({ productData, imageFile })
           }
         }}
       />
