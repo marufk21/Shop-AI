@@ -13,7 +13,6 @@ import {
 import {
   House,
   SquaresFour,
-  Sparkle,
   ChatCircle,
   Files,
   ChartBar,
@@ -33,13 +32,7 @@ const items = [
     icon: SquaresFour,
     group: "Pages",
   },
-  {
-    label: "AI Generator",
-    url: "/admin/ai-generator",
-    icon: Sparkle,
-    group: "AI",
-  },
-  { label: "Chatbot", url: "/admin/chatbot", icon: ChatCircle, group: "AI" },
+{ label: "Chatbot", url: "/admin/chatbot", icon: ChatCircle, group: "AI" },
   { label: "Documents", url: "/admin/documents", icon: Files, group: "Pages" },
   {
     label: "Analytics",

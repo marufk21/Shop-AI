@@ -12,6 +12,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "cloudinary>=1.42.0",
     "python-multipart>=0.0.18",
+    "langchain-openai>=0.3.0",
 ]
 
 [dependency-groups]
@@ -53,4 +54,12 @@ warn_unused_configs = true
 
 [[tool.mypy.overrides]]
 module = "cloudinary.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "langchain_openai.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "langchain_core.*"
 ignore_missing_imports = true

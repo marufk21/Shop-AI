@@ -7,16 +7,16 @@ import cloudinary.uploader
 from core.config import cloudinary_settings
 
 cloudinary.config(
-    cloud_name=cloudinary_settings.next_public_cloudinary_cloud_name,
-    api_key=cloudinary_settings.next_public_cloudinary_api_key,
-    api_secret=cloudinary_settings.cloudinary_api_secret,
+    cloud_name=cloudinary_settings.cloud_name,
+    api_key=cloudinary_settings.api_key,
+    api_secret=cloudinary_settings.api_secret,
     secure=True,
 )
 
 
 class CloudinaryUploader:
     def __init__(self) -> None:
-        preset = cloudinary_settings.next_public_cloudinary_upload_preset
+        preset = cloudinary_settings.upload_preset
         self.upload_preset = preset or None
 
     async def upload_image(

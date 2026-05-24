@@ -45,7 +45,6 @@ const adminGroups = [
   {
     label: "AI Tools",
     items: [
-      { title: "AI Generator", url: "/admin/ai-generator", icon: Sparkle },
       { title: "Chatbot", url: "/admin/chatbot", icon: ChatCircle },
     ],
   },

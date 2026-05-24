@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { ImageSquare, Upload, X } from "@phosphor-icons/react"
+import { ImageSquare, Sparkle, Upload, X } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -16,6 +16,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 
 import type { ProductCreateInput, ProductStatus } from "@/types/product"
+import { fetchImprovedText } from "@/server/admin/ai-fetchers"
 
 export interface ProductFormData {
   name: string
@@ -65,6 +66,8 @@ export function ProductForm({
   )
   const [removedExistingImage, setRemovedExistingImage] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [isImprovingName, setIsImprovingName] = useState(false)
+  const [isImprovingDescription, setIsImprovingDescription] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const imageToShow = removedExistingImage
@@ -140,6 +143,23 @@ export function ProductForm({
       resetForm()
     } catch {
       setError("Failed to save product. Please try again.")
+    }
+  }
+
+  const handleImprove = async (field: "name" | "description") => {
+    const text = form[field]
+    if (!text.trim()) return
+
+    const setImproving = field === "name" ? setIsImprovingName : setIsImprovingDescription
+
+    setImproving(true)
+    try {
+      const improved = await fetchImprovedText(text, field)
+      setForm({ ...form, [field]: improved })
+    } catch {
+      // silently fail — user can try again
+    } finally {
+      setImproving(false)
     }
   }
 
@@ -220,7 +240,21 @@ export function ProductForm({
             />
 
             <div className="grid gap-3">
-              <Label htmlFor="name">Product Name</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="name">Product Name</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleImprove("name")}
+                  disabled={isSubmitting || isImprovingName || !form.name.trim()}
+                >
+                  <Sparkle
+                    className={`mr-1 size-3.5 ${isImprovingName ? "animate-spin" : ""}`}
+                  />
+                  {isImprovingName ? "Improving..." : "Improve"}
+                </Button>
+              </div>
               <Input
                 id="name"
                 value={form.name}
@@ -231,7 +265,23 @@ export function ProductForm({
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="description">Description</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="description">Description</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleImprove("description")}
+                  disabled={
+                    isSubmitting || isImprovingDescription || !form.description.trim()
+                  }
+                >
+                  <Sparkle
+                    className={`mr-1 size-3.5 ${isImprovingDescription ? "animate-spin" : ""}`}
+                  />
+                  {isImprovingDescription ? "Improving..." : "Improve"}
+                </Button>
+              </div>
               <Textarea
                 id="description"
                 value={form.description}

@@ -106,15 +106,6 @@ export default function AdminDashboard() {
               </Link>
             }
           />
-          <Button
-            size="sm"
-            render={
-              <Link href="/admin/ai-generator">
-                <Sparkle className="mr-1.5 size-3.5" />
-                New Generation
-              </Link>
-            }
-          />
         </div>
       </div>
 

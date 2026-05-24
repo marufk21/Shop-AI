@@ -38,7 +38,7 @@ npm-debug.log*
 # IDE and Editor files
 .idea/
 .vscode/
-.claude 
+.pop
 .codex
 
 # Python

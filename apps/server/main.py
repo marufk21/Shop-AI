@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import product_routes, store_routes, upload_routes
+from api import ai_routes, product_routes, store_routes, upload_routes
 from core.database import Base, engine
 
 
@@ -31,6 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(ai_routes.router)
 app.include_router(product_routes.router)
 app.include_router(store_routes.router)
 app.include_router(upload_routes.router)

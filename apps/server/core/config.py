@@ -1,13 +1,14 @@
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/shopai"
-    app_name: str = "ShopAI"
-    debug: bool = False
+    database_url: str
+    app_name: str
+    debug: bool
+    openai_api_key: str
 
     model_config = {
         "env_file": ".env",
@@ -34,12 +35,17 @@ class Settings(BaseSettings):
         v = urlunparse(parsed._replace(query=new_query))
         return v
 
+    @field_validator("openai_api_key", mode="before")
+    @classmethod
+    def strip_quotes(cls, v: str) -> str:
+        return v.strip("'\"")
+
 
 class CloudinarySettings(BaseSettings):
-    next_public_cloudinary_cloud_name: str = ""
-    next_public_cloudinary_api_key: str = ""
-    next_public_cloudinary_upload_preset: str = ""
-    cloudinary_api_secret: str = ""
+    cloud_name: str = Field(validation_alias="CLOUDINARY_CLOUD_NAME")
+    api_key: str = Field(validation_alias="CLOUDINARY_API_KEY")
+    upload_preset: str = Field(validation_alias="CLOUDINARY_UPLOAD_PRESET")
+    api_secret: str = Field(validation_alias="CLOUDINARY_API_SECRET")
 
     model_config = {
         "env_file": ".env",
