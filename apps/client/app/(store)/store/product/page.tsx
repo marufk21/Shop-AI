@@ -2,124 +2,34 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { Card, CardContent } from "@workspace/ui/components/card"
 import {
-  MagnifyingGlass,
-  ShoppingCart,
   Heart,
-  SquaresFour,
+  MagnifyingGlass,
   Rows,
+  ShoppingCart,
+  SquaresFour,
 } from "@phosphor-icons/react"
+import { Button } from "@workspace/ui/components/button"
+import { Card, CardContent } from "@workspace/ui/components/card"
+import { Input } from "@workspace/ui/components/input"
 
-const products = [
-  {
-    id: 1,
-    name: "Minimal Desk Lamp",
-    category: "Home",
-    price: 89,
-    rating: 4.8,
-    reviews: 234,
-  },
-  {
-    id: 2,
-    name: "Leather Notebook",
-    category: "Office",
-    price: 34,
-    rating: 4.7,
-    reviews: 187,
-  },
-  {
-    id: 3,
-    name: "Ceramic Mug Set",
-    category: "Kitchen",
-    price: 52,
-    rating: 4.6,
-    reviews: 156,
-  },
-  {
-    id: 4,
-    name: "Wireless Charger",
-    category: "Tech",
-    price: 45,
-    rating: 4.5,
-    reviews: 312,
-  },
-  {
-    id: 5,
-    name: "Wool Throw Blanket",
-    category: "Home",
-    price: 78,
-    rating: 4.9,
-    reviews: 89,
-  },
-  {
-    id: 6,
-    name: "Bamboo Desk Organizer",
-    category: "Office",
-    price: 29,
-    rating: 4.3,
-    reviews: 145,
-  },
-  {
-    id: 7,
-    name: "Scented Candle Trio",
-    category: "Home",
-    price: 42,
-    rating: 4.7,
-    reviews: 201,
-  },
-  {
-    id: 8,
-    name: "Mechanical Keyboard",
-    category: "Tech",
-    price: 149,
-    rating: 4.9,
-    reviews: 423,
-  },
-  {
-    id: 9,
-    name: "Linen Apron",
-    category: "Kitchen",
-    price: 38,
-    rating: 4.4,
-    reviews: 67,
-  },
-  {
-    id: 10,
-    name: "Standing Desk Mat",
-    category: "Office",
-    price: 65,
-    rating: 4.6,
-    reviews: 178,
-  },
-  {
-    id: 11,
-    name: "Smart Water Bottle",
-    category: "Tech",
-    price: 35,
-    rating: 4.2,
-    reviews: 290,
-  },
-  {
-    id: 12,
-    name: "Macrame Plant Hanger",
-    category: "Home",
-    price: 24,
-    rating: 4.5,
-    reviews: 112,
-  },
-]
-
-const categories = ["All", "Home", "Office", "Kitchen", "Tech", "Fashion"]
+import { useStoreProducts } from "@/hooks/store/use-products"
 
 export default function StoreProductsPage() {
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState("All")
   const [sort, setSort] = useState("popular")
   const [gridView, setGridView] = useState(true)
-  const [wishlist, setWishlist] = useState<Set<number>>(new Set())
+  const [wishlist, setWishlist] = useState<Set<string>>(new Set())
+  const { data, isError, isLoading } = useStoreProducts({
+    limit: 100,
+    search: search || undefined,
+  })
+  const products = data?.items ?? []
+  const categories = [
+    "All",
+    ...Array.from(new Set(products.map((product) => product.category))).sort(),
+  ]
 
   const filtered = products
     .filter(
@@ -130,84 +40,107 @@ export default function StoreProductsPage() {
     .sort((a, b) => {
       if (sort === "price-low") return a.price - b.price
       if (sort === "price-high") return b.price - a.price
-      return b.rating - a.rating
+      if (sort === "newest") {
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+      }
+      return a.name.localeCompare(b.name)
     })
 
   return (
     <div className="py-8">
-        <div className="mb-8">
-          <h1 className="font-heading text-2xl font-semibold md:text-3xl">
-            All Products
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Browse our curated collection of premium products.
-          </p>
-        </div>
+      <div className="mb-8">
+        <h1 className="font-heading text-2xl font-semibold md:text-3xl">
+          All Products
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Browse our curated collection of premium products.
+        </p>
+      </div>
 
-        <div className="mb-6 space-y-3">
-          <div className="flex flex-wrap items-center gap-2">
-            {categories.map((cat) => (
-              <Button
-                key={cat}
-                variant={category === cat ? "default" : "outline"}
-                size="xs"
-                onClick={() => setCategory(cat)}
-              >
-                {cat}
-              </Button>
-            ))}
+      <div className="mb-6 space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {categories.map((cat) => (
+            <Button
+              key={cat}
+              variant={category === cat ? "default" : "outline"}
+              size="xs"
+              onClick={() => setCategory(cat)}
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="h-8 rounded-lg border border-input bg-transparent px-3 text-xs outline-none"
+          >
+            <option value="popular">Most Popular</option>
+            <option value="price-low">Price: Low</option>
+            <option value="price-high">Price: High</option>
+            <option value="newest">Newest</option>
+          </select>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={() => setGridView(true)}
+          >
+            <SquaresFour className={`size-4 ${gridView ? "" : "opacity-30"}`} />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={() => setGridView(false)}
+          >
+            <Rows className={`size-4 ${!gridView ? "" : "opacity-30"}`} />
+          </Button>
+          <div className="relative min-w-0 flex-1 sm:max-w-56">
+            <MagnifyingGlass className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9"
+            />
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="h-8 rounded-lg border border-input bg-transparent px-3 text-xs outline-none"
+        </div>
+      </div>
+
+      <div
+        className={
+          gridView
+            ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            : "space-y-3"
+        }
+      >
+        {isLoading &&
+          Array.from({ length: 8 }).map((_, index) => (
+            <div
+              key={index}
+              className="rounded-2xl border bg-card transition-colors"
             >
-              <option value="popular">Most Popular</option>
-              <option value="price-low">Price: Low</option>
-              <option value="price-high">Price: High</option>
-              <option value="newest">Newest</option>
-            </select>
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={() => setGridView(true)}
-            >
-              <SquaresFour
-                className={`size-4 ${gridView ? "" : "opacity-30"}`}
-              />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={() => setGridView(false)}
-            >
-              <Rows className={`size-4 ${!gridView ? "" : "opacity-30"}`} />
-            </Button>
-            <div className="relative min-w-0 flex-1 sm:max-w-56">
-              <MagnifyingGlass className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9"
-              />
+              <div className="aspect-square rounded-t-2xl bg-muted" />
+              <div className="p-3.5">
+                <div className="h-3 w-16 rounded bg-muted" />
+                <div className="mt-2 h-4 w-32 rounded bg-muted" />
+                <div className="mt-3 h-5 w-20 rounded bg-muted" />
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div
-          className={
-            gridView
-              ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-              : "space-y-3"
-          }
-        >
-          {filtered.map((product) =>
+          ))}
+        {!isLoading && filtered.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            {isError ? "Products could not be loaded." : "No products found."}
+          </p>
+        )}
+        {!isLoading &&
+          filtered.map((product) =>
             gridView ? (
               <Link
                 key={product.id}
-                href={`/store/product/${product.id}`}
+                href={`/store/product/${product.slug}`}
                 className="group rounded-2xl border bg-card transition-colors hover:border-primary/30"
               >
                 <div className="relative aspect-square rounded-t-2xl bg-muted">
@@ -244,7 +177,7 @@ export default function StoreProductsPage() {
                       ${product.price}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {product.rating} ({product.reviews})
+                      {product.inventory} in stock
                     </span>
                   </div>
                 </div>
@@ -266,7 +199,7 @@ export default function StoreProductsPage() {
                         ${product.price}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {product.rating} ({product.reviews})
+                        {product.inventory} in stock
                       </span>
                     </div>
                   </div>
@@ -283,7 +216,7 @@ export default function StoreProductsPage() {
               </Card>
             )
           )}
-        </div>
+      </div>
     </div>
   )
 }

@@ -1,122 +1,49 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@workspace/ui/components/button"
+import { DotsThree, Eye, Pencil, Plus, Trash } from "@phosphor-icons/react"
 import { Badge } from "@workspace/ui/components/badge"
-import { DataTable } from "@/components/shared/data-table"
-import { ProductForm } from "./product-form"
+import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
-import { Plus, DotsThree, Pencil, Trash, Eye } from "@phosphor-icons/react"
 
-type Product = {
-  id: number
-  name: string
-  category: string
-  price: number
-  inventory: number
-  status: "active" | "draft" | "archived"
-  sku: string
-  description: string
-}
+import { DataTable } from "@/components/shared/data-table"
+import {
+  useAdminProducts,
+  useCreateAdminProduct,
+  useDeleteAdminProduct,
+  useUpdateAdminProduct,
+} from "@/hooks/admin/use-products"
+import type { Product, ProductStatus } from "@/types/product"
 
-const initialProducts: Product[] = [
-  {
-    id: 1,
-    name: "Minimal Desk Lamp",
-    category: "Home",
-    price: 89,
-    inventory: 45,
-    status: "active",
-    sku: "MDL-001",
-    description: "Modern minimalist desk lamp with adjustable brightness.",
-  },
-  {
-    id: 2,
-    name: "Leather Notebook",
-    category: "Office",
-    price: 34,
-    inventory: 120,
-    status: "active",
-    sku: "LN-002",
-    description: "Premium leather-bound notebook with 200 pages.",
-  },
-  {
-    id: 3,
-    name: "Ceramic Mug Set",
-    category: "Kitchen",
-    price: 52,
-    inventory: 78,
-    status: "active",
-    sku: "CMS-003",
-    description: "Set of 4 handcrafted ceramic mugs.",
-  },
-  {
-    id: 4,
-    name: "Wireless Charger",
-    category: "Tech",
-    price: 45,
-    inventory: 200,
-    status: "active",
-    sku: "WC-004",
-    description: "Fast wireless charging pad for all devices.",
-  },
-  {
-    id: 5,
-    name: "Wool Throw Blanket",
-    category: "Home",
-    price: 78,
-    inventory: 33,
-    status: "draft",
-    sku: "WTB-005",
-    description: "Soft merino wool throw blanket.",
-  },
-  {
-    id: 6,
-    name: "Bamboo Desk Organizer",
-    category: "Office",
-    price: 29,
-    inventory: 90,
-    status: "active",
-    sku: "BDO-006",
-    description: "Sustainable bamboo desk organizer.",
-  },
-  {
-    id: 7,
-    name: "Scented Candle Trio",
-    category: "Home",
-    price: 42,
-    inventory: 15,
-    status: "archived",
-    sku: "SCT-007",
-    description: "Set of 3 hand-poured soy candles.",
-  },
-  {
-    id: 8,
-    name: "Mechanical Keyboard",
-    category: "Tech",
-    price: 149,
-    inventory: 55,
-    status: "active",
-    sku: "MK-008",
-    description: "Premium mechanical keyboard with RGB.",
-  },
-]
+import { ProductForm, type ProductFormData } from "./product-form"
 
-const statusVariant: Record<string, "default" | "secondary" | "outline"> = {
+const statusVariant: Record<
+  ProductStatus,
+  "default" | "secondary" | "outline"
+> = {
   active: "default",
   draft: "secondary",
   archived: "outline",
 }
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [search, setSearch] = useState("")
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
+  const { data, isError, isLoading } = useAdminProducts({
+    search: search || undefined,
+    limit: 100,
+  })
+  const createProduct = useCreateAdminProduct()
+  const updateProduct = useUpdateAdminProduct()
+  const deleteProduct = useDeleteAdminProduct()
+  const products = data?.items ?? []
+  const isSubmitting = createProduct.isPending || updateProduct.isPending
 
   const columns = [
     {
@@ -128,7 +55,7 @@ export default function ProductsPage() {
           <div className="size-8 rounded-lg bg-muted" />
           <div>
             <p className="text-sm font-medium">{row.name}</p>
-            <p className="text-xs text-muted-foreground">{row.sku}</p>
+            <p className="text-xs text-muted-foreground">{row.slug}</p>
           </div>
         </div>
       ),
@@ -188,8 +115,13 @@ export default function ProductsPage() {
       <DataTable
         columns={columns}
         data={products}
+        isLoading={isLoading}
+        onSearch={setSearch}
         searchPlaceholder="Search products..."
         rowKey={(row) => row.id}
+        emptyMessage={
+          isError ? "Could not load products." : "No products found."
+        }
         actions={(row) => (
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -215,9 +147,7 @@ export default function ProductsPage() {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive"
-                onSelect={() =>
-                  setProducts((prev) => prev.filter((p) => p.id !== row.id))
-                }
+                onSelect={() => deleteProduct.mutate(row.id)}
               >
                 <Trash className="mr-2 size-3.5" />
                 Delete
@@ -228,23 +158,28 @@ export default function ProductsPage() {
       />
 
       <ProductForm
+        key={`${editing?.id ?? "new"}-${formOpen ? "open" : "closed"}`}
         open={formOpen}
         onOpenChange={setFormOpen}
-        initial={editing ?? undefined}
-        onSubmit={(data) => {
+        initial={
+          editing
+            ? ({
+                name: editing.name,
+                description: editing.description ?? "",
+                price: editing.price,
+                category: editing.category,
+                status: editing.status,
+                inventory: editing.inventory,
+                image_url: editing.image_url ?? "",
+              } satisfies ProductFormData)
+            : undefined
+        }
+        isSubmitting={isSubmitting}
+        onSubmit={async (data) => {
           if (editing) {
-            setProducts((prev) =>
-              prev.map((p) => (p.id === editing.id ? { ...p, ...data } : p))
-            )
+            await updateProduct.mutateAsync({ productId: editing.id, payload: data })
           } else {
-            setProducts((prev) => [
-              ...prev,
-              {
-                ...data,
-                id: Math.max(0, ...prev.map((p) => p.id)) + 1,
-                description: data.description,
-              } as Product,
-            ])
+            await createProduct.mutateAsync(data)
           }
         }}
       />

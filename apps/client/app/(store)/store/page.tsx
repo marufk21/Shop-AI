@@ -3,13 +3,15 @@
 import Link from "next/link"
 import {
   ArrowRight,
-  Sparkle,
-  Shield,
   Lightning,
+  Shield,
+  Sparkle,
   TrendUp,
 } from "@phosphor-icons/react"
-import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
+
+import { useStoreProducts } from "@/hooks/store/use-products"
 
 const features = [
   {
@@ -38,18 +40,10 @@ const features = [
   },
 ]
 
-const products = [
-  { id: 1, name: "Minimal Desk Lamp", price: 89, category: "Home" },
-  { id: 2, name: "Leather Notebook", price: 34, category: "Office" },
-  { id: 3, name: "Ceramic Mug Set", price: 52, category: "Kitchen" },
-  { id: 4, name: "Wireless Charger", price: 45, category: "Tech" },
-  { id: 5, name: "Wool Throw Blanket", price: 78, category: "Home" },
-  { id: 6, name: "Bamboo Desk Organizer", price: 29, category: "Office" },
-  { id: 7, name: "Scented Candle Trio", price: 42, category: "Home" },
-  { id: 8, name: "Mechanical Keyboard", price: 149, category: "Tech" },
-]
-
 export default function StorePage() {
+  const { data, isError, isLoading } = useStoreProducts({ limit: 8 })
+  const products = data?.items ?? []
+
   return (
     <>
       <section className="py-20 md:py-32">
@@ -86,49 +80,59 @@ export default function StorePage() {
       </section>
 
       <section className="border-t py-20">
-          <h2 className="text-center font-heading text-2xl font-semibold md:text-3xl">
-            Everything you need to run your store
-          </h2>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f) => (
-              <div key={f.title} className="rounded-2xl border bg-card p-6">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-                  <f.icon className="size-5 text-primary" />
-                </div>
-                <h3 className="mt-4 font-semibold">{f.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {f.description}
-                </p>
+        <h2 className="text-center font-heading text-2xl font-semibold md:text-3xl">
+          Everything you need to run your store
+        </h2>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((f) => (
+            <div key={f.title} className="rounded-2xl border bg-card p-6">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+                <f.icon className="size-5 text-primary" />
               </div>
-            ))}
-          </div>
+              <h3 className="mt-4 font-semibold">{f.title}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {f.description}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="border-t py-20">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="font-heading text-2xl font-semibold md:text-3xl">
-                Trending Products
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Popular items our customers love
-              </p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              render={
-                <Link href="/store/product">
-                  View all <ArrowRight className="ml-1 size-3.5" />
-                </Link>
-              }
-            />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="font-heading text-2xl font-semibold md:text-3xl">
+              Trending Products
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Popular items our customers love
+            </p>
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {products.map((product) => (
+          <Button
+            variant="ghost"
+            size="sm"
+            render={
+              <Link href="/store/product">
+                View all <ArrowRight className="ml-1 size-3.5" />
+              </Link>
+            }
+          />
+        </div>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {isLoading &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="rounded-2xl border bg-card p-4">
+                <div className="aspect-square rounded-xl bg-muted" />
+                <div className="mt-3 h-4 w-16 rounded bg-muted" />
+                <div className="mt-2 h-5 w-32 rounded bg-muted" />
+                <div className="mt-2 h-5 w-12 rounded bg-muted" />
+              </div>
+            ))}
+          {!isLoading &&
+            products.map((product) => (
               <Link
                 key={product.id}
-                href={`/store/product/${product.id}`}
+                href={`/store/product/${product.slug}`}
                 className="rounded-2xl border bg-card p-4 transition-colors hover:border-primary/30"
               >
                 <div className="aspect-square rounded-xl bg-muted" />
@@ -143,7 +147,12 @@ export default function StorePage() {
                 </div>
               </Link>
             ))}
-          </div>
+          {!isLoading && products.length === 0 && (
+            <p className="col-span-full text-sm text-muted-foreground">
+              {isError ? "Products could not be loaded." : "No products found."}
+            </p>
+          )}
+        </div>
       </section>
     </>
   )

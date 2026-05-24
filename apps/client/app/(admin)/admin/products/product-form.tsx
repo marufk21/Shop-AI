@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { ImageSquare, Upload } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
-import { Textarea } from "@workspace/ui/components/textarea"
 import {
   Dialog,
   DialogContent,
@@ -13,23 +11,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { ImageSquare, Upload } from "@phosphor-icons/react"
+import { Input } from "@workspace/ui/components/input"
+import { Label } from "@workspace/ui/components/label"
+import { Textarea } from "@workspace/ui/components/textarea"
 
-type ProductFormData = {
+import type { ProductCreateInput, ProductStatus } from "@/types/product"
+
+export interface ProductFormData {
   name: string
   description: string
   price: number
   category: string
-  status: "active" | "draft" | "archived"
-  sku: string
+  status: ProductStatus
   inventory: number
+  image_url: string
 }
 
 type ProductFormProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSubmit: (data: ProductFormData) => void
+  onSubmit: (data: ProductCreateInput) => Promise<void>
   initial?: Partial<ProductFormData>
+  isSubmitting?: boolean
 }
 
 const defaultValues: ProductFormData = {
@@ -38,8 +41,8 @@ const defaultValues: ProductFormData = {
   price: 0,
   category: "",
   status: "draft",
-  sku: "",
   inventory: 0,
+  image_url: "",
 }
 
 export function ProductForm({
@@ -47,17 +50,28 @@ export function ProductForm({
   onOpenChange,
   onSubmit,
   initial,
+  isSubmitting = false,
 }: ProductFormProps) {
   const [form, setForm] = useState<ProductFormData>({
     ...defaultValues,
     ...initial,
   })
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(form)
-    onOpenChange(false)
-    setForm(defaultValues)
+    setError(null)
+    try {
+      await onSubmit({
+        ...form,
+        description: form.description || null,
+        image_url: form.image_url || null,
+      })
+      onOpenChange(false)
+      setForm(defaultValues)
+    } catch {
+      setError("Failed to save product. Please try again.")
+    }
   }
 
   return (
@@ -100,6 +114,7 @@ export function ProductForm({
                 id="name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+                disabled={isSubmitting}
                 required
               />
             </div>
@@ -112,6 +127,7 @@ export function ProductForm({
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
+                disabled={isSubmitting}
                 rows={3}
               />
             </div>
@@ -128,15 +144,19 @@ export function ProductForm({
                   onChange={(e) =>
                     setForm({ ...form, price: parseFloat(e.target.value) || 0 })
                   }
+                  disabled={isSubmitting}
                   required
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="sku">SKU</Label>
+                <Label htmlFor="image-url">Image URL</Label>
                 <Input
-                  id="sku"
-                  value={form.sku}
-                  onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                  id="image-url"
+                  value={form.image_url}
+                  onChange={(e) =>
+                    setForm({ ...form, image_url: e.target.value })
+                  }
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -149,6 +169,7 @@ export function ProductForm({
                   onChange={(e) =>
                     setForm({ ...form, category: e.target.value })
                   }
+                  disabled={isSubmitting}
                   className="h-9 rounded-lg border border-input bg-transparent px-3 text-sm outline-none"
                 >
                   <option value="">Select category</option>
@@ -169,6 +190,7 @@ export function ProductForm({
                       status: e.target.value as ProductFormData["status"],
                     })
                   }
+                  disabled={isSubmitting}
                   className="h-9 rounded-lg border border-input bg-transparent px-3 text-sm outline-none"
                 >
                   <option value="active">Active</option>
@@ -188,20 +210,32 @@ export function ProductForm({
                 onChange={(e) =>
                   setForm({ ...form, inventory: parseInt(e.target.value) || 0 })
                 }
+                disabled={isSubmitting}
               />
             </div>
           </div>
+
+          {error && (
+            <p className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {error}
+            </p>
+          )}
 
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit">
-              {initial ? "Save Changes" : "Create Product"}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? "Saving..."
+                : initial
+                  ? "Save Changes"
+                  : "Create Product"}
             </Button>
           </DialogFooter>
         </form>

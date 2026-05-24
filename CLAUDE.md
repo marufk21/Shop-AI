@@ -1,74 +1,103 @@
-# ShopAI — CLAUDE.md
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 AI-first e-commerce SaaS with admin dashboard, AI product generator, RAG chatbot, product management, analytics, and customer storefront.
 
-**Stack:** Next.js 16 · React · TypeScript (strict) · Tailwind v4 · shadcn/ui (mcp-server) · TanStack Query · Zustand · FastAPI · Python · SQLAlchemy · PostgreSQL + pgvector · Gemini/OpenAI
+**Stack:** Next.js 16 · React · TypeScript (strict) · Tailwind v4 · shadcn/ui · TanStack Query · Zustand · FastAPI · Python · SQLAlchemy · PostgreSQL + pgvector · Gemini/OpenAI
 
 ---
 
 ## Project State
 
-**Done:** Next.js 16 scaffold, TypeScript strict, Tailwind v4, shadcn/ui (taupe/Mira theme), `next-themes` dark mode (toggle: `d`), fonts (Playfair Display, Geist, Geist Mono), `cn()` utility, Button component, CLAUDE.md + docs.
+**Done:** Next.js 16 scaffold, TypeScript strict, Tailwind v4, shadcn/ui (taupe/Mira theme), `next-themes` dark mode (toggle: `d`), fonts (Playfair Display, Geist, Geist Mono), `cn()` utility, admin product CRUD, store product listing, Neon PostgreSQL connected.
 
 **Backlog:** PLP, PDP, cart, checkout, auth, search, categories, header, footer, SEO, analytics, deployment.
 
 ---
 
+## Workspace Setup
+
+Turborepo + pnpm workspace (`pnpm@10.33.4`, `node >= 20`). Workspace packages: `apps/*` and `packages/*`.
+
+```bash
+# Install all deps (root)
+pnpm install
+
+# Run both apps in dev (Turborepo parallel)
+pnpm dev                   # → turborepo: client :3000, server :8000
+```
+
+### Individual apps
+
+```bash
+# Frontend (Next.js + Turbopack)
+cd apps/client && pnpm dev          # http://localhost:3000
+
+# Backend (FastAPI)
+cd apps/server && pnpm dev          # http://localhost:8000
+```
+
+---
+
 ## Monorepo Structure
 
-Two independent apps — one Python, one TypeScript. They communicate only over HTTP. Never mix concerns across the boundary.
+Two independent apps — Python and TypeScript. They communicate only over HTTP.
 
 ```
 shopai/
-├── client/                  → Next.js 16 app
-│   ├── src/
-│   │   ├── app/               → (admin)/, (store)/, api/, auth/
-│   │   ├── components/        → ui/, shared/, dashboard/, chatbot/, products/
-│   │   ├── features/          → products/, ai/, chatbot/, analytics/, documents/
-│   │   ├── hooks/             → shared hooks, api(react-query hooks)
-│   │   ├── server/            → API client layer (axios-client.ts, fetchers)
-│   │   ├── lib/               → cn(), config, constants
-│   │   ├── store/             → Zustand stores
-│   │   ├── types/             → shared TypeScript types
-│   │   └── utils/             → pure utilities
-│   ├── package.json
-│   └── tsconfig.json
+├── apps/
+│   ├── client/                     → Next.js 16 app (Turbopack)
+│   │   ├── app/
+│   │   │   ├── (admin)/admin/        → dashboard, products, ai-generator, analytics, chatbot, settings
+│   │   │   ├── (store)/store/        → storefront, product listing/detail, profile
+│   │   │   └── layout.tsx
+│   │   ├── components/
+│   │   │   ├── layout/               → app-sidebar, app-header
+│   │   │   ├── shared/               → data-table, command-menu
+│   │   │   ├── chatbot/              → chatbot-wrapper, floating-chatbot
+│   │   │   ├── providers.tsx          → QueryClient, Theme, Sidebar, Tooltip, Toaster
+│   │   │   └── theme-provider.tsx
+│   │   ├── hooks/
+│   │   │   ├── admin/                → use-products (TanStack Query hooks)
+│   │   │   └── store/                → use-products
+│   │   ├── server/                   → axios-client, product-fetchers
+│   │   ├── types/                    → product.ts (shared TS types)
+│   │   └── lib/                      → cn(), config, constants
+│   │
+│   └── server/                     → FastAPI app
+│       ├── api/                      → product_routes.py, store_routes.py
+│       ├── controllers/              → product_controller.py (business logic)
+│       ├── db/                       → product_repository.py (data access)
+│       ├── models/                   → product_model.py (SQLAlchemy)
+│       ├── schemas/                  → product_schema.py (Pydantic)
+│       ├── core/                     → config.py, database.py, dependencies.py
+│       ├── utils/                    → slug.py
+│       └── main.py                   → app entry, CORS, lifespan
 │
-├── server/                    → FastAPI app
-│   ├── api/routes/            → thin route handlers
-│   ├── services/              → ai/, products/, chatbot/, analytics/
-│   ├── rag/                   → chunking/, retrieval/, embeddings/, vectorstore/
-│   ├── prompts/               → modular, version-controlled LLM prompts
-│   ├── models/                → SQLAlchemy models
-│   ├── schemas/               → Pydantic schemas
-│   ├── core/                  → config, dependencies
-│   └── repositories/          → database access layer
-│   ├── requirements.txt
-│   └── pyproject.toml
+├── packages/
+│   ├── ui/                          → shared shadcn/ui components (@workspace/ui)
+│   │   └── src/components/           → 31 components (button, dialog, table, etc.)
+│   ├── eslint-config/               → base.js, next.js, react-internal.js
+│   └── typescript-config/           → base.json, nextjs.json, react-library.json
 │
-└── CLAUDE.md
+├── turbo.json
+├── pnpm-workspace.yaml
+└── .prettierrc
 ```
 
 ### Boundary rules
 
-- **Frontend** never imports from `backend/` and vice versa.
-- All cross-app communication goes through the FastAPI REST API — no shared files, no symlinks, no shared config.
-- Shared types (e.g. API response shapes) live in `frontend/src/types/` and are derived from the backend's Pydantic schemas, not shared directly.
-- Environment variables: `frontend/.env.local` for Next.js, `backend/.env` for FastAPI. Never cross-reference.
-
-### Running the monorepo
-
-```bash
-# Frontend
-cd frontend && pnpm dev          # http://localhost:3000
-
-# Backend
-cd backend && uvicorn main:app --reload  # http://localhost:8000
-```
+- Frontend never imports from `apps/server/` and vice versa.
+- All cross-app communication goes through the FastAPI REST API — no shared files, no symlinks.
+- Shared TypeScript types live in `apps/client/types/`, derived from the backend's Pydantic schemas.
+- Environment variables: `apps/client/.env.local` for Next.js, `apps/server/.env` for FastAPI. Never cross-reference.
+- shadcn/ui components live in `packages/ui/src/components/` — import from `@workspace/ui/components/<name>`.
+- Add shadcn components via `pnpm dlx shadcn@latest add <component> -c packages/ui`.
 
 ### Patterns
 
-- **Backend:** routes delegate to services → services use repositories. AI pipelines are isolated modules. Async-first everywhere.
+- **Backend:** routes are thin → controllers have business logic → db/repositories access data. Async-first everywhere. Thin `__init__.py` files use `importlib.import_module()` to re-export from underscore-named modules.
 - **Frontend:** server components by default, TanStack Query for all server state, Zustand for client-only UI state.
 
 ---
@@ -77,10 +106,11 @@ cd backend && uvicorn main:app --reload  # http://localhost:8000
 
 ### TypeScript
 
-- Strict mode on. Zero tolerance for `any`, `as any`, `@ts-ignore`, `@ts-expect-error`.
+- Strict mode on. Zero tolerance for `any`, `@ts-ignore`, `@ts-expect-error`.
 - Prefer `type` over `interface` — use `interface` for object shapes, `type` for unions/primitives/utilities.
 - Don't annotate return types TS can derive.
-- Import via `@/*` path alias.
+- Import via `@/*` path alias (maps to `apps/client/`).
+- Import shadcn/ui via `@workspace/ui/components/<name>`.
 
 ### Components
 
@@ -97,10 +127,10 @@ export function ProductCard({ price, currency = "USD" }: ProductCardProps) { ...
 ### Styling
 
 - Tailwind utility classes only — no inline styles, CSS modules, or `style={{}}`.
-- Use `cn()` from `@/lib/utils` for class merging (`clsx` + `tailwind-merge`).
+- Use `cn()` from `@workspace/ui/lib/utils` for class merging (`clsx` + `tailwind-merge`).
 - Semantic tokens only: `bg-background`, `text-foreground`, `border-border`, `bg-primary`, `text-muted-foreground`.
 - Mobile-first: `sm:`, `md:`, `lg:` breakpoints.
-- Custom tokens via CSS variables in `globals.css` → reference via `@theme inline`.
+- Custom tokens via CSS variables in `packages/ui/src/styles/globals.css` → reference via `@theme inline`.
 
 ### Imports
 
@@ -113,7 +143,15 @@ Ordered with a blank line between each group:
 
 ### Quality Gates
 
-Run from `frontend/` before every commit: `pnpm lint` → `pnpm format` → `pnpm typecheck`. All must pass.
+All run from repo root via Turborepo:
+
+```bash
+pnpm typecheck     # tsc --noEmit across all packages
+pnpm lint          # ESLint across all packages
+pnpm format        # Prettier across all packages
+```
+
+Or within `apps/client/`: `pnpm typecheck`, `pnpm lint`, `pnpm format`.
 
 ---
 
@@ -125,23 +163,22 @@ Run from `frontend/` before every commit: `pnpm lint` → `pnpm format` → `pnp
 - Pydantic schemas for all request/response shapes. Never return raw dicts from routes.
 - SQLAlchemy models stay in `models/` — never imported directly by routes.
 - All I/O (DB, HTTP, AI calls) must be `async`.
+- Module filenames use **underscores** (`product_routes.py`), never hyphens (`product-routes.py`).
 
 ### API design
 
-- Routes are thin — validation and response shaping only. Business logic belongs in services.
+- Routes are thin — validation and response shaping only. Business logic belongs in controllers.
 - Use HTTP status codes correctly: `201` for creates, `204` for deletes, `422` for validation errors.
 - Prefix all routes: `/api/v1/...`
 - Return consistent error shapes: `{ "detail": "..." }`.
 
-### AI / RAG
-
-- Prompts live in `prompts/` — versioned, never hardcoded inline.
-- RAG pipeline stages (chunking, embedding, retrieval) are independent modules — don't collapse them.
-- Never call AI APIs directly from routes or repositories — always via a service.
-
 ### Quality Gates
 
-Run from `backend/` before every commit: `ruff check .` → `ruff format .` → `mypy .`. All must pass.
+```bash
+cd apps/server && pnpm lint       # ruff check
+cd apps/server && pnpm format     # ruff format
+cd apps/server && pnpm typecheck  # mypy (strict mode)
+```
 
 ---
 
@@ -149,7 +186,7 @@ Run from `backend/` before every commit: `ruff check .` → `ruff format .` → 
 
 ### Before coding
 
-1. Identify which app you're in — `frontend/` or `backend/`. Don't straddle.
+1. Identify which app you're in — `apps/client/` or `apps/server/`. Don't straddle.
 2. Read the files you're modifying — never edit blind.
 3. Match existing patterns in that app's codebase.
 4. If touching 3+ files or making architectural decisions, enter plan mode first.
@@ -157,15 +194,15 @@ Run from `backend/` before every commit: `ruff check .` → `ruff format .` → 
 ### While coding
 
 1. **Frontend:** keep components server-side by default. Only add `"use client"` for event handlers, hooks, or browser APIs.
-2. **Frontend:** add shadcn components via `npx shadcn add <component>` — never copy-paste from docs.
-3. **Backend:** write a service method before wiring a route. Routes are always last.
+2. **Frontend:** add shadcn components via `pnpm dlx shadcn@latest add <component> -c packages/ui` — never copy-paste from docs.
+3. **Backend:** write controller logic before wiring a route. Routes are always last.
 4. No emojis in code, comments, or UI copy.
 5. No comments describing what the code does — only write why for non-obvious behavior.
 6. No barrel files (`index.ts` re-exports) on the frontend.
 
 ### After coding
 
-1. **Frontend:** run `pnpm typecheck`. **Backend:** run `mypy .`. Both must pass before reporting done.
+1. **Frontend:** run `pnpm typecheck`. **Backend:** run `pnpm typecheck`. Both must pass before reporting done.
 2. For UI changes, start the dev server and verify in browser.
 
 ### Do not
@@ -187,7 +224,7 @@ Run from `backend/` before every commit: `ruff check .` → `ruff format .` → 
 ### Tokens
 
 - **Colors:** semantic tokens only (see Styling above).
-- **Fonts:** defined in `globals.css`.
+- **Fonts:** Playfair Display (headings), Geist (body), Geist Mono (code) — defined in `packages/ui/src/styles/globals.css`.
 - **Surfaces:** soft backgrounds, subtly elevated cards, low-contrast borders, soft layered shadows.
 - **Motion:** subtle and smooth. Use for transitions, hovers, streaming, loading states. No flashy effects.
 
@@ -197,7 +234,7 @@ Fixed collapsible sidebar (dark, icon + label) + spacious main content area (car
 
 ### Components
 
-- shadcn/ui exclusively for UI primitives.
+- shadcn/ui exclusively for UI primitives, imported from `@workspace/ui/components/<name>`.
 - Components must be reusable and composable — no hardcoded business logic in UI.
 - Avoid: heavy shadows, neon effects, oversaturated gradients, dense typography, cluttered layouts.
 

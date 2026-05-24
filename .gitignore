@@ -35,5 +35,16 @@ npm-debug.log*
 .DS_Store
 *.pem
 
-# Claude
-.claude
+# IDE and Editor files
+.idea/
+.vscode/
+.claude 
+.codex
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
