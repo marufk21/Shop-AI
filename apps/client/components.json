@@ -19,5 +19,11 @@
   },
   "rtl": true,
   "menuColor": "default",
-  "menuAccent": "subtle"
+  "menuAccent": "subtle",
+  "registries": {
+    "@shadcn": "https://ui.shadcn.com/r/{name}.json",
+    "@magicui": "https://magicui.design/r/{name}.json",
+    "@aceternity": "https://ui.aceternity.com/registry/{name}.json",
+    "@originui": "https://originui.com/r/{name}.json"
+  }
 }
