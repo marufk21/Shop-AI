@@ -75,7 +75,6 @@ class ChatController:
                 HumanMessage(content=request.message),
             ]
 
-            full_response = ""
             async for token_chunk in llm.astream(messages):
                 token = token_chunk.content
                 if isinstance(token, str):

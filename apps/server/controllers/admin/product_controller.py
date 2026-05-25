@@ -14,7 +14,7 @@ from utils.cloudinary import CloudinaryUploader
 from utils.slug import slugify
 
 
-class ProductController:
+class AdminProductController:
     def __init__(self, repo: ProductRepository, uploader: CloudinaryUploader) -> None:
         self.repo = repo
         self.uploader = uploader
@@ -87,24 +87,6 @@ class ProductController:
     async def delete_product(self, product_id: uuid.UUID) -> None:
         product = await self.get_product(product_id)
         await self.repo.delete(product)
-
-    async def get_store_products(
-        self, skip: int = 0, limit: int = 20
-    ) -> ProductListResponse:
-        items, total = await self.repo.list_all(status="active", skip=skip, limit=limit)
-        return ProductListResponse(
-            items=[ProductResponse.model_validate(p) for p in items],
-            total=total,
-        )
-
-    async def get_store_product_by_slug(self, slug: str) -> Product:
-        product = await self.repo.get_by_slug(slug)
-        if product is None or product.status != "active":
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Product not found",
-            )
-        return product
 
     async def _generate_unique_slug(
         self, name: str, exclude_id: uuid.UUID | None = None

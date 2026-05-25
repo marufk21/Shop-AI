@@ -11,8 +11,8 @@ from fastapi import (
     status,
 )
 
-from controllers import ProductController
-from core.dependencies import get_product_controller
+from controllers.admin.product_controller import AdminProductController
+from core.dependencies import get_admin_product_controller
 from schemas import (
     ProductCreate,
     ProductListResponse,
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/api/v1/products", tags=["products"])
 async def create_product(
     data: str = Form(..., description="JSON string of ProductCreate"),
     image: UploadFile | None = File(None),
-    controller: ProductController = Depends(get_product_controller),
+    controller: AdminProductController = Depends(get_admin_product_controller),
 ) -> ProductResponse:
     try:
         product_data = ProductCreate.model_validate_json(data)
@@ -45,7 +45,7 @@ async def list_products(
     search: str | None = Query(default=None),
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=20, ge=1, le=100),
-    controller: ProductController = Depends(get_product_controller),
+    controller: AdminProductController = Depends(get_admin_product_controller),
 ) -> ProductListResponse:
     return await controller.list_products(
         status_filter=status_filter, search=search, skip=skip, limit=limit
@@ -55,7 +55,7 @@ async def list_products(
 @router.get("/{product_id}", response_model=ProductResponse)
 async def get_product(
     product_id: uuid.UUID,
-    controller: ProductController = Depends(get_product_controller),
+    controller: AdminProductController = Depends(get_admin_product_controller),
 ) -> ProductResponse:
     product = await controller.get_product(product_id)
     return ProductResponse.model_validate(product)
@@ -67,7 +67,7 @@ async def update_product(
     data: str = Form(..., description="JSON string of ProductUpdate"),
     image: UploadFile | None = File(None),
     remove_image: bool = Form(False),
-    controller: ProductController = Depends(get_product_controller),
+    controller: AdminProductController = Depends(get_admin_product_controller),
 ) -> ProductResponse:
     try:
         update_data = ProductUpdate.model_validate_json(data)
@@ -84,6 +84,6 @@ async def update_product(
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
     product_id: uuid.UUID,
-    controller: ProductController = Depends(get_product_controller),
+    controller: AdminProductController = Depends(get_admin_product_controller),
 ) -> None:
     await controller.delete_product(product_id)

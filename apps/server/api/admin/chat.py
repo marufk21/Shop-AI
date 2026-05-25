@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 
-from controllers.chat_controller import ChatController
+from controllers.admin.chat_controller import ChatController
 from core.dependencies import get_chat_controller
 from schemas.chat_schema import ChatRequest
 

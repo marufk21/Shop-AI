@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
 
-from controllers.document_controller import DocumentController
+from controllers.admin.document_controller import DocumentController
 from core.dependencies import get_document_controller
 from schemas.document_schema import DocumentListResponse, DocumentResponse
 

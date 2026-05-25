@@ -12,6 +12,13 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Input } from "@workspace/ui/components/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
 import { useStoreProducts } from "@/hooks/store/use-products"
 
@@ -73,16 +80,17 @@ export default function StoreProductsPage() {
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="h-8 rounded-lg border border-input bg-transparent px-3 text-xs outline-none"
-          >
-            <option value="popular">Most Popular</option>
-            <option value="price-low">Price: Low</option>
-            <option value="price-high">Price: High</option>
-            <option value="newest">Newest</option>
-          </select>
+          <Select value={sort} onValueChange={(v) => setSort(v ?? "popular")}>
+            <SelectTrigger size="sm" className="w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="popular">Most Popular</SelectItem>
+              <SelectItem value="price-low">Price: Low</SelectItem>
+              <SelectItem value="price-high">Price: High</SelectItem>
+              <SelectItem value="newest">Newest</SelectItem>
+            </SelectContent>
+          </Select>
           <Button
             variant="outline"
             size="icon-sm"
