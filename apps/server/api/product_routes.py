@@ -32,9 +32,7 @@ async def create_product(
     try:
         product_data = ProductCreate.model_validate_json(data)
     except Exception as e:
-        raise HTTPException(
-            status_code=422, detail=f"Invalid product data: {e}"
-        ) from e
+        raise HTTPException(status_code=422, detail=f"Invalid product data: {e}") from e
 
     image_bytes = await image.read() if image else None
     product = await controller.create_product(product_data, image_bytes)
@@ -74,9 +72,7 @@ async def update_product(
     try:
         update_data = ProductUpdate.model_validate_json(data)
     except Exception as e:
-        raise HTTPException(
-            status_code=422, detail=f"Invalid product data: {e}"
-        ) from e
+        raise HTTPException(status_code=422, detail=f"Invalid product data: {e}") from e
 
     image_bytes = await image.read() if image else None
     product = await controller.update_product(

@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
 import { SidebarProvider } from "@workspace/ui/components/sidebar"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/shared/theme-provider"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { Toaster } from "sonner"
 

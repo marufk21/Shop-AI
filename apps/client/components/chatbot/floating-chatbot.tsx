@@ -21,12 +21,7 @@ import {
   FileText,
 } from "@phosphor-icons/react"
 
-type ChatMessage = {
-  id: number
-  role: "user" | "assistant"
-  content: string
-  sources?: { title: string; excerpt: string }[]
-}
+import { useChat } from "@/hooks/admin/use-chat"
 
 const quickReplies = [
   "What's your shipping policy?",
@@ -35,69 +30,9 @@ const quickReplies = [
   "Do you offer gift wrapping?",
 ]
 
-const mockReply = (question: string): ChatMessage => {
-  const replies: Record<
-    string,
-    { content: string; sources?: { title: string; excerpt: string }[] }
-  > = {
-    shipping: {
-      content:
-        "We offer free standard shipping on orders over $50 (3-5 business days). Express shipping is $12.99 (1-2 business days). All orders are processed within 24 hours.",
-      sources: [
-        {
-          title: "Shipping Policy",
-          excerpt: "Free standard shipping on orders over $50...",
-        },
-      ],
-    },
-    track: {
-      content:
-        "You can track your order by logging into your account and visiting the Orders page. You'll also receive tracking updates via email once your order ships.",
-    },
-    return: {
-      content:
-        "You can return most items within 30 days of delivery. Items must be in original condition. Return shipping is free for defective items.",
-      sources: [
-        {
-          title: "Return Policy",
-          excerpt: "30-day return window from delivery date...",
-        },
-      ],
-    },
-    gift: {
-      content:
-        "Yes! We offer premium gift wrapping for $4.99 per item. You can select gift wrapping at checkout and include a personalized message.",
-    },
-    default: {
-      content:
-        "That's a great question! Let me check our knowledge base. In the meantime, you can browse our FAQ page or contact our support team at support@shopai.com for immediate assistance.",
-    },
-  }
-
-  const key = question.toLowerCase().includes("ship")
-    ? "shipping"
-    : question.toLowerCase().includes("track")
-      ? "track"
-      : question.toLowerCase().includes("return")
-        ? "return"
-        : question.toLowerCase().includes("gift")
-          ? "gift"
-          : "default"
-
-  const result = replies[key] ?? replies.default!
-
-  return {
-    id: Date.now(),
-    role: "assistant" as const,
-    content: result.content,
-    sources: result.sources,
-  }
-}
-
 export function FloatingChatbot() {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const { messages, isStreaming, sendMessage } = useChat()
   const [input, setInput] = useState("")
-  const [isStreaming, setIsStreaming] = useState(false)
   const [open, setOpen] = useState(false)
   const scrollViewportRef = useRef<HTMLDivElement>(null)
 
@@ -111,51 +46,8 @@ export function FloatingChatbot() {
   const handleSend = (text?: string) => {
     const msg = text ?? input
     if (!msg.trim() || isStreaming) return
-
-    const userMsg: ChatMessage = {
-      id: Date.now(),
-      role: "user",
-      content: msg,
-    }
-    setMessages((prev) => [...prev, userMsg])
+    sendMessage(msg)
     if (!text) setInput("")
-    setIsStreaming(true)
-
-    const reply = mockReply(msg)
-    const words = reply.content.split(" ")
-
-    let i = 0
-    const assistantId = Date.now() + 1
-    setMessages((prev) => [
-      ...prev,
-      { id: assistantId, role: "assistant", content: "" },
-    ])
-
-    const interval = setInterval(() => {
-      if (i < words.length) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? {
-                  ...m,
-                  content: m.content
-                    ? m.content + " " + (words[i] ?? "")
-                    : (words[i] ?? ""),
-                }
-              : m
-          )
-        )
-        i++
-      } else {
-        clearInterval(interval)
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId ? { ...m, sources: reply.sources } : m
-          )
-        )
-        setIsStreaming(false)
-      }
-    }, 25)
   }
 
   return (
@@ -200,8 +92,8 @@ export function FloatingChatbot() {
           </div>
         </SheetHeader>
 
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <ScrollArea className="flex-1" viewportRef={scrollViewportRef}>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <ScrollArea className="min-h-0 flex-1 overflow-hidden" viewportRef={scrollViewportRef}>
             <div className="space-y-3 p-4">
               {messages.length === 0 && (
                 <div className="space-y-3">
@@ -240,7 +132,9 @@ export function FloatingChatbot() {
                   </Avatar>
                   <div
                     className={
-                      msg.role === "assistant" ? "" : "flex flex-col items-end"
+                      msg.role === "assistant"
+                        ? ""
+                        : "flex flex-col items-end"
                     }
                   >
                     <div
@@ -252,11 +146,9 @@ export function FloatingChatbot() {
                     >
                       <div className="text-xs leading-relaxed whitespace-pre-wrap">
                         {msg.content}
-                        {msg.role === "assistant" &&
-                          isStreaming &&
-                          msg.id === messages[messages.length - 1]?.id && (
-                            <span className="ml-0.5 inline-block size-1 animate-pulse rounded-full bg-current align-middle" />
-                          )}
+                        {msg.role === "assistant" && isStreaming && (
+                          <span className="ml-0.5 inline-block size-1 animate-pulse rounded-full bg-current align-middle" />
+                        )}
                       </div>
                     </div>
                     {msg.sources && msg.sources.length > 0 && (
@@ -268,7 +160,9 @@ export function FloatingChatbot() {
                           >
                             <FileText className="mt-0.5 size-2.5 shrink-0 text-muted-foreground" />
                             <div>
-                              <p className="font-medium">{src.title}</p>
+                              <p className="font-medium">
+                                {src.document_name}
+                              </p>
                               <p className="text-muted-foreground">
                                 {src.excerpt}
                               </p>

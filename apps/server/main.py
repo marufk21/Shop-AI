@@ -3,14 +3,23 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
-from api import ai_routes, product_routes, store_routes, upload_routes
+from api import (
+    ai_routes,
+    chat_routes,
+    document_routes,
+    product_routes,
+    store_routes,
+    upload_routes,
+)
 from core.database import Base, engine
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     async with engine.begin() as conn:
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await conn.run_sync(Base.metadata.create_all)
     yield
     await engine.dispose()
@@ -35,6 +44,8 @@ app.include_router(ai_routes.router)
 app.include_router(product_routes.router)
 app.include_router(store_routes.router)
 app.include_router(upload_routes.router)
+app.include_router(document_routes.router)
+app.include_router(chat_routes.router)
 
 
 @app.get("/health")

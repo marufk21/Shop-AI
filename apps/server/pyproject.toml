@@ -13,6 +13,8 @@ dependencies = [
     "cloudinary>=1.42.0",
     "python-multipart>=0.0.18",
     "langchain-openai>=0.3.0",
+    "pgvector>=0.3.0",
+    "pypdf>=5.0.0",
 ]
 
 [dependency-groups]
@@ -62,4 +64,8 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "langchain_core.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pgvector.*"
 ignore_missing_imports = true
