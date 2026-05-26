@@ -20,29 +20,29 @@ import { useStoreProduct } from "@/hooks/store/use-products"
 
 export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState("features")
-  const params = useParams<{ id: string }>()
-  const { data: product, isError, isLoading } = useStoreProduct(params.id)
+  const params = useParams<{ slug: string }>()
+  const { data: product, isError, isLoading } = useStoreProduct(params.slug)
 
   if (isLoading) {
     return (
       <div className="py-8">
         <div className="grid gap-8 xl:grid-cols-2">
           <div className="space-y-4">
-            <div className="aspect-square rounded-2xl bg-muted" />
+            <div className="aspect-square rounded-2xl bg-muted animate-pulse" />
             <div className="grid grid-cols-3 gap-3">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="aspect-square rounded-xl bg-muted"
+                  className="aspect-square rounded-xl bg-muted animate-pulse"
                 />
               ))}
             </div>
           </div>
           <div>
-            <div className="h-6 w-20 rounded bg-muted" />
-            <div className="mt-4 h-9 w-72 rounded bg-muted" />
-            <div className="mt-6 h-10 w-24 rounded bg-muted" />
-            <div className="mt-4 h-24 rounded bg-muted" />
+            <div className="h-6 w-20 rounded-md bg-muted animate-pulse" />
+            <div className="mt-4 h-9 w-72 rounded-md bg-muted animate-pulse" />
+            <div className="mt-6 h-10 w-24 rounded-md bg-muted animate-pulse" />
+            <div className="mt-4 h-24 rounded-md bg-muted animate-pulse" />
           </div>
         </div>
       </div>
@@ -57,18 +57,26 @@ export default function ProductDetailPage() {
           size="sm"
           className="mb-6"
           render={
-            <Link href="/store/product">
+            <Link href="/store">
               <ArrowLeft className="mr-1.5 size-3.5" />
-              Back to Products
+              Back to Store
             </Link>
           }
         />
-        <p className="text-sm text-muted-foreground">
-          Product could not be loaded.
-        </p>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="size-14 rounded-full bg-muted flex items-center justify-center mb-4 text-muted-foreground/60">
+            <ShoppingCart className="size-6" />
+          </div>
+          <h3 className="font-semibold text-base text-foreground">Product not found</h3>
+          <p className="text-xs text-muted-foreground mt-1 px-4 leading-normal max-w-sm">
+            The product you&apos;re looking for doesn&apos;t exist or has been removed.
+          </p>
+        </div>
       </div>
     )
   }
+
+  const inStock = product.inventory > 0
 
   return (
     <div className="py-8">
@@ -77,33 +85,47 @@ export default function ProductDetailPage() {
         size="sm"
         className="mb-6"
         render={
-          <Link href="/store/product">
+          <Link href="/store">
             <ArrowLeft className="mr-1.5 size-3.5" />
-            Back to Products
+            Back to Store
           </Link>
         }
       />
 
       <div className="grid gap-8 xl:grid-cols-2">
         <div className="space-y-4">
-          <div className="aspect-square overflow-hidden rounded-2xl bg-muted">
-            {product.image_url && (
+          <div className="aspect-square overflow-hidden rounded-2xl bg-muted border">
+            {product.image_url ? (
               <img
                 src={product.image_url}
                 alt={product.name}
                 className="h-full w-full object-cover"
               />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <ShoppingCart className="size-16 text-muted-foreground/30" />
+              </div>
             )}
           </div>
         </div>
 
         <div>
-          <Badge variant="secondary" className="mb-3">
-            {product.category}
-          </Badge>
-          <h1 className="font-heading text-2xl font-semibold md:text-3xl">
+          <div className="flex items-center gap-2 mb-3">
+            <Badge variant="secondary" className="font-semibold capitalize">
+              {product.category}
+            </Badge>
+            <div className="flex items-center gap-1.5 select-none">
+              <span className={`size-1.5 rounded-full ${inStock ? "bg-emerald-500" : "bg-red-500"}`} />
+              <span className="text-xs font-medium text-muted-foreground">
+                {inStock ? `${product.inventory} in stock` : "Out of stock"}
+              </span>
+            </div>
+          </div>
+
+          <h1 className="font-heading text-2xl font-semibold md:text-3xl text-foreground">
             {product.name}
           </h1>
+
           <div className="mt-2 flex items-center gap-2">
             <div className="flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -113,22 +135,25 @@ export default function ProductDetailPage() {
                 />
               ))}
             </div>
-            <span className="text-sm text-muted-foreground">
-              {product.inventory} in stock
-            </span>
+            <span className="text-xs text-muted-foreground">5.0 (2 reviews)</span>
           </div>
 
-          <p className="mt-6 text-3xl font-bold">${product.price}</p>
-          <p className="mt-3 leading-relaxed text-muted-foreground">
-            {product.description ?? "No description available."}
+          <p className="mt-6 text-3xl font-bold text-foreground">
+            ${product.price}
           </p>
 
+          {product.description && (
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              {product.description}
+            </p>
+          )}
+
           <div className="mt-6 flex gap-3">
-            <Button size="lg" className="flex-1">
+            <Button size="lg" className="flex-1 rounded-xl font-semibold" disabled={!inStock}>
               <ShoppingCart className="mr-2 size-4" />
-              Add to Cart
+              {inStock ? "Add to Cart" : "Out of Stock"}
             </Button>
-            <Button variant="outline" size="icon-lg">
+            <Button variant="outline" size="icon-lg" className="rounded-xl">
               <Heart className="size-4" />
             </Button>
           </div>
@@ -139,8 +164,8 @@ export default function ProductDetailPage() {
               { icon: ShieldCheck, label: "1 year warranty included" },
               { icon: ArrowCounterClockwise, label: "30-day easy returns" },
             ].map((item) => (
-              <div key={item.label} className="flex items-center gap-2 text-sm">
-                <item.icon className="size-4 text-muted-foreground" />
+              <div key={item.label} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <item.icon className="size-4 shrink-0" />
                 <span>{item.label}</span>
               </div>
             ))}
@@ -154,7 +179,7 @@ export default function ProductDetailPage() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium capitalize transition-colors ${
+                  className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium capitalize transition-colors cursor-pointer ${
                     activeTab === tab
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground"
@@ -174,9 +199,9 @@ export default function ProductDetailPage() {
                   ].map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-center gap-2 text-sm"
+                      className="flex items-center gap-2 text-sm text-muted-foreground"
                     >
-                      <div className="size-1.5 rounded-full bg-primary/10" />
+                      <div className="size-1.5 rounded-full bg-primary/40 shrink-0" />
                       {feature}
                     </li>
                   ))}
@@ -198,7 +223,7 @@ export default function ProductDetailPage() {
                       <span className="text-muted-foreground">
                         {spec.label}
                       </span>
-                      <span className="font-medium">{spec.value}</span>
+                      <span className="font-medium text-foreground">{spec.value}</span>
                     </div>
                   ))}
                 </div>
@@ -209,7 +234,7 @@ export default function ProductDetailPage() {
                     {
                       author: "Alex M.",
                       rating: 5,
-                      text: "Best desk lamp I've ever owned. The adjustable brightness is perfect for late-night work sessions.",
+                      text: "Best purchase I've made this year. The quality exceeded my expectations and the delivery was fast.",
                       date: "2 weeks ago",
                     },
                     {
@@ -221,7 +246,7 @@ export default function ProductDetailPage() {
                   ].map((review) => (
                     <div key={review.author} className="rounded-xl border p-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
+                        <span className="text-sm font-medium text-foreground">
                           {review.author}
                         </span>
                         <span className="text-xs text-muted-foreground">

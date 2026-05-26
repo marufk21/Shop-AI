@@ -77,7 +77,7 @@ class ChatController:
 
             async for token_chunk in llm.astream(messages):
                 token = token_chunk.content
-                if isinstance(token, str):
+                if isinstance(token, str) and token:
                     yield f"data: {json.dumps({'type': 'token', 'content': token})}\n\n"
 
             if sources:
