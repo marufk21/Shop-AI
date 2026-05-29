@@ -74,7 +74,7 @@ export function StoreSearch({ open, setOpen }: StoreSearchProps) {
                       {product.name}
                     </span>
                     <span className="text-xs text-muted-foreground truncate">
-                      {product.category}
+                      {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
                     </span>
                   </div>
                   <div className="text-sm font-semibold text-primary">
@@ -98,7 +98,7 @@ export function StoreSearch({ open, setOpen }: StoreSearchProps) {
                 className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-150 data-selected:bg-accent/50 text-sm font-medium text-muted-foreground hover:text-foreground"
               >
                 <Sparkle className="size-4 text-primary" weight="fill" />
-                <span>Browse {cat}</span>
+                <span>Browse {cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
               </CommandItem>
             ))}
           </CommandGroup>

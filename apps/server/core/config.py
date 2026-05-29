@@ -55,5 +55,5 @@ class CloudinarySettings(BaseSettings):
     }
 
 
-settings = Settings()
-cloudinary_settings = CloudinarySettings()
+settings = Settings()  # type: ignore[call-arg]
+cloudinary_settings = CloudinarySettings()  # type: ignore[call-arg]

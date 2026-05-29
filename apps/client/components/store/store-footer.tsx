@@ -32,7 +32,7 @@ export function StoreFooter() {
       {/* Decorative gradient overlay */}
       <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
 
-      <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
+      <div className="mx-auto max-w-7xl px-6 py-12 md:py-16 md:pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Info (takes 2 columns space on large screens) */}
           <div className="lg:col-span-2 space-y-4">

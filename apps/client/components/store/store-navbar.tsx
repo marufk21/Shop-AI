@@ -6,24 +6,13 @@ import { useTheme } from "next-themes"
 import {
   Sparkle,
   ShoppingCart,
-  UserCircle,
-  MagnifyingGlass,
   List,
   Sun,
   Moon,
-  Compass,
   ShoppingBag,
-  House,
+  Package,
 } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
 import {
   Sheet,
   SheetContent,
@@ -32,19 +21,20 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@workspace/ui/components/sheet"
-import { StoreSearch } from "./store-search"
+import { useCart } from "./cart-provider"
 
 export function StoreNavbar() {
   const { resolvedTheme, setTheme } = useTheme()
   const [scrolled, setScrolled] = React.useState(false)
-  const [searchOpen, setSearchOpen] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
+  const { itemCount, openCart } = useCart()
+
   React.useEffect(() => {
     setMounted(true)
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
     }
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -52,10 +42,6 @@ export function StoreNavbar() {
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: "smooth" })
   }
-
-
-
-  const inactiveLinkClass = "text-muted-foreground hover:text-foreground transition-all duration-300 font-medium cursor-pointer"
 
   return (
     <>
@@ -70,36 +56,26 @@ export function StoreNavbar() {
           {/* Logo */}
           <Link
             href="/store"
-            className="flex items-center gap-2.5 font-heading text-lg font-bold tracking-tight select-none group"
+            className="flex items-center gap-2.5 font-heading text-lg font-bold tracking-tight select-none group shrink-0"
           >
             <div className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/20 transition-transform duration-300 group-hover:scale-105">
-              <Sparkle className="size-4 animate-pulse" weight="fill" />
+              <Sparkle className="size-4" weight="fill" />
             </div>
-            <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text">
+            <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text hidden sm:inline">
               ShopAI
             </span>
           </Link>
 
           {/* Desktop Action Controls */}
-          <div className="hidden md:flex items-center gap-3">
-            {/* Search Trigger */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border bg-muted/30 text-muted-foreground hover:text-foreground text-xs font-medium cursor-pointer transition-all duration-200 hover:bg-muted/50 w-56 shadow-xs"
-            >
-              <MagnifyingGlass className="size-3.5" />
-              <span>Search products...</span>
-              <kbd className="ml-auto pointer-events-none inline-flex h-4.5 select-none items-center gap-0.5 rounded border bg-background px-1.5 font-mono text-[9px] font-medium opacity-100 shadow-xs">
-                ⌘K
-              </kbd>
-            </button>
-
+          <div className="hidden md:flex items-center gap-2">
             {/* Theme Switcher */}
             {mounted && (
               <Button
                 variant="ghost"
                 size="icon-sm"
-                onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                onClick={() =>
+                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                }
                 className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
               >
                 {resolvedTheme === "dark" ? (
@@ -111,69 +87,59 @@ export function StoreNavbar() {
               </Button>
             )}
 
-            {/* Cart Icon (Visual Only) */}
+            {/* Cart Button */}
             <Button
               variant="ghost"
               size="icon-sm"
+              onClick={openCart}
               className="relative text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
             >
               <ShoppingCart className="size-4.5" />
-              <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground shadow-xs animate-scale-in">
-                2
-              </span>
+              {itemCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
+                  {itemCount > 9 ? "9+" : itemCount}
+                </span>
+              )}
               <span className="sr-only">View cart</span>
             </Button>
-
-            {/* Profile Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
-                />
-              }>
-                <UserCircle className="size-5" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52 p-1.5">
-                <DropdownMenuLabel className="font-semibold text-xs text-foreground px-2 py-1.5">My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator className="my-1" />
-                <DropdownMenuItem render={<Link href="/store/profile">Profile</Link>} className="cursor-pointer" />
-                <DropdownMenuItem render={<Link href="/admin">Admin Dashboard</Link>} className="cursor-pointer" />
-                <DropdownMenuSeparator className="my-1" />
-                <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
-          {/* Mobile Actions/Drawer */}
-          <div className="flex md:hidden items-center gap-2.5">
-            {/* Search Trigger */}
+          {/* Mobile Actions */}
+          <div className="flex md:hidden items-center gap-1.5">
+            {/* Cart Button - Mobile */}
             <Button
               variant="ghost"
               size="icon-sm"
-              onClick={() => setSearchOpen(true)}
-              className="text-muted-foreground hover:text-foreground"
+              onClick={openCart}
+              className="relative text-muted-foreground hover:text-foreground rounded-lg"
             >
-              <MagnifyingGlass className="size-4" />
+              <ShoppingCart className="size-4.5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
+                  {itemCount > 9 ? "9+" : itemCount}
+                </span>
+              )}
             </Button>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu */}
             <Sheet>
-              <SheetTrigger render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground hover:text-foreground rounded-lg"
-                />
-              }>
+              <SheetTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-muted-foreground hover:text-foreground rounded-lg"
+                  />
+                }
+              >
                 <List className="size-4.5" />
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 p-0 flex flex-col h-full bg-background border-l">
-                <SheetHeader className="px-6 py-5 border-b flex flex-row items-center justify-between">
-                  <SheetTitle className="flex items-center gap-2.5 font-bold tracking-tight text-lg">
+              <SheetContent
+                side="right"
+                className="w-72 p-0 flex flex-col h-full bg-background border-l"
+              >
+                <SheetHeader className="px-5 py-4 border-b flex flex-row items-center justify-between">
+                  <SheetTitle className="flex items-center gap-2.5 font-bold tracking-tight text-base">
                     <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                       <Sparkle className="size-3.5" weight="fill" />
                     </div>
@@ -181,45 +147,53 @@ export function StoreNavbar() {
                   </SheetTitle>
                 </SheetHeader>
 
-                {/* Mobile Navigation Links */}
-                <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
-
-                  <div className="border-t my-4" />
-
-                  <div className="space-y-1.5">
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-3 mb-2">
-                      Account & Actions
-                    </div>
-                    <SheetClose render={
-                      <Link
-                        href="/store/profile"
-                        className="flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+                  <SheetClose
+                    render={
+                      <button
+                        onClick={() => scrollTo("products")}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer text-left"
                       />
-                    }>
-                      <UserCircle className="size-4" />
-                      <span>My Profile</span>
-                    </SheetClose>
-                    <SheetClose render={
+                    }
+                  >
+                    <Package className="size-4" />
+                    Products
+                  </SheetClose>
+                  <SheetClose
+                    render={
+                      <button
+                        onClick={() => scrollTo("features")}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer text-left"
+                      />
+                    }
+                  >
+                    <Sparkle className="size-4" />
+                    Features
+                  </SheetClose>
+                  <SheetClose
+                    render={
                       <Link
                         href="/admin"
-                        className="flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer text-left"
                       />
-                    }>
-                      <Compass className="size-4" />
-                      <span>Admin Dashboard</span>
-                    </SheetClose>
-                  </div>
+                    }
+                  >
+                    <ShoppingBag className="size-4" />
+                    Admin Dashboard
+                  </SheetClose>
                 </div>
 
-                {/* Mobile Drawer Footer Controls */}
-                <div className="p-6 border-t bg-muted/20 space-y-4">
+                {/* Mobile drawer footer */}
+                <div className="p-4 border-t bg-muted/10 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Appearance</span>
+                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      Appearance
+                    </span>
                     {mounted && (
-                      <div className="flex rounded-lg border bg-background p-1">
+                      <div className="flex rounded-lg border bg-background p-0.5">
                         <button
                           onClick={() => setTheme("light")}
-                          className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
+                          className={`px-3 py-1.5 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                             resolvedTheme === "light"
                               ? "bg-primary text-primary-foreground shadow-xs"
                               : "text-muted-foreground hover:text-foreground"
@@ -230,7 +204,7 @@ export function StoreNavbar() {
                         </button>
                         <button
                           onClick={() => setTheme("dark")}
-                          className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
+                          className={`px-3 py-1.5 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                             resolvedTheme === "dark"
                               ? "bg-primary text-primary-foreground shadow-xs"
                               : "text-muted-foreground hover:text-foreground"
@@ -242,16 +216,6 @@ export function StoreNavbar() {
                       </div>
                     )}
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <ShoppingCart className="size-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">Visual Cart</span>
-                    </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-xs">
-                      2 items
-                    </span>
-                  </div>
                 </div>
               </SheetContent>
             </Sheet>
@@ -259,8 +223,6 @@ export function StoreNavbar() {
         </div>
       </header>
 
-      {/* Cmd+K Search Palette */}
-      <StoreSearch open={searchOpen} setOpen={setSearchOpen} />
     </>
   )
 }
