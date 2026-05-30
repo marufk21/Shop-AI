@@ -30,7 +30,7 @@ app = FastAPI(title="ShopAI", version="0.1.0", lifespan=lifespan)
 
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://shop-ai-dac6.onrender.com"
+    "https://shop-ai-client-azure.vercel.app"
 ]
 frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url:
