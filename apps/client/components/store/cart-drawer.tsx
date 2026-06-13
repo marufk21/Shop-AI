@@ -15,6 +15,7 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Separator } from "@workspace/ui/components/separator"
 import { useCart } from "@/components/store/cart-provider"
+import { getProductImageUrl } from "@/lib/image-url"
 
 export function CartDrawer() {
   const {
@@ -161,7 +162,7 @@ export function CartDrawer() {
                       >
                         {item.imageUrl ? (
                           <img
-                            src={item.imageUrl}
+                            src={getProductImageUrl(item.imageUrl, "thumbnail")}
                             alt={item.name}
                             className="h-full w-full object-cover"
                           />

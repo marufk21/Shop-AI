@@ -12,6 +12,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 
 import { DataTable } from "@/components/shared/data-table"
+import { getProductImageUrl } from "@/lib/image-url"
 import {
   useAdminProducts,
   useCreateAdminProduct,
@@ -54,7 +55,7 @@ export default function ProductsPage() {
         <div className="flex items-center gap-3">
           {row.image_url ? (
             <img
-              src={row.image_url}
+              src={getProductImageUrl(row.image_url, "thumbnail")}
               alt={row.name}
               className="size-8 rounded-lg object-cover"
             />

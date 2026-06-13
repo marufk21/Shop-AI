@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Sparkle, ShoppingBag } from "@phosphor-icons/react"
 import { useStoreProducts } from "@/hooks/store/use-products"
+import { getProductImageUrl } from "@/lib/image-url"
 import {
   Command,
   CommandDialog,
@@ -60,7 +61,7 @@ export function StoreSearch({ open, setOpen }: StoreSearchProps) {
                 >
                   {product.image_url ? (
                     <img
-                      src={product.image_url}
+                      src={getProductImageUrl(product.image_url, "thumbnail")}
                       alt={product.name}
                       className="size-8 rounded-md object-cover border bg-muted"
                     />

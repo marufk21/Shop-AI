@@ -7,6 +7,7 @@ import { Heart, ShoppingBag, Plus } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
 import type { Product } from "@/types/product"
 import { useCart } from "@/components/store/cart-provider"
+import { getProductImageUrl } from "@/lib/image-url"
 import { toast } from "sonner"
 
 interface ProductCardProps {
@@ -65,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/50">
           {product.image_url ? (
             <img
-              src={product.image_url}
+              src={getProductImageUrl(product.image_url, "thumbnail")}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
