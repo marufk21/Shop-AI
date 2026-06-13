@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     database_url: str
     app_name: str
     debug: bool
-    openai_api_key: str
+    gemini_api_key: str
 
     model_config = {
         "env_file": ".env",
@@ -35,7 +35,7 @@ class Settings(BaseSettings):
         v = urlunparse(parsed._replace(query=new_query))
         return v
 
-    @field_validator("openai_api_key", mode="before")
+    @field_validator("gemini_api_key", mode="before")
     @classmethod
     def strip_quotes(cls, v: str) -> str:
         return v.strip("'\"")

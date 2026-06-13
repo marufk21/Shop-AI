@@ -1,11 +1,11 @@
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pydantic import SecretStr
 
 from core.config import settings
 
-_embeddings = OpenAIEmbeddings(
-    model="text-embedding-3-small",
-    api_key=SecretStr(settings.openai_api_key),
+_embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/gemini-embedding-001",
+    api_key=SecretStr(settings.gemini_api_key),
 )
 
 

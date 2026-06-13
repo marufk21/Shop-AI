@@ -39,6 +39,6 @@ class DocumentChunk(Base):
     )
     content: Mapped[str] = mapped_column(Text)
     chunk_index: Mapped[int] = mapped_column(Integer)
-    embedding: Mapped[list[float]] = mapped_column(Vector(1536))
+    embedding: Mapped[list[float]] = mapped_column(Vector(3072))
 
     document: Mapped[Document] = relationship("Document", back_populates="chunks")

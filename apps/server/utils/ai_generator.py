@@ -1,5 +1,5 @@
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import SecretStr
 
 from core.config import settings
@@ -21,9 +21,9 @@ PROMPTS: dict[str, str] = {
 
 
 def improve_text(text: str, field: str) -> str:
-    llm = ChatOpenAI(
-        model="gpt-4o-mini",
-        api_key=SecretStr(settings.openai_api_key),
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        api_key=SecretStr(settings.gemini_api_key),
         temperature=0.7,
     )
 

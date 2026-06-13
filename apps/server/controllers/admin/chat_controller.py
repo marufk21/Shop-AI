@@ -3,7 +3,7 @@ from collections.abc import AsyncGenerator
 
 from fastapi.responses import StreamingResponse
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import SecretStr
 
 from core.config import settings
@@ -63,9 +63,9 @@ class ChatController:
                 RAG_SYSTEM_PROMPT.format(context=context) if context else SYSTEM_PROMPT
             )
 
-            llm = ChatOpenAI(
-                model="gpt-4o-mini",
-                api_key=SecretStr(settings.openai_api_key),
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-2.5-flash",
+                api_key=SecretStr(settings.gemini_api_key),
                 temperature=request.temperature,
                 streaming=True,
             )
