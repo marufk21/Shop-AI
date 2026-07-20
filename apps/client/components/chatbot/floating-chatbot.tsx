@@ -58,7 +58,7 @@ export function FloatingChatbot() {
           <button
             className="fixed right-4 bottom-4 z-50 flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-105 hover:shadow-xl active:scale-95 transition-all duration-200 cursor-pointer"
           >
-            <ChatCircle className="size-[18px]" weight="fill" />
+            <ChatCircle className="size-4.5" weight="fill" />
           </button>
         }
       />
@@ -66,7 +66,7 @@ export function FloatingChatbot() {
       <SheetContent
         side="right"
         showCloseButton={false}
-        className="flex w-full max-w-[380px] flex-col p-0 sm:max-w-[380px] border-l"
+        className="flex w-full max-w-95 flex-col p-0 sm:max-w-95 border-l"
       >
         {/* ── Header ── */}
         <div className="shrink-0 border-b px-4 py-3">
