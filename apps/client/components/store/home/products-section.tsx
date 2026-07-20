@@ -104,7 +104,7 @@ export function ProductsSection() {
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0">
 
           {/* Category pills — scrollable on mobile */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-0.5 -mx-4 px-4 sm:mx-0 sm:px-0">
             {isLoading && categories.length <= 1
               ? Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="h-7 w-20 rounded-lg bg-muted animate-pulse shrink-0" />

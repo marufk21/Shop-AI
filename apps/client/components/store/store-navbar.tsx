@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
   Sparkle,
@@ -25,6 +26,7 @@ import { useCart } from "./cart-provider"
 
 export function StoreNavbar() {
   const { resolvedTheme, setTheme } = useTheme()
+  const router = useRouter()
   const [scrolled, setScrolled] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
   const { itemCount, openCart } = useCart()
@@ -101,6 +103,17 @@ export function StoreNavbar() {
                 </span>
               )}
               <span className="sr-only">View cart</span>
+            </Button>
+
+            {/* Admin Dashboard */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push("/admin")}
+              className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+            >
+              <ShoppingBag className="size-4" />
+              <span>Admin Dashboard</span>
             </Button>
           </div>
 
