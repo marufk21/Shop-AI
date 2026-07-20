@@ -73,9 +73,7 @@ export function FloatingChatbot() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="relative">
-                <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Sparkle className="size-3.5" weight="fill" />
-                </div>
+                <img src="/logo.png" alt="ShopAI" className="size-8 rounded-lg object-cover" />
                 <span className="absolute -right-0.5 -bottom-0.5 flex size-2 rounded-full bg-emerald-500 ring-[1.5px] ring-background" />
               </div>
               <div>
@@ -103,18 +101,16 @@ export function FloatingChatbot() {
               {messages.length === 0 && (
                 <div className="flex flex-col items-center pt-8 pb-4">
                   {/* Welcome icon */}
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-muted/60 mb-3">
-                    <Sparkle className="size-5 text-muted-foreground" weight="fill" />
-                  </div>
+                  <img src="/logo.png" alt="ShopAI" className="size-12 rounded-2xl object-cover mb-3" />
                   <p className="text-sm font-semibold text-foreground">
                     How can I help?
                   </p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5 text-center max-w-[220px] leading-relaxed">
+                  <p className="text-[11px] text-muted-foreground mt-0.5 text-center max-w-55 leading-relaxed">
                     Ask me about products, orders, shipping, or anything else.
                   </p>
 
                   {/* Quick reply grid */}
-                  <div className="grid grid-cols-2 gap-1.5 mt-5 w-full max-w-[280px]">
+                  <div className="grid grid-cols-2 gap-1.5 mt-5 w-full max-w-70">
                     {quickReplies.map(({ icon: Icon, label, prompt }) => (
                       <button
                         key={label}
@@ -140,19 +136,13 @@ export function FloatingChatbot() {
                     className={`flex gap-2 ${isBot ? "" : "flex-row-reverse"}`}
                   >
                     {/* Avatar */}
-                    <div
-                      className={`flex size-6 shrink-0 items-center justify-center rounded-md mt-0.5 ${
-                        isBot
-                          ? "bg-muted text-muted-foreground"
-                          : "bg-primary text-primary-foreground"
-                      }`}
-                    >
-                      {isBot ? (
-                        <Sparkle className="size-3" weight="fill" />
-                      ) : (
+                    {isBot ? (
+                      <img src="/logo.png" alt="ShopAI" className="size-6 rounded-md object-cover mt-0.5 shrink-0" />
+                    ) : (
+                      <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground mt-0.5">
                         <User className="size-3" weight="bold" />
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     {/* Bubble */}
                     <div className={`min-w-0 max-w-[82%] ${isBot ? "" : "flex flex-col items-end"}`}>
@@ -163,7 +153,7 @@ export function FloatingChatbot() {
                             : "rounded-tr-sm bg-primary text-primary-foreground"
                         }`}
                       >
-                        <div className="whitespace-pre-wrap break-words">
+                        <div className="whitespace-pre-wrap wrap-break-word">
                           {msg.content}
                           {isLastBot && isStreaming && (
                             <span className="ml-1 inline-flex gap-0.5 align-middle">

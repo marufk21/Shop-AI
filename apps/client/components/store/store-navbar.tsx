@@ -60,9 +60,7 @@ export function StoreNavbar() {
             href="/store"
             className="flex items-center gap-2.5 font-heading text-lg font-bold tracking-tight select-none group shrink-0"
           >
-            <div className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/20 transition-transform duration-300 group-hover:scale-105">
-              <Sparkle className="size-4" weight="fill" />
-            </div>
+            <img src="/logo.png" alt="ShopAI Logo" className="size-8 rounded-lg object-cover transition-transform duration-300 group-hover:scale-105" />
             <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text hidden sm:inline">
               ShopAI
             </span>

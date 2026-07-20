@@ -29,8 +29,11 @@ export function CartDrawer() {
   } = useCart()
 
   const shippingThreshold = 50
+  const standardShippingFee = 5.99
   const shippingProgress = Math.min((subtotal / shippingThreshold) * 100, 100)
   const freeShipping = subtotal >= shippingThreshold
+  const shippingFee = freeShipping ? 0 : standardShippingFee
+  const total = subtotal + shippingFee
 
   React.useEffect(() => {
     if (isOpen) {
@@ -246,7 +249,7 @@ export function CartDrawer() {
                       {freeShipping ? (
                         <span className="text-emerald-600">Free</span>
                       ) : (
-                        `$${(shippingThreshold - subtotal).toFixed(2)} away`
+                        `$${shippingFee.toFixed(2)}`
                       )}
                     </span>
                   </div>
@@ -255,7 +258,7 @@ export function CartDrawer() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-foreground">Total</span>
                   <span className="text-lg font-bold text-foreground tabular-nums">
-                    ${subtotal.toFixed(2)}
+                    ${total.toFixed(2)}
                   </span>
                 </div>
                 <Button className="w-full h-11 rounded-xl font-semibold cursor-pointer text-sm shadow-lg shadow-primary/20">

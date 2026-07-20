@@ -38,11 +38,9 @@ export function StoreFooter() {
           <div className="lg:col-span-2 space-y-4">
             <Link
               href="/store"
-              className="flex items-center gap-2.5 font-heading text-lg font-bold tracking-tight"
+              className="flex items-center gap-2.5 font-heading text-lg font-bold tracking-tight select-none group"
             >
-              <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Sparkle className="size-3.5" weight="fill" />
-              </div>
+              <img src="/logo.png" alt="ShopAI Logo" className="size-7 rounded-md object-cover transition-transform duration-300 group-hover:scale-105" />
               <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text">
                 ShopAI
               </span>
