@@ -267,3 +267,7 @@ Fixed collapsible sidebar (dark, icon + label) + spacious main content area (car
 ### Responsive
 
 Mobile-first. Sidebar → drawer on mobile. Tables → stacked cards. Analytics → responsive charts.
+
+### Kill Server Command
+
+npx kill-port server-name

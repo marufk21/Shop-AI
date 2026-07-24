@@ -39,7 +39,7 @@ export function ProductsSection() {
     setCurrentPage(1)
   }, [search, category, sort])
 
-  const { data, isError, isLoading, refetch } = useStoreProducts({ limit: 100 })
+  const { data, isError, isLoading, refetch } = useStoreProducts({ limit: 2000 })
   const products = data?.items ?? []
 
   const categories = React.useMemo(() => {

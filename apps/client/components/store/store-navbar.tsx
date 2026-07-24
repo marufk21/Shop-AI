@@ -95,7 +95,7 @@ export function StoreNavbar() {
               className="relative text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
             >
               <ShoppingCart className="size-4.5" />
-              {itemCount > 0 && (
+              {mounted && itemCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
                   {itemCount > 9 ? "9+" : itemCount}
                 </span>
@@ -125,7 +125,7 @@ export function StoreNavbar() {
               className="relative text-muted-foreground hover:text-foreground rounded-lg"
             >
               <ShoppingCart className="size-4.5" />
-              {itemCount > 0 && (
+              {mounted && itemCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
                   {itemCount > 9 ? "9+" : itemCount}
                 </span>

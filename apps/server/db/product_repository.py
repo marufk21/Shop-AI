@@ -66,6 +66,19 @@ class ProductRepository:
         await self.db.refresh(product)
         return product
 
+    async def create_batch(self, products: list[Product]) -> list[Product]:
+        self.db.add_all(products)
+        await self.db.flush()
+        return products
+
+    async def slugs_exist(self, slugs: list[str]) -> set[str]:
+        if not slugs:
+            return set()
+        result = await self.db.execute(
+            select(Product.slug).where(Product.slug.in_(slugs))
+        )
+        return {row[0] for row in result.all()}
+
     async def delete(self, product: Product) -> None:
         await self.db.delete(product)
         await self.db.flush()
