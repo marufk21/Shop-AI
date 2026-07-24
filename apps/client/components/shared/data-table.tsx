@@ -19,7 +19,6 @@ import {
   MagnifyingGlass,
   CaretLeft,
   CaretRight,
-  Funnel,
 } from "@phosphor-icons/react"
 
 type Column<T> = {
@@ -84,8 +83,9 @@ export function DataTable<T extends Record<string, unknown>>({
       })
     : data
 
-  const totalPages = Math.ceil(sorted.length / pageSize)
-  const paged = sorted.slice(page * pageSize, (page + 1) * pageSize)
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
+  const safePage = Math.min(page, totalPages - 1)
+  const paged = sorted.slice(safePage * pageSize, (safePage + 1) * pageSize)
 
   const SortIcon = ({ column }: { column: string }) => {
     if (sortKey !== column)
@@ -107,24 +107,18 @@ export function DataTable<T extends Record<string, unknown>>({
   return (
     <div className="space-y-4">
       {(onSearch || searchPlaceholder) && (
-        <div className="flex items-center gap-3">
-          <div className="relative max-w-sm flex-1">
-            <MagnifyingGlass className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder={searchPlaceholder}
-              value={search}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <Button variant="outline" size="sm">
-            <Funnel className="mr-1.5 size-3.5" />
-            Filters
-          </Button>
+        <div className="relative max-w-sm">
+          <MagnifyingGlass className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder={searchPlaceholder}
+            value={search}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="pl-9"
+          />
         </div>
       )}
 
-      <div className="rounded-xl border">
+      <div className="scrollbar-hide overflow-x-auto rounded-xl border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -179,33 +173,60 @@ export function DataTable<T extends Record<string, unknown>>({
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {page * pageSize + 1}–
-            {Math.min((page + 1) * pageSize, sorted.length)} of {sorted.length}
+            Showing {safePage * pageSize + 1}–
+            {Math.min((safePage + 1) * pageSize, sorted.length)} of {sorted.length}
           </p>
           <div className="flex items-center gap-1">
             <Button
               variant="outline"
               size="icon-xs"
               onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
+              disabled={safePage === 0}
             >
               <CaretLeft className="size-3.5" />
             </Button>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <Button
-                key={i}
-                variant={page === i ? "default" : "outline"}
-                size="icon-xs"
-                onClick={() => setPage(i)}
-              >
-                {i + 1}
-              </Button>
-            ))}
+
+            {Array.from({ length: totalPages }).map((_, i) => {
+              // Show first, last, current ±1, and ellipsis
+              const show =
+                i === 0 ||
+                i === totalPages - 1 ||
+                Math.abs(i - safePage) <= 1
+
+              if (!show) {
+                const isEllipsis =
+                  (i === 1 && safePage > 2) ||
+                  (i === totalPages - 2 && safePage < totalPages - 3)
+                if (isEllipsis) {
+                  return (
+                    <span
+                      key={i}
+                      className="flex size-8 items-center justify-center text-xs text-muted-foreground select-none"
+                    >
+                      …
+                    </span>
+                  )
+                }
+                return null
+              }
+
+              return (
+                <Button
+                  key={i}
+                  variant={safePage === i ? "default" : "outline"}
+                  size="icon-xs"
+                  onClick={() => setPage(i)}
+                >
+                  {i + 1}
+                </Button>
+              )
+            })}
+
             <Button
               variant="outline"
               size="icon-xs"
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page >= totalPages - 1}
+              disabled={safePage >= totalPages - 1}
             >
               <CaretRight className="size-3.5" />
             </Button>

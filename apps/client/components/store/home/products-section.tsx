@@ -11,6 +11,7 @@ import {
   CaretRight,
   ShoppingBag,
   X,
+  Tag,
 } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -29,32 +30,96 @@ import { staggerContainer, fadeInUp } from "@/lib/animation-variants"
 
 const ITEMS_PER_PAGE = 12
 
+type CategoryTree = Record<string, string[]>
+
+function parseCategoryHierarchy(category: string): {
+  master: string
+  articleType: string
+} {
+  const parts = category.split(">").map((s) => s.trim())
+  return {
+    master: parts[0] ?? category,
+    articleType: parts[parts.length - 1] ?? category,
+  }
+}
+
+function buildCategoryTree(products: { category: string }[]): {
+  masters: string[]
+  articlesByMaster: CategoryTree
+  productCountByMaster: Record<string, number>
+  productCountByArticle: Record<string, number>
+} {
+  const masterSet = new Set<string>()
+  const articlesByMaster: CategoryTree = {}
+  const productCountByMaster: Record<string, number> = {}
+  const productCountByArticle: Record<string, number> = {}
+
+  for (const product of products) {
+    const { master, articleType } = parseCategoryHierarchy(product.category)
+
+    masterSet.add(master)
+
+    if (!articlesByMaster[master]) {
+      articlesByMaster[master] = []
+    }
+    if (!articlesByMaster[master].includes(articleType)) {
+      articlesByMaster[master].push(articleType)
+    }
+
+    productCountByMaster[master] = (productCountByMaster[master] ?? 0) + 1
+    productCountByArticle[articleType] =
+      (productCountByArticle[articleType] ?? 0) + 1
+  }
+
+  return {
+    masters: Array.from(masterSet).sort(),
+    articlesByMaster,
+    productCountByMaster,
+    productCountByArticle,
+  }
+}
+
 export function ProductsSection() {
   const [search, setSearch] = React.useState("")
-  const [category, setCategory] = React.useState("All")
+  const [masterCategory, setMasterCategory] = React.useState("All")
+  const [articleType, setArticleType] = React.useState("All")
   const [sort, setSort] = React.useState("popular")
   const [currentPage, setCurrentPage] = React.useState(1)
 
   React.useEffect(() => {
     setCurrentPage(1)
-  }, [search, category, sort])
+  }, [search, masterCategory, articleType, sort])
 
   const { data, isError, isLoading, refetch } = useStoreProducts({ limit: 2000 })
-  const products = data?.items ?? []
+  const products = React.useMemo(() => data?.items ?? [], [data?.items])
 
-  const categories = React.useMemo(() => {
-    const list = new Set(products.map((p) => p.category))
-    return ["All", ...Array.from(list).sort()]
-  }, [products])
+  const { masters, articlesByMaster, productCountByMaster } =
+    React.useMemo(() => buildCategoryTree(products), [products])
+
+  const visibleArticleTypes = React.useMemo(() => {
+    if (masterCategory === "All") return []
+    return articlesByMaster[masterCategory] ?? []
+  }, [masterCategory, articlesByMaster])
+
+  // Reset article type when master changes
+  React.useEffect(() => {
+    setArticleType("All")
+  }, [masterCategory])
 
   const filteredAndSortedProducts = React.useMemo(() => {
     return products
       .filter((p) => {
-        const matchesCategory = category === "All" || p.category.toLowerCase() === category.toLowerCase()
+        const { master, articleType: pArticle } = parseCategoryHierarchy(
+          p.category,
+        )
+
+        if (masterCategory !== "All" && master !== masterCategory) return false
+        if (articleType !== "All" && pArticle !== articleType) return false
+
         const matchesSearch =
           p.name.toLowerCase().includes(search.toLowerCase()) ||
           (p.description?.toLowerCase().includes(search.toLowerCase()) ?? false)
-        return matchesCategory && matchesSearch
+        return matchesSearch
       })
       .sort((a, b) => {
         if (sort === "price-low") return a.price - b.price
@@ -63,7 +128,7 @@ export function ProductsSection() {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         return a.name.localeCompare(b.name)
       })
-  }, [products, search, category, sort])
+  }, [products, search, masterCategory, articleType, sort])
 
   const paginatedProducts = React.useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
@@ -71,7 +136,6 @@ export function ProductsSection() {
   }, [filteredAndSortedProducts, currentPage])
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedProducts.length / ITEMS_PER_PAGE))
-  const hasActiveFilters = category !== "All"
 
   return (
     <section id="products" className="py-10 scroll-mt-20">
@@ -100,38 +164,99 @@ export function ProductsSection() {
           </div>
         </motion.div>
 
-        {/* ── Filter toolbar: categories | search | sort — single row ── */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0">
+        {/* ── Filter toolbar: categories | search | sort ── */}
+        <div className="mb-8 space-y-3">
 
-          {/* Category pills — scrollable on mobile */}
+          {/* ── Primary row: Master categories ── */}
           <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-0.5 -mx-4 px-4 sm:mx-0 sm:px-0">
-            {isLoading && categories.length <= 1
+            {/* All master pill */}
+            <button
+              onClick={() => setMasterCategory("All")}
+              className={`h-8 px-3.5 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 transition-all duration-200 border ${
+                masterCategory === "All"
+                  ? "bg-foreground border-foreground text-background shadow-sm"
+                  : "bg-background border-border hover:border-foreground/25 hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              All
+              <span className="ml-1.5 text-[10px] opacity-60">
+                ({products.length})
+              </span>
+            </button>
+
+            {isLoading && masters.length === 0
               ? Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="h-7 w-20 rounded-lg bg-muted animate-pulse shrink-0" />
+                  <div
+                    key={i}
+                    className="h-8 w-24 rounded-lg bg-muted animate-pulse shrink-0"
+                  />
                 ))
-              : categories.map((cat) => {
-                  const active = category === cat
+              : masters.map((master) => {
+                  const active = masterCategory === master
+                  const count = productCountByMaster[master] ?? 0
                   return (
                     <button
-                      key={cat}
-                      onClick={() => setCategory(cat)}
-                      className={`h-7 px-3.5 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 transition-all duration-200 border capitalize ${
+                      key={master}
+                      onClick={() => setMasterCategory(master)}
+                      className={`h-8 px-3.5 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 transition-all duration-200 border ${
                         active
                           ? "bg-foreground border-foreground text-background shadow-sm"
                           : "bg-background border-border hover:border-foreground/25 hover:bg-muted/40 text-muted-foreground hover:text-foreground"
                       }`}
                     >
-                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                      {master}
+                      <span className="ml-1.5 text-[10px] opacity-60">
+                        ({count})
+                      </span>
                     </button>
                   )
                 })}
           </div>
 
-          {/* Spacer pushes controls right on desktop */}
-          <div className="hidden sm:block flex-1 min-w-4" />
+          {/* ── Secondary row: Article types (visible when a master is selected) ── */}
+          {masterCategory !== "All" && visibleArticleTypes.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="scrollbar-hide flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-0.5 -mx-4 px-4 sm:mx-0 sm:px-0"
+            >
+              <Tag className="size-3 text-muted-foreground shrink-0" />
 
-          {/* Search + Sort — compact, right-aligned on desktop */}
-          <div className="flex items-center gap-2 shrink-0">
+              {/* All article types under this master */}
+              <button
+                onClick={() => setArticleType("All")}
+                className={`h-7 px-3 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 transition-all duration-200 border ${
+                  articleType === "All"
+                    ? "bg-primary/10 border-primary/30 text-primary shadow-sm"
+                    : "bg-background border-border hover:border-primary/25 hover:bg-primary/5 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                All {masterCategory}
+              </button>
+
+              {visibleArticleTypes.map((at) => {
+                const active = articleType === at
+                return (
+                  <button
+                    key={at}
+                    onClick={() => setArticleType(at)}
+                    className={`h-7 px-3 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 transition-all duration-200 border capitalize ${
+                      active
+                        ? "bg-primary/10 border-primary/30 text-primary shadow-sm"
+                        : "bg-background border-border hover:border-primary/25 hover:bg-primary/5 text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {at}
+                  </button>
+                )
+              })}
+            </motion.div>
+          )}
+
+          {/* ── Search + Sort row ── */}
+          <div className="flex items-center gap-2">
             {/* Compact search input */}
             <div className="relative">
               <MagnifyingGlass className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
@@ -225,7 +350,10 @@ export function ProductsSection() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCategory("All") }
+                onClick={() => {
+                  setMasterCategory("All")
+                  setArticleType("All")
+                }}
                 className="mt-5 h-8 rounded-xl text-xs font-semibold cursor-pointer"
               >
                 Reset Filters
@@ -235,7 +363,7 @@ export function ProductsSection() {
 
           {!isLoading && !isError && filteredAndSortedProducts.length > 0 && (
             <motion.div
-              key={category + sort + currentPage}
+              key={masterCategory + articleType + sort + currentPage}
               variants={staggerContainer}
               initial="hidden"
               animate="visible"

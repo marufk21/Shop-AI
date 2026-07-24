@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { ImageSquare, Sparkle, Upload, X } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -15,7 +15,7 @@ import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 
-import type { ProductCreateInput, ProductStatus } from "@/types/product"
+import type { Product, ProductCreateInput, ProductStatus } from "@/types/product"
 import { fetchImprovedText } from "@/server/admin/ai-fetchers"
 
 export interface ProductFormData {
@@ -34,6 +34,7 @@ type ProductFormProps = {
   initial?: Partial<ProductFormData>
   existingImageUrl?: string | null
   isSubmitting?: boolean
+  existingProducts?: Product[]
 }
 
 const defaultValues: ProductFormData = {
@@ -47,6 +48,39 @@ const defaultValues: ProductFormData = {
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"]
 
+function parseCategoryHierarchy(category: string): {
+  master: string
+  articleType: string
+} {
+  const parts = category.split(">").map((s) => s.trim())
+  return {
+    master: parts[0] ?? category,
+    articleType: parts[parts.length - 1] ?? category,
+  }
+}
+
+function buildCategoryTree(products: { category: string }[]) {
+  const masterSet = new Set<string>()
+  const articlesByMaster: Record<string, string[]> = {}
+
+  for (const product of products) {
+    const { master, articleType } = parseCategoryHierarchy(product.category)
+    if (!master || !articleType) continue
+    masterSet.add(master)
+    if (!articlesByMaster[master]) {
+      articlesByMaster[master] = []
+    }
+    if (!articlesByMaster[master].includes(articleType)) {
+      articlesByMaster[master].push(articleType)
+    }
+  }
+
+  return {
+    masters: Array.from(masterSet).sort(),
+    articlesByMaster,
+  }
+}
+
 export function ProductForm({
   open,
   onOpenChange,
@@ -54,6 +88,7 @@ export function ProductForm({
   initial,
   existingImageUrl,
   isSubmitting = false,
+  existingProducts = [],
 }: ProductFormProps) {
   const [form, setForm] = useState<ProductFormData>({
     ...defaultValues,
@@ -68,7 +103,60 @@ export function ProductForm({
   const [isDragging, setIsDragging] = useState(false)
   const [isImprovingName, setIsImprovingName] = useState(false)
   const [isImprovingDescription, setIsImprovingDescription] = useState(false)
+  const [useCustomCategory, setUseCustomCategory] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const { masters, articlesByMaster } = useMemo(
+    () => buildCategoryTree(existingProducts),
+    [existingProducts],
+  )
+
+  // Parse existing category for initial form state
+  const initialParsed = initial?.category
+    ? parseCategoryHierarchy(initial.category)
+    : null
+  const [selectedMaster, setSelectedMaster] = useState(
+    initialParsed?.master && masters.includes(initialParsed.master)
+      ? initialParsed.master
+      : "",
+  )
+  const [selectedArticle, setSelectedArticle] = useState(
+    initialParsed?.articleType ?? "",
+  )
+  const [customCategory, setCustomCategory] = useState(
+    !initialParsed?.master || !masters.includes(initialParsed.master)
+      ? (initial?.category ?? "")
+      : "",
+  )
+
+  const articleTypes = selectedMaster
+    ? (articlesByMaster[selectedMaster] ?? [])
+    : []
+
+  // When master changes, update form category
+  const handleMasterChange = (master: string) => {
+    setSelectedMaster(master)
+    setSelectedArticle("")
+    setUseCustomCategory(false)
+    if (master === "__custom__") {
+      setUseCustomCategory(true)
+      setSelectedMaster("")
+    } else {
+      setForm({ ...form, category: master })
+    }
+  }
+
+  const handleArticleChange = (article: string) => {
+    setSelectedArticle(article)
+    if (selectedMaster && article) {
+      setForm({ ...form, category: `${selectedMaster} > ${article}` })
+    }
+  }
+
+  const handleCustomCategoryChange = (value: string) => {
+    setCustomCategory(value)
+    setForm({ ...form, category: value })
+  }
 
   const imageToShow = removedExistingImage
     ? null
@@ -80,6 +168,10 @@ export function ProductForm({
     setImagePreview(null)
     setRemovedExistingImage(false)
     setError(null)
+    setSelectedMaster("")
+    setSelectedArticle("")
+    setCustomCategory("")
+    setUseCustomCategory(false)
   }
 
   const handleFile = (file: File) => {
@@ -312,21 +404,70 @@ export function ProductForm({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-3">
                 <Label>Category</Label>
-                <select
-                  value={form.category}
-                  onChange={(e) =>
-                    setForm({ ...form, category: e.target.value })
-                  }
-                  disabled={isSubmitting}
-                  className="h-9 rounded-lg border border-input bg-transparent px-3 text-sm outline-none"
-                >
-                  <option value="">Select category</option>
-                  <option value="home">Home</option>
-                  <option value="office">Office</option>
-                  <option value="kitchen">Kitchen</option>
-                  <option value="tech">Tech</option>
-                  <option value="fashion">Fashion</option>
-                </select>
+
+                {masters.length > 0 && !useCustomCategory ? (
+                  <div className="space-y-2">
+                    <select
+                      value={selectedMaster}
+                      onChange={(e) => handleMasterChange(e.target.value)}
+                      disabled={isSubmitting}
+                      className="h-9 w-full rounded-lg border border-input bg-transparent px-3 text-sm outline-none"
+                    >
+                      <option value="">Select category</option>
+                      {masters.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                      <option disabled>──────────</option>
+                      <option value="__custom__">Custom...</option>
+                    </select>
+
+                    {selectedMaster && articleTypes.length > 0 && (
+                      <select
+                        value={selectedArticle}
+                        onChange={(e) => handleArticleChange(e.target.value)}
+                        disabled={isSubmitting}
+                        className="h-9 w-full rounded-lg border border-input bg-transparent px-3 text-sm outline-none"
+                      >
+                        <option value="">Select type</option>
+                        {articleTypes.map((a) => (
+                          <option key={a} value={a}>
+                            {a}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+
+                    {selectedMaster && articleTypes.length === 0 && (
+                      <p className="text-[11px] text-muted-foreground px-1">
+                        Category will be set to: <strong>{selectedMaster}</strong>
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Input
+                      value={customCategory}
+                      onChange={(e) => handleCustomCategoryChange(e.target.value)}
+                      placeholder="e.g. Apparel > Tshirts"
+                      disabled={isSubmitting}
+                      required
+                    />
+                    {masters.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUseCustomCategory(false)
+                          setCustomCategory("")
+                        }}
+                        className="text-[11px] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      >
+                        Choose from existing categories
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="grid gap-3">
                 <Label>Status</Label>
