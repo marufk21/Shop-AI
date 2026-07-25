@@ -30,6 +30,9 @@ engine = create_async_engine(
     database_url,
     echo=settings.debug,
     connect_args=connect_args,
+    # Neon closes idle connections on scale-to-zero; recycle + pre-ping avoids stale sockets
+    pool_pre_ping=True,
+    pool_recycle=300,
 )
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 

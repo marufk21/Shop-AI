@@ -26,7 +26,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await engine.dispose()
 
 
-# Force reload — store products limit increased to 10000
 app = FastAPI(title="ShopAI", version="0.1.0", lifespan=lifespan)
 
 ALLOWED_ORIGINS = [
