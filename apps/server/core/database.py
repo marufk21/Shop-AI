@@ -30,7 +30,8 @@ engine = create_async_engine(
     database_url,
     echo=settings.debug,
     connect_args=connect_args,
-    # Neon closes idle connections on scale-to-zero; recycle + pre-ping avoids stale sockets
+    # Neon closes idle connections on scale-to-zero; recycle + pre-ping avoids
+    # stale sockets.
     pool_pre_ping=True,
     pool_recycle=300,
 )

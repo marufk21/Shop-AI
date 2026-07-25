@@ -49,7 +49,7 @@ pnpm install
 ```env
 DATABASE_URL="postgresql://user:password@host:5432/dbname?sslmode=require"
 APP_NAME=ShopAI
-DEBUG=false
+APP_DEBUG=false
 GEMINI_API_KEY="your-gemini-api-key"
 CLOUDINARY_CLOUD_NAME="your-cloud-name"
 CLOUDINARY_API_KEY="your-api-key"

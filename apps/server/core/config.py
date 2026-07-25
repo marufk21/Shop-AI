@@ -5,10 +5,10 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_url: str
-    app_name: str
-    debug: bool
-    gemini_api_key: str
+    database_url: str = Field(validation_alias="DATABASE_URL")
+    app_name: str = Field(default="ShopAI", validation_alias="APP_NAME")
+    debug: bool = Field(default=False, validation_alias="APP_DEBUG")
+    gemini_api_key: str = Field(validation_alias="GEMINI_API_KEY")
 
     model_config = {
         "env_file": ".env",
