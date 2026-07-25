@@ -5,7 +5,7 @@ import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 
 import { cn } from "@workspace/ui/lib/utils"
-import { CaretRightIcon, DotsThreeIcon } from "@phosphor-icons/react"
+import { CaretRight, DotsThree } from "@phosphor-icons/react"
 
 function Breadcrumb({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -88,7 +88,7 @@ function BreadcrumbSeparator({
       {...props}
     >
       {children ?? (
-        <CaretRightIcon className="rtl:rotate-180" />
+        <CaretRight className="rtl:rotate-180" />
       )}
     </li>
   )
@@ -109,7 +109,7 @@ function BreadcrumbEllipsis({
       )}
       {...props}
     >
-      <DotsThreeIcon
+      <DotsThree
       />
       <span className="sr-only">More</span>
     </span>

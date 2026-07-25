@@ -4,15 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AI-first e-commerce SaaS with admin dashboard, AI product generator, RAG chatbot, product management, analytics, and customer storefront.
 
-**Stack:** Next.js 16 · React 19 · TypeScript (strict) · Tailwind v4 · shadcn/ui (base-mira) · @base-ui/react · TanStack Query · FastAPI · Python · SQLAlchemy · PostgreSQL + pgvector · OpenAI (GPT-4o-mini, text-embedding-3-small) · Cloudinary · LangChain
+**Stack:** Next.js 16 · React 19 · TypeScript (strict) · Tailwind v4 · shadcn/ui (base-mira) · @base-ui/react · TanStack Query · FastAPI · Python · SQLAlchemy · PostgreSQL + pgvector · Gemini (2.5 Flash, embedding-001) · Cloudinary · LangChain
 
 ---
 
 ## Project State
 
-**Done:** Next.js 16 scaffold, TypeScript strict, Tailwind v4, shadcn/ui (taupe/Mira theme, OKLCH tokens), `next-themes` dark mode (toggle: `d`), fonts (Lora headings, Raleway body, Geist Mono code), `cn()` utility, admin product CRUD with Cloudinary image upload, store product listing/detail, RAG chatbot with SSE streaming + source citations, AI product name/description improver, document upload with parsing/chunking/embedding pipeline, admin analytics page, admin settings page, backend admin/store separation (routes + controllers), Neon PostgreSQL + pgvector connected.
+**Done:** Next.js 16 scaffold, TypeScript strict, Tailwind v4, shadcn/ui (taupe/Mira theme, OKLCH tokens), `next-themes` dark mode (toggle: `d`), fonts (Lora headings, Raleway body, Geist Mono code), `cn()` utility, admin product CRUD with Cloudinary image upload, store product listing/detail/category pages, store home page (hero carousel, category icon grid, flash deals, offer cards, promo banner, newsletter), cart drawer with persistent state, product quick view, recently viewed, related products, responsive store layout (announcement bar, sticky category bar, mobile bottom nav, store footer), RAG chatbot with SSE streaming + source citations, AI product name/description improver, document upload with parsing/chunking/embedding pipeline, admin analytics page, admin settings page, backend admin/store separation (routes + controllers), Neon PostgreSQL + pgvector connected.
 
-**Backlog:** Cart, checkout, auth, search, categories, deployment.
+**Backlog:** Checkout, auth, search, deployment.
 
 ---
 
@@ -51,24 +51,31 @@ shopai/
 │   │   ├── app/
 │   │   │   ├── (admin)/admin/        → dashboard, products, documents, chatbot, analytics, settings
 │   │   │   │   └── products/product-form.tsx  (shared dialog component, not a route)
-│   │   │   ├── (store)/store/        → storefront, product listing/detail, profile
-│   │   │   └── layout.tsx            → root layout (Lora, Raleway, Geist Mono fonts)
+│   │   │   └── (store)/store/        → storefront: home, product detail [slug], category [slug], all products
+│   │   │       └── layout.tsx        → store layout (announcement bar, navbar, mobile bottom bar, footer)
 │   │   ├── components/
+│   │   │   ├── store/                → storefront UI: cart-provider, cart-drawer, store-navbar, store-footer,
+│   │   │   │     store-search, product-card, product-card-skeleton, product-detail-content,
+│   │   │   │     product-quick-view, related-products, recently-viewed, announcement-bar,
+│   │   │   │     sticky-category-bar, mobile-bottom-bar, category-page-content, all-products-content
+│   │   │   ├── store/home/           → home-page-content, home-skeleton, hero-carousel, category-icon-grid,
+│   │   │   │     flash-deals-section, offer-cards-strip, product-row-section, products-section,
+│   │   │   │     promo-banner, newsletter-section
 │   │   │   ├── layout/               → app-sidebar, app-header
 │   │   │   ├── shared/               → data-table, command-menu, theme-provider
 │   │   │   ├── chatbot/              → chatbot-wrapper, floating-chatbot (SSE streaming)
 │   │   │   └── providers.tsx         → QueryClient, Theme, Sidebar, Tooltip, Toaster (sonner)
 │   │   ├── hooks/
 │   │   │   ├── admin/                → use-products, use-documents, use-chat
-│   │   │   └── store/                → use-products
+│   │   │   └── store/                → use-products, use-recently-viewed
 │   │   ├── server/                   → axios-client + fetchers (admin: products, ai, documents, chat; store: products)
 │   │   ├── types/                    → product.ts, document.ts, chat.ts
-│   │   └── lib/                      → (empty — cn() lives in packages/ui)
+│   │   └── lib/                      → image-url.ts (Cloudinary URL builder)
 │   │
 │   └── server/                     → FastAPI app
 │       ├── api/
 │       │   ├── admin/                → products (CRUD), upload (Cloudinary), ai (improve), documents, chat (RAG SSE)
-│       │   └── store/                → products (listing + detail by slug)
+│       │   └── store/                → products (listing + detail by slug), categories
 │       ├── controllers/
 │       │   ├── admin/                → AdminProductController, DocumentController, ChatController
 │       │   └── store/                → StoreProductController
@@ -76,14 +83,15 @@ shopai/
 │       ├── models/                   → product_model, document_model (with DocumentChunk + pgvector)
 │       ├── schemas/                  → product_schema, document_schema, chat_schema, ai_schema
 │       ├── core/                     → config.py (Pydantic Settings), database.py (async SQLAlchemy), dependencies.py (DI)
-│       ├── utils/                    → ai_generator, chunker, cloudinary, document_parser, embedding, slug
+│       ├── utils/                    → ai_generator (Gemini 2.5 Flash), chunker, cloudinary, document_parser,
+│       │                               embedding (Gemini embedding-001), slug
 │       ├── uploads/documents/        → uploaded document files ({uuid}_{filename})
 │       └── main.py                   → app entry, CORS (localhost:3000/3001), lifespan (pgvector ext + create_all)
 
 ├── packages/
 │   ├── ui/                          → shared shadcn/ui components (@workspace/ui)
 │   │   └── src/
-│   │       ├── components/           → 32 components built on @base-ui/react (accordion…tooltip)
+│   │       ├── components/           → 33 components built on @base-ui/react (accordion…tooltip)
 │   │       ├── lib/utils.ts          → cn() (clsx + tailwind-merge)
 │   │       ├── hooks/                → use-mobile
 │   │       └── styles/globals.css    → Tailwind v4 + OKLCH tokens + @theme inline
@@ -107,16 +115,18 @@ shopai/
 
 ### @base-ui/react Turbopack SSR patch
 
-`@base-ui/react` v1.5.0 needs `"use client"` directives on all ESM/CJS files for Turbopack SSR. Without this, importing any `@base-ui/react` component in a server component will crash. Until upstream ships the fix, every file in `node_modules/@base-ui/react/{esm,cjs}/*.js` must be patched to add `"use client"` at the top. This affects the `packages/ui` workspace since all 32 components re-export from `@base-ui/react`.
+`@base-ui/react` v1.5.0 needs `"use client"` directives on all ESM/CJS files for Turbopack SSR. Without this, importing any `@base-ui/react` component in a server component will crash. Until upstream ships the fix, every file in `node_modules/@base-ui/react/{esm,cjs}/*.js` must be patched to add `"use client"` at the top. This affects the `packages/ui` workspace since all 33 components re-export from `@base-ui/react`.
 
 ### Patterns
 
 - **Backend:** routes are thin → controllers have business logic → db/repositories access data. Async-first everywhere.
-- **Backend document pipeline:** upload → save file → create DB record → parse text (`document_parser`) → chunk text (`chunker`) → generate embeddings (`embedding`, 1536-dim) → store chunks in pgvector → mark status `indexed`.
-- **Backend chat RAG:** embed user query → cosine similarity search via `VectorRepository.search_similar` → build context from matching chunks → stream GPT-4o-mini response via SSE (`text/event-stream`) → emit `token` events, then `sources` citations, then `[DONE]`.
+- **Backend document pipeline:** upload → save file → create DB record → parse text (`document_parser`) → chunk text (`chunker`) → generate embeddings (`embedding`, 768-dim) → store chunks in pgvector → mark status `indexed`.
+- **Backend chat RAG:** embed user query → cosine similarity search via `VectorRepository.search_similar` → build context from matching chunks → stream Gemini 2.5 Flash response via SSE (`text/event-stream`) → emit `token` events, then `sources` citations, then `[DONE]`.
 - **Backend image uploads:** All product images go through `CloudinaryUploader` (wraps `cloudinary` SDK). Uploaded via `asyncio.to_thread` to avoid blocking.
 - **Frontend:** server components by default, TanStack Query for all server state (staleTime 30s, retry 1).
 - **Frontend chat streaming:** uses raw `fetch` + SSE parsing (not Axios) — reads `ReadableStream`, splits on `\n\n`, parses `data: ` lines as JSON events.
+- **Frontend store cart:** `CartProvider` wraps the store layout — uses React Context + localStorage persistence. `useCart` hook exposes `addItem`, `removeItem`, `updateQuantity`, `clearCart`, and computed `itemCount`/`total`.
+- **Frontend store navigation:** `StickyCategoryBar` pins below the navbar on scroll; `MobileBottomBar` provides quick access on small screens; `AnnouncementBar` sits at the very top of the store layout.
 
 ---
 
@@ -195,7 +205,7 @@ Or within `apps/client/`: `pnpm typecheck`, `pnpm lint`, `pnpm format`.
 ### Database
 
 - Async SQLAlchemy with `asyncpg` driver. `database_url` auto-rewritten from `postgresql://` to `postgresql+asyncpg://` in config.
-- `pgvector` extension created in lifespan startup. `Vector(1536)` column on `DocumentChunk.embedding`.
+- `pgvector` extension created in lifespan startup. `Vector(768)` column on `DocumentChunk.embedding`.
 - Cosine distance (`<=>`) for vector similarity search. Join to parent `Document` filtered by `status == "indexed"`.
 
 ### Quality Gates

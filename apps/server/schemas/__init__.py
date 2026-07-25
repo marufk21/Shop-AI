@@ -7,6 +7,8 @@ ProductCreate = _product_schema.ProductCreate
 ProductListResponse = _product_schema.ProductListResponse
 ProductResponse = _product_schema.ProductResponse
 ProductUpdate = _product_schema.ProductUpdate
+CategoryItem = _product_schema.CategoryItem
+CategoryListResponse = _product_schema.CategoryListResponse
 
 _document_schema = import_module("schemas.document_schema")
 DocumentResponse = _document_schema.DocumentResponse
@@ -23,6 +25,8 @@ __all__ = [
     "ProductListResponse",
     "ProductResponse",
     "ProductUpdate",
+    "CategoryItem",
+    "CategoryListResponse",
     "DocumentResponse",
     "DocumentListResponse",
     "ChatRequest",

@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Product
@@ -34,6 +34,7 @@ class ProductRepository:
         self,
         status: str | None = None,
         search: str | None = None,
+        category: str | None = None,
         skip: int = 0,
         limit: int = 20,
     ) -> tuple[list[Product], int]:
@@ -43,6 +44,14 @@ class ProductRepository:
         if status is not None:
             query = query.where(Product.status == status)
             count_query = count_query.where(Product.status == status)
+
+        if category is not None:
+            cat_filter = or_(
+                Product.category == category,
+                Product.category.ilike(f"{category} >%"),
+            )
+            query = query.where(cat_filter)
+            count_query = count_query.where(cat_filter)
 
         if search is not None:
             search_filter = Product.name.ilike(f"%{search}%")
@@ -78,6 +87,32 @@ class ProductRepository:
             select(Product.slug).where(Product.slug.in_(slugs))
         )
         return {row[0] for row in result.all()}
+
+    async def get_categories(
+        self, status: str | None = None
+    ) -> list[dict[str, object]]:
+        query = select(Product.category, func.count(Product.id).label("count"))
+        if status is not None:
+            query = query.where(Product.status == status)
+        query = query.group_by(Product.category).order_by(func.count(Product.id).desc())
+
+        result = await self.db.execute(query)
+        rows = result.all()
+
+        # Aggregate into master categories (first segment before ">")
+        master_counts: dict[str, int] = {}
+        for row in rows:
+            cat = row[0]
+            count = row[1]
+            master = cat.split(">")[0].strip()
+            master_counts[master] = master_counts.get(master, 0) + count
+
+        return [
+            {"name": name, "count": count}
+            for name, count in sorted(
+                master_counts.items(), key=lambda x: x[1], reverse=True
+            )
+        ]
 
     async def delete(self, product: Product) -> None:
         await self.db.delete(product)

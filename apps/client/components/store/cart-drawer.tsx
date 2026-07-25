@@ -266,8 +266,7 @@ export function CartDrawer() {
                   <ArrowRight className="ml-2 size-4" />
                 </Button>
                 <p className="text-center text-[11px] text-muted-foreground">
-                  Free shipping on orders over ${shippingThreshold} &middot; 30-day
-                  easy returns
+                  30-day easy returns
                 </p>
               </div>
             )}

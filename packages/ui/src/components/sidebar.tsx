@@ -23,7 +23,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
-import { LayoutIcon  } from "@phosphor-icons/react"
+import { Layout  } from "@phosphor-icons/react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -271,7 +271,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <LayoutIcon className="rtl:rotate-180" />
+      <Layout className="rtl:rotate-180" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 
 from db import ProductRepository
 from models import Product
-from schemas import ProductListResponse, ProductResponse
+from schemas import CategoryListResponse, ProductListResponse, ProductResponse
 
 
 class StoreProductController:
@@ -10,13 +10,22 @@ class StoreProductController:
         self.repo = repo
 
     async def get_store_products(
-        self, skip: int = 0, limit: int = 20
+        self,
+        skip: int = 0,
+        limit: int = 20,
+        category: str | None = None,
     ) -> ProductListResponse:
-        items, total = await self.repo.list_all(status="active", skip=skip, limit=limit)
+        items, total = await self.repo.list_all(
+            status="active", skip=skip, limit=limit, category=category
+        )
         return ProductListResponse(
             items=[ProductResponse.model_validate(p) for p in items],
             total=total,
         )
+
+    async def get_categories(self) -> CategoryListResponse:
+        categories = await self.repo.get_categories(status="active")
+        return CategoryListResponse(categories=categories)
 
     async def get_store_product_by_slug(self, slug: str) -> Product:
         product = await self.repo.get_by_slug(slug)

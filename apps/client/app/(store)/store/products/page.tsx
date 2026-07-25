@@ -3,9 +3,9 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { getQueryClient } from "@/lib/query-client"
 import { storeProductKeys } from "@/hooks/store/use-products"
 import { fetchStoreProducts } from "@/server/store/product-fetchers"
-import { HomePageContent } from "@/components/store/home/home-page-content"
+import { AllProductsContent } from "@/components/store/all-products-content"
 
-export default async function StorePage() {
+export default async function ProductsPage() {
   const queryClient = getQueryClient()
 
   try {
@@ -14,12 +14,12 @@ export default async function StorePage() {
       queryFn: () => fetchStoreProducts({ limit: 10000 }),
     })
   } catch {
-    // Prefetch failed — client will fetch on mount
+    // Prefetch failed
   }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <HomePageContent />
+      <AllProductsContent />
     </HydrationBoundary>
   )
 }

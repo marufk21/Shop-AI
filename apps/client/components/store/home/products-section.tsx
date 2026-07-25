@@ -9,7 +9,6 @@ import {
   ArrowClockwise,
   CaretLeft,
   CaretRight,
-  ShoppingBag,
   X,
   Tag,
 } from "@phosphor-icons/react"
@@ -23,6 +22,9 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import { Slider } from "@workspace/ui/components/slider"
+
+import Link from "next/link"
 import { useStoreProducts } from "@/hooks/store/use-products"
 import { ProductCard } from "@/components/store/product-card"
 import { ProductCardSkeleton } from "@/components/store/product-card-skeleton"
@@ -85,13 +87,28 @@ export function ProductsSection() {
   const [articleType, setArticleType] = React.useState("All")
   const [sort, setSort] = React.useState("popular")
   const [currentPage, setCurrentPage] = React.useState(1)
-
   React.useEffect(() => {
     setCurrentPage(1)
   }, [search, masterCategory, articleType, sort])
 
   const { data, isError, isLoading, refetch } = useStoreProducts({ limit: 10000 })
   const products = React.useMemo(() => data?.items ?? [], [data?.items])
+
+  // Compute max price from products
+  const maxPrice = React.useMemo(() => {
+    if (products.length === 0) return 10000
+    return Math.ceil(Math.max(...products.map((p) => p.price), 100))
+  }, [products])
+
+  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 10000])
+
+  React.useEffect(() => {
+    setPriceRange([0, maxPrice])
+  }, [maxPrice])
+
+  React.useEffect(() => {
+    setCurrentPage(1)
+  }, [search, masterCategory, articleType, sort, priceRange])
 
   const { masters, articlesByMaster, productCountByMaster } =
     React.useMemo(() => buildCategoryTree(products), [products])
@@ -115,6 +132,8 @@ export function ProductsSection() {
 
         if (masterCategory !== "All" && master !== masterCategory) return false
         if (articleType !== "All" && pArticle !== articleType) return false
+        // Price range filter
+        if (p.price < priceRange[0] || p.price > priceRange[1]) return false
 
         const matchesSearch =
           p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -128,7 +147,7 @@ export function ProductsSection() {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         return a.name.localeCompare(b.name)
       })
-  }, [products, search, masterCategory, articleType, sort])
+  }, [products, search, masterCategory, articleType, sort, priceRange])
 
   const paginatedProducts = React.useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
@@ -147,19 +166,16 @@ export function ProductsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3"
+          className="mb-8 flex items-end justify-between gap-3"
         >
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1 flex items-center gap-1.5">
-              <ShoppingBag className="size-3" weight="fill" />
-              Catalogue
-            </p>
-            <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-              Explore Products
-            </h2>
-          </div>
+          <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+            All Products
+            <span className="ml-2 text-sm font-medium text-muted-foreground">
+              {isLoading ? "..." : `${filteredAndSortedProducts.length} items`}
+            </span>
+          </h2>
 
-          <div className="h-8 px-3 flex items-center rounded-lg border border-border bg-muted/40 text-xs font-semibold text-muted-foreground whitespace-nowrap">
+          <div className="h-8 px-3 hidden sm:flex items-center rounded-lg border border-border bg-muted/40 text-xs font-semibold text-muted-foreground whitespace-nowrap">
             {isLoading ? "—" : `${filteredAndSortedProducts.length} products`}
           </div>
         </motion.div>
@@ -195,10 +211,11 @@ export function ProductsSection() {
                   const active = masterCategory === master
                   const count = productCountByMaster[master] ?? 0
                   return (
-                    <button
+                    <Link
                       key={master}
+                      href={`/store/category/${encodeURIComponent(master.toLowerCase())}`}
                       onClick={() => setMasterCategory(master)}
-                      className={`h-8 px-3.5 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 transition-all duration-200 border ${
+                      className={`h-8 px-3.5 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 transition-all duration-200 border inline-flex items-center ${
                         active
                           ? "bg-foreground border-foreground text-background shadow-sm"
                           : "bg-background border-border hover:border-foreground/25 hover:bg-muted/40 text-muted-foreground hover:text-foreground"
@@ -208,7 +225,7 @@ export function ProductsSection() {
                       <span className="ml-1.5 text-[10px] opacity-60">
                         ({count})
                       </span>
-                    </button>
+                    </Link>
                   )
                 })}
           </div>
@@ -254,6 +271,28 @@ export function ProductsSection() {
               })}
             </motion.div>
           )}
+
+          {/* ── Price Range Slider ── */}
+          <div className="flex items-center gap-3 px-1">
+            <SlidersHorizontal className="size-3 text-muted-foreground shrink-0" />
+            <span className="text-[11px] font-semibold text-muted-foreground shrink-0">
+              Price
+            </span>
+            <span className="text-[10px] font-medium text-muted-foreground tabular-nums w-12 text-right shrink-0">
+              ${priceRange[0]}
+            </span>
+            <Slider
+              value={priceRange}
+              onValueChange={(v) => setPriceRange(v as [number, number])}
+              min={0}
+              max={maxPrice}
+              step={1}
+              className="flex-1"
+            />
+            <span className="text-[10px] font-medium text-muted-foreground tabular-nums w-12 shrink-0">
+              ${priceRange[1]}
+            </span>
+          </div>
 
           {/* ── Search + Sort row ── */}
           <div className="flex items-center gap-2">

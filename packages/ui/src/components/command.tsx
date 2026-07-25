@@ -15,7 +15,7 @@ import {
   InputGroup,
   InputGroupAddon,
 } from "@workspace/ui/components/input-group"
-import { MagnifyingGlassIcon, CheckIcon } from "@phosphor-icons/react"
+import { MagnifyingGlass, Check } from "@phosphor-icons/react"
 
 function Command({
   className,
@@ -82,7 +82,7 @@ function CommandInput({
           {...props}
         />
         <InputGroupAddon>
-          <MagnifyingGlassIcon className="size-3.5 shrink-0 opacity-50" />
+          <MagnifyingGlass className="size-3.5 shrink-0 opacity-50" />
         </InputGroupAddon>
       </InputGroup>
     </div>
@@ -162,7 +162,7 @@ function CommandItem({
       {...props}
     >
       {children}
-      <CheckIcon className="ms-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
+      <Check className="ms-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
     </CommandPrimitive.Item>
   )
 }

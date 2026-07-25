@@ -11,7 +11,7 @@ import {
   Sun,
   Moon,
   ShoppingBag,
-  Package,
+  MagnifyingGlass,
 } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -23,6 +23,7 @@ import {
   SheetClose,
 } from "@workspace/ui/components/sheet"
 import { useCart } from "./cart-provider"
+import { cn } from "@workspace/ui/lib/utils"
 
 export function StoreNavbar() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -40,34 +41,47 @@ export function StoreNavbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: "smooth" })
-  }
-
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        className={cn(
+          "sticky top-0 z-40 w-full transition-all duration-300",
           scrolled
             ? "border-b bg-background/80 backdrop-blur-xl shadow-xs"
             : "bg-transparent"
-        }`}
+        )}
       >
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6">
-          {/* Logo */}
-          <Link
-            href="/store"
-            className="flex items-center gap-2.5 font-heading text-lg font-bold tracking-tight select-none group shrink-0"
-          >
-            <img src="/logo.png" alt="ShopAI Logo" className="size-8 rounded-lg object-cover transition-transform duration-300 group-hover:scale-105" />
-            <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text hidden sm:inline">
-              ShopAI
-            </span>
-          </Link>
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-4 sm:px-6">
+          {/* Left: Logo */}
+          <div className="flex-1 flex items-center">
+            <Link
+              href="/store"
+              className="flex items-center gap-2 font-heading text-lg font-bold tracking-tight select-none group shrink-0"
+            >
+              <img
+                src="/logo.png"
+                alt="ShopAI Logo"
+                className="size-8 rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text hidden lg:inline">
+                ShopAI
+              </span>
+            </Link>
+          </div>
 
-          {/* Desktop Action Controls */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Center: Search Bar */}
+          <div className="hidden sm:flex flex-1 max-w-xl items-center gap-2.5 rounded-xl border border-border/60 bg-muted/30 px-4 h-9">
+            <MagnifyingGlass className="size-4 text-muted-foreground shrink-0" />
+            <span className="text-xs text-muted-foreground/70 flex-1 truncate">
+              Search for products, brands and more...
+            </span>
+            <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded-md border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <span className="text-[9px]">⌘</span>K
+            </kbd>
+          </div>
+
+          {/* Right: Actions - Desktop */}
+          <div className="hidden md:flex flex-1 items-center justify-end gap-1">
             {/* Theme Switcher */}
             {mounted && (
               <Button
@@ -111,12 +125,12 @@ export function StoreNavbar() {
               className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
             >
               <ShoppingBag className="size-4" />
-              <span>Admin Dashboard</span>
+              <span className="hidden lg:inline">Admin</span>
             </Button>
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex md:hidden items-center gap-1.5">
+          <div className="flex md:hidden items-center gap-1 ml-auto">
             {/* Cart Button - Mobile */}
             <Button
               variant="ghost"
@@ -159,33 +173,24 @@ export function StoreNavbar() {
                 </SheetHeader>
 
                 <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+                  {/* Features */}
                   <SheetClose
                     render={
-                      <button
-                        onClick={() => scrollTo("products")}
+                      <Link
+                        href="/store/products"
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer text-left"
                       />
                     }
                   >
-                    <Package className="size-4" />
-                    Products
+                    <ShoppingBag className="size-4" />
+                    All Products
                   </SheetClose>
-                  <SheetClose
-                    render={
-                      <button
-                        onClick={() => scrollTo("features")}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer text-left"
-                      />
-                    }
-                  >
-                    <Sparkle className="size-4" />
-                    Features
-                  </SheetClose>
+
                   <SheetClose
                     render={
                       <Link
                         href="/admin"
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer text-left"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer"
                       />
                     }
                   >
@@ -233,7 +238,6 @@ export function StoreNavbar() {
           </div>
         </div>
       </header>
-
     </>
   )
 }

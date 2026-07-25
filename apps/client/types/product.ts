@@ -33,6 +33,7 @@ export type ProductUpdateInput = Partial<ProductCreateInput>
 export interface ProductListParams {
   status?: ProductStatus
   search?: string
+  category?: string
   skip?: number
   limit?: number
 }

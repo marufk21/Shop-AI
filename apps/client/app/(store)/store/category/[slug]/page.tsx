@@ -3,15 +3,22 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { getQueryClient } from "@/lib/query-client"
 import { storeProductKeys } from "@/hooks/store/use-products"
 import { fetchStoreProducts } from "@/server/store/product-fetchers"
-import { HomePageContent } from "@/components/store/home/home-page-content"
+import { CategoryPageContent } from "@/components/store/category-page-content"
 
-export default async function StorePage() {
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+  const categoryName = decodeURIComponent(slug)
+
   const queryClient = getQueryClient()
 
   try {
     await queryClient.prefetchQuery({
-      queryKey: storeProductKeys.list({ limit: 10000 }),
-      queryFn: () => fetchStoreProducts({ limit: 10000 }),
+      queryKey: storeProductKeys.list({ category: categoryName, limit: 10000 }),
+      queryFn: () => fetchStoreProducts({ category: categoryName, limit: 10000 }),
     })
   } catch {
     // Prefetch failed — client will fetch on mount
@@ -19,7 +26,7 @@ export default async function StorePage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <HomePageContent />
+      <CategoryPageContent categoryName={categoryName} />
     </HydrationBoundary>
   )
 }

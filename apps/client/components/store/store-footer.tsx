@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Sparkle, GithubLogo, TwitterLogo, InstagramLogo } from "@phosphor-icons/react"
+import { GithubLogo, TwitterLogo, InstagramLogo } from "@phosphor-icons/react"
 
 export function StoreFooter() {
   const shopLinks = [

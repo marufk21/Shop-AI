@@ -39,3 +39,12 @@ class ProductResponse(ProductBase):
 class ProductListResponse(BaseModel):
     items: list[ProductResponse]
     total: int
+
+
+class CategoryItem(BaseModel):
+    name: str
+    count: int
+
+
+class CategoryListResponse(BaseModel):
+    categories: list[CategoryItem]
