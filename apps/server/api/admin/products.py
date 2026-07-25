@@ -44,7 +44,7 @@ async def list_products(
     status_filter: str | None = Query(default=None, alias="status"),
     search: str | None = Query(default=None),
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=20, ge=1, le=2000),
+    limit: int = Query(default=20, ge=1, le=10000),
     controller: AdminProductController = Depends(get_admin_product_controller),
 ) -> ProductListResponse:
     return await controller.list_products(

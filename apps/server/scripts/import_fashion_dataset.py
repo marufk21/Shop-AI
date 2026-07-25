@@ -11,6 +11,7 @@ Usage:
     python -m scripts.import_fashion_dataset --batch-size 200
     python -m scripts.import_fashion_dataset --dry-run
     python -m scripts.import_fashion_dataset --seed 42
+    python -m scripts.import_fashion_dataset --offset 2000 --limit 10000
 """
 
 import argparse
@@ -64,6 +65,7 @@ async def run_import(
     batch_size: int,
     dry_run: bool = False,
     seed: int | None = None,
+    offset: int = 0,
 ) -> ImportReport:
     """Run the full import pipeline."""
     report = ImportReport()
@@ -77,13 +79,14 @@ async def run_import(
     print(f"Dataset:  {CSV_PATH}")
     print(f"Images:   {IMAGES_DIR}")
     print(f"Limit:    {limit} products")
+    print(f"Offset:   {offset} rows skipped")
     print(f"Batch:    {batch_size}")
     print(f"Dry run:  {dry_run}")
     print()
 
     # ── Phase 1: Read CSV ──────────────────────────────────────────
     print("[Phase 1/5] Reading CSV...")
-    rows, invalid = read_csv_limited(CSV_PATH, limit)
+    rows, invalid = read_csv_limited(CSV_PATH, limit, offset)
     report.csv_rows_read = limit
     report.csv_valid = len(rows)
     report.csv_skipped_invalid = invalid
@@ -209,6 +212,12 @@ def main() -> None:
         default=42,
         help="Random seed for reproducible prices/inventory (default: 42)",
     )
+    parser.add_argument(
+        "--offset",
+        type=int,
+        default=0,
+        help="Number of valid CSV rows to skip before importing (default: 0)",
+    )
     args = parser.parse_args()
 
     asyncio.run(
@@ -217,6 +226,7 @@ def main() -> None:
             batch_size=args.batch_size,
             dry_run=args.dry_run,
             seed=args.seed,
+            offset=args.offset,
         )
     )
 

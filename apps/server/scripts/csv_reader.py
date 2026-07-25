@@ -62,13 +62,17 @@ def validate_csv_row(raw: dict[str, str]) -> CSVRow | None:
     )
 
 
-def read_csv_limited(csv_path: Path, limit: int) -> tuple[list[CSVRow], int]:
-    """Read up to `limit` valid rows from the CSV file.
+def read_csv_limited(
+    csv_path: Path, limit: int, offset: int = 0
+) -> tuple[list[CSVRow], int]:
+    """Read up to `limit` valid rows from the CSV file, skipping the first
+    `offset` valid rows.
 
     Returns (valid_rows, skipped_invalid_count).
     """
     rows: list[CSVRow] = []
     skipped_invalid = 0
+    skipped_offset = 0
 
     with open(csv_path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -78,6 +82,9 @@ def read_csv_limited(csv_path: Path, limit: int) -> tuple[list[CSVRow], int]:
             parsed = validate_csv_row(raw)
             if parsed is None:
                 skipped_invalid += 1
+                continue
+            if skipped_offset < offset:
+                skipped_offset += 1
                 continue
             rows.append(parsed)
 

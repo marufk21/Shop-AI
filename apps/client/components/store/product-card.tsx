@@ -63,12 +63,12 @@ export function ProductCard({ product }: ProductCardProps) {
         className="relative flex flex-col h-full rounded-2xl border border-border/60 bg-card overflow-hidden transition-shadow duration-300 group-hover:shadow-lg group-hover:shadow-foreground/5 group-hover:border-border"
       >
         {/* Image */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/50">
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-white">
           {product.image_url ? (
             <img
               src={getProductImageUrl(product.image_url, "thumbnail")}
               alt={product.name}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-[1.03]"
               loading="lazy"
             />
           ) : (

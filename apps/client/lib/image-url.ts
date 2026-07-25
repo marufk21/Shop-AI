@@ -17,19 +17,19 @@ export function getOptimizedImageUrl(
   //      →  https://res.cloudinary.com/<cloud>/image/upload/f_auto,q_auto,w_800/v123/name.jpg
   return url.replace(
     /\/image\/upload\//,
-    `/image/upload/f_auto,q_auto,w_${width}/`
+    `/image/upload/f_auto,q_auto:best,w_${width}/`
   )
 }
 
 /**
  * Gets the best image URL for the given display size.
- * Thumbnail cards: width=400, detail pages: width=800.
+ * Thumbnail cards: width=800, detail pages: width=1200.
  * Always applies Cloudinary optimization when applicable.
  */
 export function getProductImageUrl(
   imageUrl: string | null | undefined,
   size: "thumbnail" | "detail" | "preview" = "detail"
 ): string | undefined {
-  const widthMap = { thumbnail: 400, preview: 600, detail: 800 }
+  const widthMap = { thumbnail: 800, preview: 800, detail: 1200 }
   return getOptimizedImageUrl(imageUrl, widthMap[size])
 }

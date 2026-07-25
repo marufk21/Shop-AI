@@ -118,12 +118,12 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60">
+          <div className="aspect-[3/4] overflow-hidden rounded-3xl bg-white border border-border/60">
             {product.image_url ? (
               <img
                 src={getProductImageUrl(product.image_url, "detail")}
                 alt={product.name}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain p-6"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">

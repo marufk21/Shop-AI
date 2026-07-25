@@ -6,7 +6,7 @@ export function ProductCardSkeleton() {
   return (
     <div className="rounded-2xl border bg-card flex flex-col overflow-hidden shadow-xs w-full p-0">
       {/* Product Image Skeleton */}
-      <div className="relative aspect-square w-full bg-muted overflow-hidden">
+      <div className="relative aspect-[3/4] w-full bg-muted overflow-hidden">
         <Skeleton className="h-full w-full rounded-none" />
         
         {/* Badges/Actions Skeletons */}

@@ -86,7 +86,7 @@ export default function ProductsPage() {
   const [editing, setEditing] = useState<Product | null>(null)
   const { data, isError, isLoading } = useAdminProducts({
     search: search || undefined,
-    limit: 2000,
+    limit: 10000,
   })
   const createProduct = useCreateAdminProduct()
   const updateProduct = useUpdateAdminProduct()
