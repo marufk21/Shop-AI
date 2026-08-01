@@ -113,7 +113,7 @@ export function StickyCategoryBar() {
   const isHome = pathname === "/store"
 
   return (
-    <div className="sticky top-16 z-30 w-full border-b bg-background/95 backdrop-blur-xl">
+    <div className="sticky top-16 z-30 w-full bg-background/95 backdrop-blur-xl">
       <div className="scrollbar-hide mx-auto flex h-11 max-w-7xl items-center justify-between gap-[7px] overflow-x-auto px-4 sm:justify-start sm:gap-1 sm:px-6">
         {/* For You */}
         <Link

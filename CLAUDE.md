@@ -52,11 +52,11 @@ shopai/
 │   │   │   ├── (admin)/admin/        → dashboard, products, documents, chatbot, analytics, settings
 │   │   │   │   └── products/product-form.tsx  (shared dialog component, not a route)
 │   │   │   └── (store)/store/        → storefront: home, product detail [slug], category [slug], all products
-│   │   │       └── layout.tsx        → store layout (announcement bar, navbar, mobile bottom bar, footer)
+│   │   │       └── layout.tsx        → store layout (navbar, mobile bottom bar, footer)
 │   │   ├── components/
 │   │   │   ├── store/                → storefront UI: cart-provider, cart-drawer, store-navbar, store-footer,
 │   │   │   │     store-search, product-card, product-card-skeleton, product-detail-content,
-│   │   │   │     product-quick-view, related-products, recently-viewed, announcement-bar,
+│   │   │   │     product-quick-view, related-products, recently-viewed,
 │   │   │   │     sticky-category-bar, mobile-bottom-bar, category-page-content, all-products-content
 │   │   │   ├── store/home/           → home-page-content, home-skeleton, hero-carousel, category-icon-grid,
 │   │   │   │     flash-deals-section, offer-cards-strip, product-row-section, products-section,
@@ -126,7 +126,7 @@ shopai/
 - **Frontend:** server components by default, TanStack Query for all server state (staleTime 30s, retry 1).
 - **Frontend chat streaming:** uses raw `fetch` + SSE parsing (not Axios) — reads `ReadableStream`, splits on `\n\n`, parses `data: ` lines as JSON events.
 - **Frontend store cart:** `CartProvider` wraps the store layout — uses React Context + localStorage persistence. `useCart` hook exposes `addItem`, `removeItem`, `updateQuantity`, `clearCart`, and computed `itemCount`/`total`.
-- **Frontend store navigation:** `StickyCategoryBar` pins below the navbar on scroll; `MobileBottomBar` provides quick access on small screens; `AnnouncementBar` sits at the very top of the store layout.
+- **Frontend store navigation:** `StickyCategoryBar` pins below the navbar on scroll; `MobileBottomBar` provides quick access on small screens.
 
 ---
 

@@ -1,6 +1,5 @@
 import { StoreNavbar } from "@/components/store/store-navbar"
 import { StoreFooter } from "@/components/store/store-footer"
-import { AnnouncementBar } from "@/components/store/announcement-bar"
 import { StickyCategoryBar } from "@/components/store/sticky-category-bar"
 import { MobileBottomBar } from "@/components/store/mobile-bottom-bar"
 import { ChatbotWrapper } from "@/components/chatbot/chatbot-wrapper"
@@ -14,7 +13,6 @@ export default function StoreLayout({
 }) {
   return (
     <CartProvider>
-      <AnnouncementBar />
       <div className="flex min-h-svh flex-col w-full">
         <StoreNavbar />
         <StickyCategoryBar />
