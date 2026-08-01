@@ -26,7 +26,9 @@ export function HomePageContent() {
   }, [products])
 
   const deals = React.useMemo(() => {
-    return [...products].sort(() => Math.random() - 0.5).slice(0, 8)
+    return [...products]
+      .sort((a, b) => a.slug.localeCompare(b.slug))
+      .slice(0, 8)
   }, [products])
 
   return (

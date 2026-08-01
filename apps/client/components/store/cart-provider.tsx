@@ -17,6 +17,7 @@ interface CartState {
 }
 
 type CartAction =
+  | { type: "HYDRATE_CART"; payload: CartItem[] }
   | { type: "ADD_ITEM"; payload: CartItem }
   | { type: "REMOVE_ITEM"; payload: { productId: string } }
   | { type: "UPDATE_QUANTITY"; payload: { productId: string; quantity: number } }
@@ -46,6 +47,8 @@ function saveCart(items: CartItem[]) {
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
+    case "HYDRATE_CART":
+      return { ...state, items: action.payload }
     case "ADD_ITEM": {
       const existing = state.items.find(
         (i) => i.productId === action.payload.productId
@@ -127,13 +130,17 @@ export function useCart() {
 
 function createInitialState(): CartState {
   return {
-    items: loadCart(),
+    items: [],
     isOpen: false,
   }
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = React.useReducer(cartReducer, null, createInitialState)
+
+  React.useEffect(() => {
+    dispatch({ type: "HYDRATE_CART", payload: loadCart() })
+  }, [])
 
   const itemCount = state.items.reduce((sum, i) => sum + i.quantity, 0)
   const subtotal = state.items.reduce((sum, i) => sum + i.price * i.quantity, 0)

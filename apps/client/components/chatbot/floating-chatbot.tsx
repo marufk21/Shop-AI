@@ -74,7 +74,7 @@ export function FloatingChatbot() {
             <div className="flex items-center gap-2.5">
               <div className="relative">
                 <img src="/logo.png" alt="ShopAI" className="size-8 rounded-lg object-cover" />
-                <span className="absolute -right-0.5 -bottom-0.5 flex size-2 rounded-full bg-emerald-500 ring-[1.5px] ring-background" />
+                <span className="absolute -right-0.5 -bottom-0.5 flex size-2 rounded-full bg-foreground ring-[1.5px] ring-background" />
               </div>
               <div>
                 <p className="text-[13px] font-semibold tracking-tight leading-tight">

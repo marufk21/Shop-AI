@@ -4,7 +4,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 export function ProductCardSkeleton() {
   return (
-    <div className="rounded-2xl border bg-card flex flex-col overflow-hidden shadow-xs w-full p-0">
+    <div className="flex w-full flex-col overflow-hidden rounded-lg border bg-card p-0 shadow-xs sm:rounded-2xl">
       {/* Product Image Skeleton */}
       <div className="relative aspect-[3/4] w-full bg-muted overflow-hidden">
         <Skeleton className="h-full w-full rounded-none" />
@@ -17,7 +17,7 @@ export function ProductCardSkeleton() {
       </div>
 
       {/* Details Skeletons */}
-      <div className="p-4 flex flex-col flex-1 space-y-3.5">
+      <div className="flex flex-1 flex-col space-y-2.5 p-2.5 sm:space-y-3.5 sm:p-4">
         {/* Name Title */}
         <Skeleton className="h-4.5 w-3/4 rounded-md" />
 

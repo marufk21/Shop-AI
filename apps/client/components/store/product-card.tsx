@@ -65,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="relative flex flex-col h-full rounded-2xl border border-border/50 bg-card overflow-hidden transition-all duration-300 group-hover/card:shadow-xl group-hover/card:shadow-foreground/5 group-hover/card:border-border group-hover/card:-translate-y-1"
+          className="relative flex h-full flex-col overflow-hidden rounded-lg border border-border/50 bg-card transition-all duration-300 group-hover/card:border-border group-hover/card:shadow-xl group-hover/card:shadow-foreground/5 md:group-hover/card:-translate-y-1"
         >
           {/* Image */}
           <div className="relative aspect-square w-full overflow-hidden bg-white">
@@ -73,7 +73,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <img
                 src={getProductImageUrl(product.image_url, "thumbnail")}
                 alt={product.name}
-                className="absolute inset-0 h-full w-full object-contain p-5 transition-transform duration-500 group-hover/card:scale-110"
+                className="absolute inset-0 h-full w-full object-contain p-3 transition-transform duration-500 sm:p-5 md:group-hover/card:scale-110"
                 loading="lazy"
               />
             ) : (
@@ -84,12 +84,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Badge */}
             {badge === "hot" && (
-              <span className="absolute top-3 left-3 inline-flex items-center rounded-lg bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+              <span className="absolute left-2 top-2 inline-flex items-center rounded-md bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm sm:left-3 sm:top-3 sm:rounded-lg sm:px-2 sm:text-[10px]">
                 Hot Deal
               </span>
             )}
             {badge === "ai" && (
-              <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-lg bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground shadow-sm">
+              <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-md bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground shadow-sm sm:left-3 sm:top-3 sm:rounded-lg sm:px-2 sm:text-[10px]">
                 <Sparkle className="size-2.5" weight="fill" />
                 AI Pick
               </span>
@@ -98,7 +98,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Wishlist button */}
             <button
               onClick={handleWishlistToggle}
-              className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all cursor-pointer z-10"
+              className="absolute right-2 top-2 z-10 flex size-7 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-500 sm:right-3 sm:top-3 sm:size-8"
               aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
             >
               <Heart
@@ -112,7 +112,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <Button
                 onClick={handleAddToCart}
                 disabled={!inStock}
-                className="w-full h-9 rounded-xl bg-white text-black hover:bg-gray-50 font-semibold text-xs border border-gray-200 shadow-lg cursor-pointer"
+                className="w-full h-9 rounded-xl bg-background text-foreground hover:bg-secondary font-semibold text-xs border border-border shadow-lg cursor-pointer"
               >
                 <Plus className="size-3.5 mr-1.5" />
                 {inStock ? "Add to Cart" : "Out of Stock"}
@@ -121,26 +121,26 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Details */}
-          <div className="flex flex-col flex-1 p-3">
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="flex flex-1 flex-col p-2.5 sm:p-3">
+            <p className="truncate text-[9px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-[10px]">
               {product.category.split(">")[0]?.trim() ?? product.category}
             </p>
-            <h3 className="font-heading text-[13px] font-semibold text-foreground line-clamp-1 leading-tight mt-0.5">
+            <h3 className="mt-0.5 line-clamp-2 min-h-[2.25rem] font-heading text-[12px] font-semibold leading-tight text-foreground sm:min-h-0 sm:text-[13px] sm:line-clamp-1">
               {product.name}
             </h3>
 
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="inline-flex items-center gap-0.5 rounded bg-emerald-500 px-1.5 py-px text-[10px] font-bold text-white leading-none">
+            <div className="mt-1 flex items-center gap-1">
+              <span className="inline-flex items-center gap-0.5 rounded bg-primary px-1.5 py-px text-[10px] font-bold text-primary-foreground leading-none">
                 4.2 <Star className="size-2.5" weight="fill" />
               </span>
-              <span className="text-[10px] text-muted-foreground">(234)</span>
+              <span className="truncate text-[9px] text-muted-foreground sm:text-[10px]">(234)</span>
             </div>
 
-            <div className="mt-auto pt-2">
-              <span className="text-base font-bold text-foreground tabular-nums">
+            <div className="mt-auto flex items-end justify-between gap-1 pt-2">
+              <span className="min-w-0 truncate text-sm font-bold text-foreground tabular-nums sm:text-base">
                 {formattedPrice}
               </span>
-              <p className="text-[10px] font-medium text-emerald-600 mt-px">Free delivery</p>
+              <span className="hidden text-[10px] font-medium text-muted-foreground sm:inline">Free delivery</span>
             </div>
           </div>
         </motion.div>

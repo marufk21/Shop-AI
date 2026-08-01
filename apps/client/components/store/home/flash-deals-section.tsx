@@ -38,14 +38,14 @@ export function FlashDealsSection({ products }: { products: Product[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex items-end justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-rose-500/10">
-              <Lightning className="size-4.5 text-rose-500" weight="fill" />
+            <div className="flex size-9 items-center justify-center rounded-xl bg-foreground/10">
+              <Lightning className="size-4.5 text-foreground" weight="fill" />
             </div>
             <div>
               <h2 className="font-heading text-xl sm:text-2xl font-bold text-foreground">
                 Deals of the Day
               </h2>
-              <span className="text-sm font-bold text-rose-500 tabular-nums tracking-wider">
+              <span className="text-sm font-bold text-foreground tabular-nums tracking-wider">
                 {timeLeft || "00:00:00"}
               </span>
             </div>

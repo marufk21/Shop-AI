@@ -1,6 +1,6 @@
 /**
  * Transforms a Cloudinary image URL to include optimization parameters.
- * Applies: auto format, auto quality, width scaling.
+ * Applies: auto format, high quality, no-upscale width limiting, and sharpening.
  * Returns the original URL unchanged if it's not a Cloudinary URL.
  */
 export function getOptimizedImageUrl(
@@ -12,12 +12,12 @@ export function getOptimizedImageUrl(
   // Only transform Cloudinary image upload URLs
   if (!url.includes("cloudinary.com")) return url
 
-  // Insert f_auto,q_auto,w_<width> before /image/upload/ in the Cloudinary URL
+  // Insert f_auto,q_auto,c_limit,w_<width> before /image/upload/ in the Cloudinary URL
   // Example: https://res.cloudinary.com/<cloud>/image/upload/v123/name.jpg
-  //      →  https://res.cloudinary.com/<cloud>/image/upload/f_auto,q_auto,w_800/v123/name.jpg
+  //      -> https://res.cloudinary.com/<cloud>/image/upload/f_auto,q_auto:best,c_limit,w_800,e_sharpen:80/v123/name.jpg
   return url.replace(
     /\/image\/upload\//,
-    `/image/upload/f_auto,q_auto:best,w_${width}/`
+    `/image/upload/f_auto,q_auto:best,c_limit,w_${width},e_sharpen:80/`
   )
 }
 

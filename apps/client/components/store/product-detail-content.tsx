@@ -114,20 +114,20 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8">
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <div className="grid gap-5 lg:grid-cols-2 lg:gap-12">
         {/* Left: Image */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="sticky top-28 self-start"
+          className="self-start lg:sticky lg:top-28"
         >
-          <div className="aspect-square overflow-hidden rounded-3xl border border-border/40 bg-white">
+          <div className="h-[320px] overflow-hidden rounded-2xl border border-border/40 bg-white sm:aspect-square sm:h-auto">
             {product.image_url ? (
               <img
                 src={getProductImageUrl(product.image_url, "detail")}
                 alt={product.name}
-                className="h-full w-full object-contain p-8"
+                className="h-full w-full object-contain p-6 sm:p-8"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-muted/10">
@@ -153,7 +153,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
             </Badge>
             <div className="flex items-center gap-1.5">
               <span
-                className={`size-1.5 rounded-full ${inStock ? "bg-emerald-500" : "bg-red-500"}`}
+                className={`size-1.5 rounded-full ${inStock ? "bg-foreground" : "bg-destructive"}`}
               />
               <span className="text-xs font-medium text-muted-foreground">
                 {inStock ? `${product.inventory} in stock` : "Sold out"}
@@ -172,7 +172,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className="size-4 fill-amber-400 text-amber-400"
+                  className="size-4 fill-foreground text-foreground"
                   weight="fill"
                 />
               ))}
@@ -187,7 +187,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
             <span className="text-3xl font-bold text-foreground tabular-nums">
               ${product.price.toFixed(2)}
             </span>
-            <p className="mt-0.5 text-xs font-medium text-emerald-600">
+            <p className="mt-0.5 text-xs font-medium text-muted-foreground">
               Free delivery
             </p>
           </div>
@@ -246,7 +246,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                 className="h-12 w-12 shrink-0 cursor-pointer rounded-xl"
               >
                 <Heart
-                  className={`size-5 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`}
+                  className={`size-5 ${isWishlisted ? "fill-destructive text-destructive" : ""}`}
                   weight={isWishlisted ? "fill" : "regular"}
                 />
               </Button>
@@ -285,7 +285,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
             ].map((offer) => (
               <div key={offer.text} className="flex items-start gap-2">
                 <offer.icon
-                  className="mt-0.5 size-3.5 shrink-0 text-emerald-600"
+                  className="mt-0.5 size-3.5 shrink-0 text-foreground/60"
                   weight="fill"
                 />
                 <p className="text-xs leading-snug text-muted-foreground">
@@ -336,7 +336,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                   className="flex items-center gap-2.5 text-sm text-muted-foreground"
                 >
                   <Check
-                    className="size-4 shrink-0 text-emerald-500"
+                    className="size-4 shrink-0 text-foreground/60"
                     weight="bold"
                   />{" "}
                   {f}
@@ -387,7 +387,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
                         key={i}
-                        className="size-4 fill-amber-400 text-amber-400"
+                        className="size-4 fill-foreground text-foreground"
                         weight="fill"
                       />
                     ))}
@@ -411,7 +411,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                       </span>
                       <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
                         <div
-                          className="h-full rounded-full bg-amber-400"
+                          className="h-full rounded-full bg-foreground"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -459,7 +459,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                           {review.verified && (
                             <Badge
                               variant="secondary"
-                              className="h-4 shrink-0 rounded-full bg-emerald-100 px-1.5 text-[9px] font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                              className="h-4 shrink-0 rounded-full bg-muted px-1.5 text-[9px] font-semibold text-foreground"
                             >
                               Verified
                             </Badge>
@@ -473,7 +473,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
                             key={i}
-                            className={`size-3 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/25"}`}
+                            className={`size-3 ${i < review.rating ? "fill-foreground text-foreground" : "text-muted-foreground/25"}`}
                             weight={i < review.rating ? "fill" : "regular"}
                           />
                         ))}

@@ -75,15 +75,15 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 md:py-10">
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-2">
-          <div className="relative">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="grid grid-cols-[minmax(0,1fr)_8.5rem] items-center gap-2 sm:flex">
+          <div className="relative min-w-0">
             <SlidersHorizontal className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search..."
-              className="h-8 w-40 pl-7 pr-7 rounded-lg border-border bg-background text-xs font-medium"
+              className="h-8 w-full rounded-lg border-border bg-background pl-7 pr-7 text-xs font-medium sm:w-40"
             />
             {search && (
               <button
@@ -95,7 +95,7 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
             )}
           </div>
           <Select value={sort} onValueChange={(v) => setSort(v ?? "popular")}>
-            <SelectTrigger className="h-8 w-36 rounded-lg border-border bg-background text-xs font-semibold cursor-pointer shrink-0">
+            <SelectTrigger className="h-8 w-full shrink-0 cursor-pointer rounded-lg border-border bg-background text-xs font-semibold sm:w-36">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
@@ -108,7 +108,7 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
         </div>
 
         {!isLoading && (
-          <span className="h-8 px-3 inline-flex items-center rounded-lg border border-border bg-muted/40 text-xs font-semibold text-muted-foreground whitespace-nowrap">
+          <span className="inline-flex h-8 w-full items-center justify-center rounded-lg border border-border bg-muted/40 px-3 text-xs font-semibold text-muted-foreground sm:w-auto sm:justify-start">
             {filteredAndSorted.length.toLocaleString()} products
           </span>
         )}
@@ -117,7 +117,7 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
       {/* Products grid */}
       <div className="min-h-96">
         {isLoading && (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
@@ -147,7 +147,7 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
             variants={staggerContainer}
             initial="hidden"
             animate="visible"
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4"
           >
             {paginatedProducts.map((product) => (
               <motion.div key={product.id} variants={fadeInUp}>

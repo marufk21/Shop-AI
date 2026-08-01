@@ -5,23 +5,13 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
-  Sparkle,
   ShoppingCart,
-  List,
   Sun,
   Moon,
   ShoppingBag,
   MagnifyingGlass,
 } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose,
-} from "@workspace/ui/components/sheet"
 import { useCart } from "./cart-provider"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -146,95 +136,23 @@ export function StoreNavbar() {
               )}
             </Button>
 
-            {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    className="text-muted-foreground hover:text-foreground rounded-lg"
-                  />
+            {mounted && (
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() =>
+                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
                 }
+                className="text-muted-foreground hover:text-foreground rounded-lg"
               >
-                <List className="size-4.5" />
-              </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="w-72 p-0 flex flex-col h-full bg-background border-l"
-              >
-                <SheetHeader className="px-5 py-4 border-b flex flex-row items-center justify-between">
-                  <SheetTitle className="flex items-center gap-2.5 font-bold tracking-tight text-base">
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                      <Sparkle className="size-3.5" weight="fill" />
-                    </div>
-                    <span>ShopAI</span>
-                  </SheetTitle>
-                </SheetHeader>
-
-                <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-                  {/* Features */}
-                  <SheetClose
-                    render={
-                      <Link
-                        href="/store/products"
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer text-left"
-                      />
-                    }
-                  >
-                    <ShoppingBag className="size-4" />
-                    All Products
-                  </SheetClose>
-
-                  <SheetClose
-                    render={
-                      <Link
-                        href="/admin"
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer"
-                      />
-                    }
-                  >
-                    <ShoppingBag className="size-4" />
-                    Admin Dashboard
-                  </SheetClose>
-                </div>
-
-                {/* Mobile drawer footer */}
-                <div className="p-4 border-t bg-muted/10 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Appearance
-                    </span>
-                    {mounted && (
-                      <div className="flex rounded-lg border bg-background p-0.5">
-                        <button
-                          onClick={() => setTheme("light")}
-                          className={`px-3 py-1.5 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                            resolvedTheme === "light"
-                              ? "bg-primary text-primary-foreground shadow-xs"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          <Sun className="size-3.5" />
-                          Light
-                        </button>
-                        <button
-                          onClick={() => setTheme("dark")}
-                          className={`px-3 py-1.5 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                            resolvedTheme === "dark"
-                              ? "bg-primary text-primary-foreground shadow-xs"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          <Moon className="size-3.5" />
-                          Dark
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+                {resolvedTheme === "dark" ? (
+                  <Sun className="size-4.5" />
+                ) : (
+                  <Moon className="size-4.5" />
+                )}
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            )}
           </div>
         </div>
       </header>

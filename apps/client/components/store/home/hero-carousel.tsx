@@ -18,7 +18,7 @@ const SLIDES = [
     subtitle: "Premium fashion, electronics & more",
     cta: "Shop the Sale",
     href: "/store/products",
-    gradient: "from-rose-500/10 via-amber-500/5 to-background",
+    gradient: "from-foreground/5 via-foreground/3 to-background",
   },
   {
     badge: "New Arrivals",
@@ -26,7 +26,7 @@ const SLIDES = [
     subtitle: "Fresh styles curated by AI for you",
     cta: "Explore New",
     href: "/store/products",
-    gradient: "from-sky-500/10 via-violet-500/5 to-background",
+    gradient: "from-foreground/8 via-foreground/2 to-background",
   },
 ]
 
@@ -48,30 +48,30 @@ export function HeroCarousel() {
   }, [api])
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-4 sm:pt-6">
-      <Carousel opts={{ loop: true }} className="w-full rounded-3xl overflow-hidden relative" setApi={setApi}>
+    <section className="mx-auto max-w-7xl px-3 pt-3 sm:px-6 sm:pt-6">
+      <Carousel opts={{ loop: true }} className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl" setApi={setApi}>
         <CarouselContent>
           {SLIDES.map((slide) => (
             <CarouselItem key={slide.title}>
-              <div className={`relative bg-linear-to-br ${slide.gradient}`}>
-                <div className="px-8 sm:px-12 py-12 sm:py-16">
+              <div className={`relative min-h-[260px] bg-linear-to-br sm:min-h-[340px] ${slide.gradient}`}>
+                <div className="px-6 py-10 sm:px-12 sm:py-16">
                   <div className="relative z-10 max-w-lg">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border bg-background/80 backdrop-blur-sm px-3 py-0.5 text-xs font-semibold text-muted-foreground mb-5">
+                  <span className="mb-4 inline-flex max-w-full items-center gap-1.5 rounded-full border bg-background/80 px-3 py-0.5 text-[11px] font-semibold text-muted-foreground backdrop-blur-sm sm:mb-5 sm:text-xs">
                     <Sparkle className="size-3 text-primary" weight="fill" />
-                    {slide.badge}
+                    <span className="truncate">{slide.badge}</span>
                   </span>
 
-                  <h1 className="font-heading text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                  <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                     {slide.title}
                   </h1>
 
-                  <p className="mt-3 text-base sm:text-lg text-muted-foreground">
+                  <p className="mt-3 max-w-[17rem] text-sm leading-relaxed text-muted-foreground sm:max-w-none sm:text-lg">
                     {slide.subtitle}
                   </p>
 
                   <Button
                     size="lg"
-                    className="mt-8 h-12 px-6 rounded-xl font-semibold text-sm shadow-lg shadow-primary/20 cursor-pointer"
+                    className="mt-7 h-11 rounded-xl px-5 text-sm font-semibold shadow-lg shadow-primary/20 sm:mt-8 sm:h-12 sm:px-6"
                     render={
                       <Link href={slide.href}>
                         {slide.cta}
@@ -93,8 +93,8 @@ export function HeroCarousel() {
       </CarouselContent>
 
       {/* Navigation */}
-      <div className="absolute bottom-6 left-0 right-0">
-        <div className="px-6 sm:px-8 flex items-center justify-between">
+      <div className="absolute inset-x-0 bottom-5 sm:bottom-6">
+        <div className="flex items-center justify-between px-6 sm:px-8">
           <div className="flex items-center gap-2">
             {SLIDES.map((_, i) => (
               <button
@@ -110,7 +110,7 @@ export function HeroCarousel() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 sm:flex">
             <button
               onClick={() => api?.scrollPrev()}
               className="flex size-9 items-center justify-center rounded-full border bg-background/80 backdrop-blur-sm hover:bg-background shadow-sm transition-all cursor-pointer"

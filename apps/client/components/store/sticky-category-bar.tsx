@@ -13,6 +13,13 @@ import {
   Backpack,
   Sparkle,
   Heart,
+  Dress,
+  Hoodie,
+  Handbag,
+  Sunglasses,
+  BaseballCap,
+  Gift,
+  Drop,
 } from "@phosphor-icons/react"
 import { useStoreProducts } from "@/hooks/store/use-products"
 import { cn } from "@workspace/ui/lib/utils"
@@ -20,6 +27,11 @@ import { cn } from "@workspace/ui/lib/utils"
 const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   Apparel: TShirt,
   Clothing: TShirt,
+  Dress: Dress,
+  Dresses: Dress,
+  Topwear: Hoodie,
+  Innerwear: TShirt,
+  Bottomwear: TShirt,
   Footwear: Sneaker,
   Shoes: Sneaker,
   Electronics: DeviceMobile,
@@ -27,9 +39,35 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
   Home: House,
   Sports: Football,
   Accessories: Watch,
+  Jewellery: Sparkle,
+  Jewelry: Sparkle,
+  Eyewear: Sunglasses,
+  Sunglasses: Sunglasses,
+  Watches: Watch,
+  Caps: BaseballCap,
   Bags: Backpack,
+  Bag: Handbag,
+  Handbags: Handbag,
+  "Free Items": Gift,
+  Free: Gift,
+  "Personal Care": Drop,
+  Personal: Drop,
+  Beauty: Drop,
+  Grooming: Drop,
   default: Sparkle,
 }
+
+const FALLBACK_ICONS = [
+  TShirt,
+  Watch,
+  Sneaker,
+  Backpack,
+  DeviceMobile,
+  House,
+  Football,
+  Sunglasses,
+  BaseballCap,
+]
 
 function CategoryIcon({ name, className }: { name: string; className?: string }) {
   let IconComponent = CATEGORY_ICONS[name]
@@ -41,7 +79,12 @@ function CategoryIcon({ name, className }: { name: string; className?: string })
       }
     }
   }
-  if (!IconComponent) IconComponent = Sparkle
+  if (!IconComponent) {
+    const charSum = name
+      .split("")
+      .reduce((sum, char) => sum + char.charCodeAt(0), 0)
+    IconComponent = FALLBACK_ICONS[charSum % FALLBACK_ICONS.length] ?? Sparkle
+  }
   return <IconComponent className={className} />
 }
 
@@ -71,19 +114,24 @@ export function StickyCategoryBar() {
 
   return (
     <div className="sticky top-16 z-30 w-full border-b bg-background/95 backdrop-blur-xl">
-      <div className="scrollbar-hide flex items-center gap-0.5 overflow-x-auto px-4 sm:px-6 mx-auto max-w-7xl h-11">
+      <div className="scrollbar-hide mx-auto flex h-11 max-w-7xl items-center justify-between gap-[7px] overflow-x-auto px-4 sm:justify-start sm:gap-1 sm:px-6">
         {/* For You */}
         <Link
           href="/store"
           className={cn(
-            "flex shrink-0 items-center gap-1.5 rounded-lg px-3 h-8 transition-colors",
+            "flex h-8 shrink-0 items-center gap-1.5 rounded-lg transition-colors",
             isHome
-              ? "bg-primary text-primary-foreground font-semibold"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/50 font-medium"
+              ? "bg-primary px-3 font-semibold text-primary-foreground"
+              : "px-[11px] font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground sm:px-3"
           )}
         >
           <Heart className="size-3.5" weight={isHome ? "fill" : "regular"} />
-          <span className="text-xs whitespace-nowrap">For You</span>
+          <span className={cn(
+            "whitespace-nowrap text-[11px] sm:text-xs",
+            !isHome && "hidden sm:inline"
+          )}>
+            For You
+          </span>
         </Link>
 
         {categories.map(([name]) => {
@@ -94,14 +142,19 @@ export function StickyCategoryBar() {
               key={name}
               href={`/store/category/${catSlug}`}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 rounded-lg px-3 h-8 transition-colors",
+                "flex h-8 shrink-0 items-center gap-1.5 rounded-lg transition-colors",
                 isActive
-                  ? "bg-primary text-primary-foreground font-semibold"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50 font-medium"
+                  ? "bg-primary px-3 font-semibold text-primary-foreground"
+                  : "px-[11px] font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground sm:px-3"
               )}
             >
               <CategoryIcon name={name} className="size-3.5" />
-              <span className="text-xs whitespace-nowrap">{name}</span>
+              <span className={cn(
+                "whitespace-nowrap text-[11px] sm:text-xs",
+                !isActive && "hidden sm:inline"
+              )}>
+                {name}
+              </span>
             </Link>
           )
         })}

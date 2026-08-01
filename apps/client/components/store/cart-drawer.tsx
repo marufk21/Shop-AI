@@ -57,7 +57,7 @@ export function CartDrawer() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={closeCart}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs"
+            className="fixed inset-0 z-50 bg-foreground/50 backdrop-blur-xs"
           />
 
           {/* Drawer */}
@@ -96,8 +96,8 @@ export function CartDrawer() {
             {/* Free shipping progress */}
             <div className="px-6 py-4 border-b bg-muted/20">
               {freeShipping ? (
-                <div className="flex items-center gap-2.5 text-sm font-medium text-emerald-600">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-foreground">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-muted">
                     <Package className="size-4" weight="fill" />
                   </div>
                   You qualify for free shipping!
@@ -220,7 +220,7 @@ export function CartDrawer() {
                           {/* Remove */}
                           <button
                             onClick={() => removeItem(item.productId)}
-                            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
+                            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted transition-colors cursor-pointer"
                             aria-label="Remove item"
                           >
                             <Trash className="size-3.5" />
@@ -247,7 +247,7 @@ export function CartDrawer() {
                     <span className="text-muted-foreground">Shipping</span>
                     <span className="font-medium">
                       {freeShipping ? (
-                        <span className="text-emerald-600">Free</span>
+                        <span className="text-muted-foreground">Free</span>
                       ) : (
                         `$${shippingFee.toFixed(2)}`
                       )}

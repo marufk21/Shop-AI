@@ -342,7 +342,7 @@ export function ProductsSection() {
         {/* ── Products grid ── */}
         <div className="min-h-96">
           {isLoading && (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
@@ -406,7 +406,7 @@ export function ProductsSection() {
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
-              className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4"
             >
               {paginatedProducts.map((product) => (
                 <motion.div key={product.id} variants={fadeInUp}>

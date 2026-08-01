@@ -33,7 +33,7 @@ export function StoreFooter() {
       <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
 
       <div className="mx-auto max-w-7xl px-6 py-12 md:py-16 md:pb-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12">
           {/* Brand Info (takes 2 columns space on large screens) */}
           <div className="lg:col-span-2 space-y-4">
             <Link
@@ -79,61 +79,63 @@ export function StoreFooter() {
             </div>
           </div>
 
-          {/* Shop Column */}
-          <div className="space-y-3.5">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              Shop
-            </h4>
-            <ul className="space-y-2">
-              {shopLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-8 lg:col-span-3 lg:grid-cols-3 lg:gap-12">
+            {/* Shop Column */}
+            <div className="space-y-3.5">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                Shop
+              </h4>
+              <ul className="space-y-2">
+                {shopLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Company Column */}
-          <div className="space-y-3.5">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              Company
-            </h4>
-            <ul className="space-y-2">
-              {companyLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Company Column */}
+            <div className="space-y-3.5">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                Company
+              </h4>
+              <ul className="space-y-2">
+                {companyLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Support Column */}
-          <div className="space-y-3.5">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              Support
-            </h4>
-            <ul className="space-y-2">
-              {supportLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Support Column */}
+            <div className="space-y-3.5">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                Support
+              </h4>
+              <ul className="space-y-2">
+                {supportLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 
