@@ -72,7 +72,7 @@ export function CartDrawer() {
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b">
               <div className="flex items-center gap-3">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10">
+                <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
                   <ShoppingBag className="size-4.5 text-primary" weight="fill" />
                 </div>
                 <div>
@@ -88,7 +88,7 @@ export function CartDrawer() {
                 variant="ghost"
                 size="icon-sm"
                 onClick={closeCart}
-                className="rounded-xl text-muted-foreground hover:text-foreground cursor-pointer"
+                className="rounded-lg text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <X className="size-4.5" />
               </Button>
@@ -141,7 +141,7 @@ export function CartDrawer() {
                   </p>
                   <Button
                     onClick={closeCart}
-                    className="mt-6 rounded-xl font-semibold cursor-pointer"
+                    className="mt-6 rounded-lg font-semibold cursor-pointer"
                   >
                     Continue Shopping
                     <ArrowRight className="ml-1.5 size-4" />
@@ -156,7 +156,7 @@ export function CartDrawer() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: 30 }}
-                      className="flex gap-4 rounded-2xl border bg-card p-3"
+                      className="flex gap-4 rounded-xl border bg-card p-3"
                     >
                       {/* Product image */}
                       <Link
@@ -196,7 +196,7 @@ export function CartDrawer() {
 
                         <div className="flex items-center justify-between">
                           {/* Quantity controls */}
-                          <div className="flex items-center gap-0.5 rounded-lg border bg-muted/30 p-0.5">
+                          <div className="flex items-center gap-0.5 rounded-md border bg-muted/30 p-0.5">
                             <button
                               onClick={() =>
                                 updateQuantity(item.productId, item.quantity - 1)
@@ -223,7 +223,7 @@ export function CartDrawer() {
                           {/* Remove */}
                           <button
                             onClick={() => removeItem(item.productId)}
-                            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted transition-colors cursor-pointer"
+                            className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-muted transition-colors cursor-pointer"
                             aria-label="Remove item"
                           >
                             <Trash className="size-3.5" />
@@ -264,7 +264,7 @@ export function CartDrawer() {
                     ${total.toFixed(2)}
                   </span>
                 </div>
-                <Button className="w-full h-11 rounded-xl font-semibold cursor-pointer text-sm shadow-lg shadow-primary/20">
+                <Button className="w-full h-11 rounded-lg font-semibold cursor-pointer text-sm shadow-lg shadow-primary/20">
                   Checkout
                   <ArrowRight className="ml-2 size-4" />
                 </Button>

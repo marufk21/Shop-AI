@@ -75,7 +75,7 @@ export function HeroCarousel() {
     <section className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6">
       <Carousel
         opts={{ loop: true }}
-        className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl"
+        className="relative w-full overflow-hidden rounded-xl"
         setApi={setApi}
       >
         <CarouselContent>
@@ -103,7 +103,7 @@ export function HeroCarousel() {
 
                     <Button
                       size="lg"
-                      className="mt-4 h-9 rounded-lg px-4 text-xs font-semibold shadow-lg shadow-primary/20 sm:mt-6 sm:h-12 sm:rounded-xl sm:px-6 sm:text-sm"
+                      className="mt-4 h-9 rounded-lg px-4 text-xs font-semibold shadow-lg shadow-primary/20 sm:mt-6 sm:h-12 sm:px-6 sm:text-sm"
                       render={
                         <Link href={slide.href}>
                           {slide.cta}

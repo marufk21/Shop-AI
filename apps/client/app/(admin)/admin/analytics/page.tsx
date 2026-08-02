@@ -169,11 +169,11 @@ export default function AnalyticsPage() {
             </div>
             <div className="mt-4 flex items-center justify-center gap-6">
               <div className="flex items-center gap-2">
-                <div className="size-2.5 rounded-sm bg-primary/20" />
+                <div className="size-2.5 rounded-full bg-primary/20" />
                 <span className="text-xs text-muted-foreground">Tokens</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="size-2.5 rounded-sm bg-primary" />
+                <div className="size-2.5 rounded-full bg-primary" />
                 <span className="text-xs text-muted-foreground">Queries</span>
               </div>
             </div>

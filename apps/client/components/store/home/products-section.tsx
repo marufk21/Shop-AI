@@ -350,8 +350,8 @@ export function ProductsSection() {
           )}
 
           {!isLoading && isError && (
-            <div className="flex flex-col items-center justify-center text-center py-24 border border-dashed border-border/60 rounded-2xl">
-              <div className="size-14 rounded-2xl bg-muted flex items-center justify-center mb-4 text-muted-foreground/40">
+            <div className="flex flex-col items-center justify-center text-center py-24 border border-dashed border-border/60 rounded-xl">
+              <div className="size-14 rounded-xl bg-muted flex items-center justify-center mb-4 text-muted-foreground/40">
                 <ArrowClockwise className="size-6" />
               </div>
               <h3 className="font-heading text-base font-semibold text-foreground">
@@ -375,9 +375,9 @@ export function ProductsSection() {
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center justify-center text-center py-24 border border-dashed border-border/60 rounded-2xl"
+              className="flex flex-col items-center justify-center text-center py-24 border border-dashed border-border/60 rounded-xl"
             >
-              <div className="size-14 rounded-2xl bg-muted flex items-center justify-center mb-4 text-muted-foreground/40">
+              <div className="size-14 rounded-xl bg-muted flex items-center justify-center mb-4 text-muted-foreground/40">
                 <FolderOpen className="size-6" />
               </div>
               <h3 className="font-heading text-base font-semibold text-foreground">

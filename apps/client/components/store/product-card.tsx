@@ -66,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="relative flex h-full flex-col overflow-hidden rounded-lg border border-border/50 bg-card transition-all duration-300 group-hover/card:border-border group-hover/card:shadow-xl group-hover/card:shadow-foreground/5 md:group-hover/card:-translate-y-1"
+          className="relative flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all duration-300 group-hover/card:border-border group-hover/card:shadow-xl group-hover/card:shadow-foreground/5 md:group-hover/card:-translate-y-1"
         >
           {/* Image */}
           <div className="relative aspect-square w-full overflow-hidden bg-white">
@@ -86,12 +86,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Badge */}
             {badge === "hot" && (
-              <span className="absolute left-2 top-2 inline-flex items-center rounded-md bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm sm:left-3 sm:top-3 sm:rounded-lg sm:px-2 sm:text-[10px]">
+              <span className="absolute left-2 top-2 inline-flex items-center rounded-lg bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm sm:left-3 sm:top-3 sm:px-2 sm:text-[10px]">
                 Hot Deal
               </span>
             )}
             {badge === "ai" && (
-              <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-md bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground shadow-sm sm:left-3 sm:top-3 sm:rounded-lg sm:px-2 sm:text-[10px]">
+              <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-lg bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground shadow-sm sm:left-3 sm:top-3 sm:px-2 sm:text-[10px]">
                 <Sparkle className="size-2.5" weight="fill" />
                 AI Pick
               </span>
@@ -114,7 +114,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <Button
                 onClick={handleAddToCart}
                 disabled={!inStock}
-                className="w-full h-9 rounded-xl bg-background text-foreground hover:bg-secondary font-semibold text-xs border border-border shadow-lg cursor-pointer"
+                className="w-full h-9 rounded-lg bg-background text-foreground hover:bg-secondary font-semibold text-xs border border-border shadow-lg cursor-pointer"
               >
                 <Plus className="size-3.5 mr-1.5" />
                 {inStock ? "Add to Cart" : "Out of Stock"}

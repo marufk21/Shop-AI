@@ -181,7 +181,7 @@ export default function DocumentsPage() {
                 placeholder="Search documents..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-8 w-56 rounded-md border border-input bg-transparent pr-3 pl-9 text-xs outline-none focus:border-ring"
+                className="h-8 w-56 rounded-lg border border-input bg-transparent pr-3 pl-9 text-xs outline-none focus:border-ring"
               />
             </div>
           </div>

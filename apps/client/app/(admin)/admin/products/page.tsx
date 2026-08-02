@@ -316,7 +316,7 @@ export default function ProductsPage() {
           {/* Active filter indicator + clear */}
           {masterCategory !== "All" && (
             <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted/60 text-xs font-medium">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-muted/60 text-xs font-medium">
                 {masterCategory}
                 {articleType !== "All" && ` › ${articleType}`}
                 <button

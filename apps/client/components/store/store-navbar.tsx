@@ -54,7 +54,7 @@ export function StoreNavbar() {
                 alt="ShopAI Logo"
                 width={32}
                 height={32}
-                className="size-8 rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
+                className="size-8 rounded-md object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text hidden lg:inline">
                 ShopAI
@@ -63,12 +63,12 @@ export function StoreNavbar() {
           </div>
 
           {/* Center: Search Bar */}
-          <div className="hidden sm:flex flex-1 max-w-xl items-center gap-2.5 rounded-xl border border-border/60 bg-muted/30 px-4 h-9">
+          <div className="hidden sm:flex flex-1 max-w-xl items-center gap-2.5 rounded-lg border border-border/60 bg-muted/30 px-4 h-9">
             <MagnifyingGlass className="size-4 text-muted-foreground shrink-0" />
             <span className="text-xs text-muted-foreground/70 flex-1 truncate">
               Search for products, brands and more...
             </span>
-            <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded-md border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+            <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded-lg border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
               <span className="text-[9px]">⌘</span>K
             </kbd>
           </div>

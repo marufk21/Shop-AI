@@ -66,7 +66,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="aspect-square animate-pulse rounded-3xl bg-muted" />
+          <div className="aspect-square animate-pulse rounded-xl bg-muted" />
           <div className="space-y-4 pt-4">
             <div className="h-4 w-20 animate-pulse rounded-lg bg-muted" />
             <div className="h-8 w-80 animate-pulse rounded-lg bg-muted" />
@@ -89,7 +89,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           This product doesn&apos;t exist or has been removed.
         </p>
         <Button
-          className="mt-6 rounded-xl font-semibold"
+          className="mt-6 rounded-lg font-semibold"
           render={<Link href="/store">Back to Store</Link>}
         />
       </div>
@@ -123,7 +123,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           transition={{ duration: 0.4 }}
           className="self-start lg:sticky lg:top-28"
         >
-          <div className="relative h-[320px] overflow-hidden rounded-2xl border border-border/40 bg-white sm:aspect-square sm:h-auto">
+          <div className="relative h-[320px] overflow-hidden rounded-xl border border-border/40 bg-white sm:aspect-square sm:h-auto">
             {product.image_url ? (
               <Image
                 src={getProductImageUrl(product.image_url, "detail")!}
@@ -210,10 +210,10 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
               <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Quantity
               </span>
-              <div className="flex items-center gap-0.5 rounded-xl border bg-muted/30 p-0.5">
+              <div className="flex items-center gap-0.5 rounded-md border bg-muted/30 p-0.5">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-background"
+                  className="flex size-9 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-background"
                 >
                   <Minus className="size-3.5" />
                 </button>
@@ -237,7 +237,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                 size="lg"
                 onClick={handleAddToCart}
                 disabled={!inStock}
-                className="h-12 flex-1 cursor-pointer rounded-xl text-sm font-semibold shadow-lg shadow-primary/20"
+                className="h-12 flex-1 cursor-pointer rounded-lg text-sm font-semibold shadow-lg shadow-primary/20"
               >
                 <ShoppingCart className="mr-2 size-4.5" weight="fill" />
                 {inStock ? "Add to Cart" : "Out of Stock"}
@@ -246,7 +246,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                 variant="outline"
                 size="icon-lg"
                 onClick={() => setIsWishlisted((prev) => !prev)}
-                className="h-12 w-12 shrink-0 cursor-pointer rounded-xl"
+                className="h-12 w-12 shrink-0 cursor-pointer rounded-lg"
               >
                 <Heart
                   className={`size-5 ${isWishlisted ? "fill-destructive text-destructive" : ""}`}
@@ -274,7 +274,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           </div>
 
           {/* Offers */}
-          <div className="mt-5 space-y-2 rounded-2xl border border-border/40 bg-card/50 p-4">
+          <div className="mt-5 space-y-2 rounded-xl border border-border/40 bg-card/50 p-4">
             {[
               {
                 icon: CreditCard,
@@ -349,7 +349,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           )}
 
           {activeTab === "specifications" && (
-            <div className="overflow-hidden rounded-2xl border border-border/40">
+            <div className="overflow-hidden rounded-xl border border-border/40">
               {[
                 { label: "SKU", value: product.slug },
                 { label: "Category", value: mainCategory },
@@ -381,7 +381,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           {activeTab === "reviews" && (
             <div className="space-y-5">
               {/* Rating summary */}
-              <div className="flex items-center gap-6 rounded-2xl border border-border/40 bg-card p-6">
+              <div className="flex items-center gap-6 rounded-xl border border-border/40 bg-card p-6">
                 <div className="shrink-0 text-center">
                   <p className="text-5xl font-bold tracking-tight text-foreground">
                     5.0
@@ -445,7 +445,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
               ].map((review) => (
                 <div
                   key={review.author}
-                  className="rounded-2xl border border-border/40 bg-card p-5"
+                  className="rounded-xl border border-border/40 bg-card p-5"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary ring-2 ring-primary/20">
@@ -493,7 +493,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
               <Button
                 variant="outline"
                 size="lg"
-                className="h-11 w-full cursor-pointer rounded-xl text-sm font-semibold"
+                className="h-11 w-full cursor-pointer rounded-lg text-sm font-semibold"
               >
                 Write a Review
               </Button>

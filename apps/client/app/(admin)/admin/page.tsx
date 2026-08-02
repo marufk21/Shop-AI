@@ -144,7 +144,7 @@ export default function AdminDashboard() {
                   className="flex h-full flex-1 flex-col items-center justify-end gap-1"
                 >
                   <div
-                    className="w-full rounded-md bg-primary transition-all"
+                    className="w-full rounded-full bg-primary transition-all"
                     style={{ height: `${h}%`, minHeight: 4 }}
                   />
                   <span className="text-[10px] text-muted-foreground">
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
             </div>
             <div className="mt-6 flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
-                <div className="size-2.5 rounded-sm bg-primary" />
+                <div className="size-2.5 rounded-full bg-primary" />
                 <span className="text-muted-foreground">Token Usage</span>
               </div>
               <span className="font-medium">12,450 tokens today</span>
