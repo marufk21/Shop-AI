@@ -10,7 +10,14 @@ import type { Product } from "@/types/product"
 
 export function RecentlyViewed() {
   const { items } = useRecentlyViewed()
-  const { data } = useStoreProducts({ limit: 10000 })
+  const slugs = React.useMemo(
+    () => items.map((item) => item.slug).join(","),
+    [items]
+  )
+  const { data } = useStoreProducts(
+    { slugs, limit: 20 },
+    slugs.length > 0
+  )
 
   const recentlyViewedProducts = React.useMemo(() => {
     if (!data?.items || items.length === 0) return []

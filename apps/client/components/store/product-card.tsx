@@ -9,6 +9,7 @@ import { Button } from "@workspace/ui/components/button"
 import type { Product } from "@/types/product"
 import { useCart } from "@/components/store/cart-provider"
 import { getProductImageUrl } from "@/lib/image-url"
+import { formatCurrency } from "@/lib/format-currency"
 import { toast } from "sonner"
 
 interface ProductCardProps {
@@ -29,10 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
   }, [product.name])
 
   const formattedPrice = React.useMemo(() => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(product.price)
+    return formatCurrency(product.price)
   }, [product.price])
 
   const handleAddToCart = (e: React.MouseEvent) => {

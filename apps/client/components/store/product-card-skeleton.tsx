@@ -1,5 +1,3 @@
-"use client"
-
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 export function ProductCardSkeleton() {

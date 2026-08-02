@@ -21,7 +21,7 @@ import {
   Gift,
   Drop,
 } from "@phosphor-icons/react"
-import { useStoreProducts } from "@/hooks/store/use-products"
+import { useStoreCategories } from "@/hooks/store/use-products"
 import { cn } from "@workspace/ui/lib/utils"
 
 const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -94,19 +94,9 @@ function parseMaster(category: string): string {
 
 export function StickyCategoryBar() {
   const pathname = usePathname()
-  const { data } = useStoreProducts({ limit: 10000 })
-  const products = data?.items ?? []
+  const { data: categories = [] } = useStoreCategories()
 
-  const categories = React.useMemo(() => {
-    const map = new Map<string, number>()
-    for (const p of products) {
-      const master = parseMaster(p.category)
-      map.set(master, (map.get(master) ?? 0) + 1)
-    }
-    return Array.from(map.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-  }, [products])
+  const topCategories = categories.slice(0, 8)
 
   const isHome = pathname === "/store"
 
@@ -132,7 +122,7 @@ export function StickyCategoryBar() {
           </span>
         </Link>
 
-        {categories.map(([name]) => {
+        {topCategories.map(({ name }) => {
           const catSlug = encodeURIComponent(name.toLowerCase())
           const isActive = pathname === `/store/category/${catSlug}`
           return (

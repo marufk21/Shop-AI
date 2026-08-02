@@ -35,6 +35,7 @@ class ProductRepository:
         status: str | None = None,
         search: str | None = None,
         category: str | None = None,
+        slugs: list[str] | None = None,
         skip: int = 0,
         limit: int = 20,
     ) -> tuple[list[Product], int]:
@@ -44,6 +45,10 @@ class ProductRepository:
         if status is not None:
             query = query.where(Product.status == status)
             count_query = count_query.where(Product.status == status)
+
+        if slugs is not None:
+            query = query.where(Product.slug.in_(slugs))
+            count_query = count_query.where(Product.slug.in_(slugs))
 
         if category is not None:
             cat_filter = or_(

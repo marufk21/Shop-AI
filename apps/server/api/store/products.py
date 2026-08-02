@@ -12,10 +12,11 @@ async def list_store_products(
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=20, ge=1, le=10000),
     category: str | None = Query(default=None),
+    slugs: str | None = Query(default=None),
     controller: StoreProductController = Depends(get_store_product_controller),
 ) -> ProductListResponse:
     return await controller.get_store_products(
-        skip=skip, limit=limit, category=category
+        skip=skip, limit=limit, category=category, slugs=slugs
     )
 
 

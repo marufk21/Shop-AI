@@ -4,7 +4,7 @@ import { StickyCategoryBar } from "@/components/store/sticky-category-bar"
 import { MobileBottomBar } from "@/components/store/mobile-bottom-bar"
 import { ChatbotWrapper } from "@/components/chatbot/chatbot-wrapper"
 import { CartProvider } from "@/components/store/cart-provider"
-import { CartDrawer } from "@/components/store/cart-drawer"
+import { CartDrawer } from "@/components/store/cart-drawer-loader"
 
 export default function StoreLayout({
   children,

@@ -1,5 +1,3 @@
-"use client"
-
 import { ProductsSection } from "@/components/store/home/products-section"
 
 export function AllProductsContent() {

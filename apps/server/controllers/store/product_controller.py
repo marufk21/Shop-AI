@@ -14,9 +14,11 @@ class StoreProductController:
         skip: int = 0,
         limit: int = 20,
         category: str | None = None,
+        slugs: str | None = None,
     ) -> ProductListResponse:
+        slug_list = slugs.split(",") if slugs else None
         items, total = await self.repo.list_all(
-            status="active", skip=skip, limit=limit, category=category
+            status="active", skip=skip, limit=limit, category=category, slugs=slug_list
         )
         return ProductListResponse(
             items=[ProductResponse.model_validate(p) for p in items],

@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import Link from "next/link"
 import { ArrowRight } from "@phosphor-icons/react"
@@ -21,8 +19,6 @@ export function ProductRowSection({
   className,
   href = "/store/products",
 }: ProductRowSectionProps) {
-  const scrollRef = React.useRef<HTMLDivElement>(null)
-
   if (products.length === 0) return null
 
   return (
@@ -41,10 +37,7 @@ export function ProductRowSection({
           </Link>
         </div>
 
-        <div
-          ref={scrollRef}
-          className="scrollbar-hide flex gap-4 overflow-x-auto overflow-y-hidden pb-1"
-        >
+        <div className="scrollbar-hide flex gap-4 overflow-x-auto overflow-y-hidden pb-1">
           {products.slice(0, 10).map((product) => (
             <div
               key={product.id}

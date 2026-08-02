@@ -34,6 +34,7 @@ export interface ProductListParams {
   status?: ProductStatus
   search?: string
   category?: string
+  slugs?: string
   skip?: number
   limit?: number
 }

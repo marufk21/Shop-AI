@@ -16,18 +16,15 @@ interface RelatedProductsProps {
 }
 
 export function RelatedProducts({ category, currentSlug }: RelatedProductsProps) {
-  const { data } = useStoreProducts({ limit: 10000 })
   const masterCategory = parseMasterCategory(category)
+  const { data } = useStoreProducts({ category, limit: 24 })
 
   const related = React.useMemo(() => {
     if (!data?.items) return []
     return data.items
-      .filter((p) => {
-        const pMaster = parseMasterCategory(p.category)
-        return pMaster === masterCategory && p.slug !== currentSlug
-      })
+      .filter((p) => p.slug !== currentSlug)
       .slice(0, 6)
-  }, [data?.items, masterCategory, currentSlug])
+  }, [data?.items, currentSlug])
 
   if (related.length === 0) return null
 

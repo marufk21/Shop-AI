@@ -5,6 +5,15 @@ import type {
   ProductListResponse,
 } from "@/types/product"
 
+export interface CategoryInfo {
+  name: string
+  count: number
+}
+
+interface CategoryListResponse {
+  categories: CategoryInfo[]
+}
+
 export async function fetchStoreProducts(params: ProductListParams = {}) {
   const { data } = await axiosClient.get<ProductListResponse>(
     "/api/v1/store/products",
@@ -20,4 +29,12 @@ export async function fetchStoreProduct(slug: string) {
   )
 
   return data
+}
+
+export async function fetchStoreCategories() {
+  const { data } = await axiosClient.get<CategoryListResponse>(
+    "/api/v1/store/categories"
+  )
+
+  return data.categories
 }
