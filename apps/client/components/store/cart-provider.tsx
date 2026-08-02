@@ -17,7 +17,6 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: "HYDRATE_CART"; payload: CartItem[] }
   | { type: "ADD_ITEM"; payload: CartItem }
   | { type: "REMOVE_ITEM"; payload: { productId: string } }
   | { type: "UPDATE_QUANTITY"; payload: { productId: string; quantity: number } }
@@ -47,52 +46,46 @@ function saveCart(items: CartItem[]) {
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
-    case "HYDRATE_CART":
-      return { ...state, items: action.payload }
     case "ADD_ITEM": {
       const existing = state.items.find(
         (i) => i.productId === action.payload.productId
       )
-      let next: CartItem[]
       if (existing) {
-        next = state.items.map((i) =>
+        const next = state.items.map((i) =>
           i.productId === action.payload.productId
             ? { ...i, quantity: i.quantity + action.payload.quantity }
             : i
         )
-      } else {
-        next = [...state.items, action.payload]
+        return { ...state, items: next, isOpen: true }
       }
-      saveCart(next)
-      return { ...state, items: next, isOpen: true }
+      return { ...state, items: [...state.items, action.payload], isOpen: true }
     }
     case "REMOVE_ITEM": {
       const next = state.items.filter(
         (i) => i.productId !== action.payload.productId
       )
-      saveCart(next)
       return { ...state, items: next }
     }
     case "UPDATE_QUANTITY": {
       if (action.payload.quantity <= 0) {
-        const next = state.items.filter(
-          (i) => i.productId !== action.payload.productId
-        )
-        saveCart(next)
-        return { ...state, items: next }
+        return {
+          ...state,
+          items: state.items.filter(
+            (i) => i.productId !== action.payload.productId
+          ),
+        }
       }
-      const next = state.items.map((i) =>
-        i.productId === action.payload.productId
-          ? { ...i, quantity: action.payload.quantity }
-          : i
-      )
-      saveCart(next)
-      return { ...state, items: next }
+      return {
+        ...state,
+        items: state.items.map((i) =>
+          i.productId === action.payload.productId
+            ? { ...i, quantity: action.payload.quantity }
+            : i
+        ),
+      }
     }
-    case "CLEAR_CART": {
-      saveCart([])
+    case "CLEAR_CART":
       return { ...state, items: [] }
-    }
     case "TOGGLE_CART":
       return { ...state, isOpen: !state.isOpen }
     case "OPEN_CART":
@@ -104,11 +97,20 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   }
 }
 
-interface CartContextValue {
+// ── State context (changes when cart data changes) ──
+
+interface CartStateValue {
   items: CartItem[]
   isOpen: boolean
   itemCount: number
   subtotal: number
+}
+
+const CartStateContext = React.createContext<CartStateValue | null>(null)
+
+// ── Dispatch context (stable — never changes after mount) ──
+
+interface CartDispatchValue {
   addItem: (item: CartItem) => void
   removeItem: (productId: string) => void
   updateQuantity: (productId: string, quantity: number) => void
@@ -118,48 +120,81 @@ interface CartContextValue {
   closeCart: () => void
 }
 
-const CartContext = React.createContext<CartContextValue | null>(null)
+const CartDispatchContext = React.createContext<CartDispatchValue | null>(null)
 
-export function useCart() {
-  const ctx = React.useContext(CartContext)
+// ── Hooks ──
+
+export function useCartState() {
+  const ctx = React.useContext(CartStateContext)
   if (!ctx) {
-    throw new Error("useCart must be used within a CartProvider")
+    throw new Error("useCartState must be used within a CartProvider")
   }
   return ctx
 }
 
-function createInitialState(): CartState {
-  return {
-    items: [],
-    isOpen: false,
+export function useCartDispatch() {
+  const ctx = React.useContext(CartDispatchContext)
+  if (!ctx) {
+    throw new Error("useCartDispatch must be used within a CartProvider")
   }
+  return ctx
 }
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = React.useReducer(cartReducer, null, createInitialState)
-
-  React.useEffect(() => {
-    dispatch({ type: "HYDRATE_CART", payload: loadCart() })
-  }, [])
-
-  const itemCount = state.items.reduce((sum, i) => sum + i.quantity, 0)
-  const subtotal = state.items.reduce((sum, i) => sum + i.price * i.quantity, 0)
-
-  const value: CartContextValue = {
-    items: state.items,
-    isOpen: state.isOpen,
-    itemCount,
-    subtotal,
-    addItem: (item) => dispatch({ type: "ADD_ITEM", payload: item }),
-    removeItem: (productId) =>
-      dispatch({ type: "REMOVE_ITEM", payload: { productId } }),
-    updateQuantity: (productId, quantity) =>
-      dispatch({ type: "UPDATE_QUANTITY", payload: { productId, quantity } }),
-    clearCart: () => dispatch({ type: "CLEAR_CART" }),
-    toggleCart: () => dispatch({ type: "TOGGLE_CART" }),
-    openCart: () => dispatch({ type: "OPEN_CART" }),
-    closeCart: () => dispatch({ type: "CLOSE_CART" }),
+/** Convenience hook — reads both contexts. Prefer useCartState / useCartDispatch for granular re-renders. */
+export function useCart(): CartStateValue & CartDispatchValue {
+  const state = React.useContext(CartStateContext)
+  const dispatch = React.useContext(CartDispatchContext)
+  if (!state || !dispatch) {
+    throw new Error("useCart must be used within a CartProvider")
   }
+  return { ...state, ...dispatch }
+}
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+// ── Provider ──
+
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = React.useReducer(cartReducer, null, () => ({
+    items: loadCart(),
+    isOpen: false,
+  }))
+
+  // Persist cart to localStorage on every items change (side effect outside reducer)
+  React.useEffect(() => {
+    saveCart(state.items)
+  }, [state.items])
+
+  // Memoize derived state so StateContext only changes when values actually differ
+  const stateValue = React.useMemo<CartStateValue>(
+    () => ({
+      items: state.items,
+      isOpen: state.isOpen,
+      itemCount: state.items.reduce((sum, i) => sum + i.quantity, 0),
+      subtotal: state.items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    }),
+    [state.items, state.isOpen]
+  )
+
+  // Dispatch functions are stable — dispatch from useReducer never changes
+  const dispatchValue = React.useMemo<CartDispatchValue>(
+    () => ({
+      addItem: (item) => dispatch({ type: "ADD_ITEM", payload: item }),
+      removeItem: (productId) =>
+        dispatch({ type: "REMOVE_ITEM", payload: { productId } }),
+      updateQuantity: (productId, quantity) =>
+        dispatch({ type: "UPDATE_QUANTITY", payload: { productId, quantity } }),
+      clearCart: () => dispatch({ type: "CLEAR_CART" }),
+      toggleCart: () => dispatch({ type: "TOGGLE_CART" }),
+      openCart: () => dispatch({ type: "OPEN_CART" }),
+      closeCart: () => dispatch({ type: "CLOSE_CART" }),
+    }),
+    []
+  )
+
+  return (
+    <CartStateContext.Provider value={stateValue}>
+      <CartDispatchContext.Provider value={dispatchValue}>
+        {children}
+      </CartDispatchContext.Provider>
+    </CartStateContext.Provider>
+  )
 }

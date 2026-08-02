@@ -54,6 +54,7 @@ export function StoreNavbar() {
                 alt="ShopAI Logo"
                 width={32}
                 height={32}
+                priority
                 className="size-8 rounded-md object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text hidden lg:inline">

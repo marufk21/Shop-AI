@@ -7,6 +7,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@workspace/ui", "@base-ui/react"],
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {
@@ -14,6 +15,10 @@ const nextConfig = {
         hostname: "res.cloudinary.com",
       },
     ],
+    formats: ["image/avif", "image/webp"],
+  },
+  experimental: {
+    optimizePackageImports: ["framer-motion", "@phosphor-icons/react"],
   },
 }
 

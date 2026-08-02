@@ -17,8 +17,8 @@ export default async function CategoryPage({
 
   try {
     await queryClient.prefetchQuery({
-      queryKey: storeProductKeys.list({ category: categoryName, limit: 10000 }),
-      queryFn: () => fetchStoreProducts({ category: categoryName, limit: 10000 }),
+      queryKey: storeProductKeys.list({ category: categoryName, skip: 0, limit: 12 }),
+      queryFn: () => fetchStoreProducts({ category: categoryName, skip: 0, limit: 12 }),
     })
   } catch {
     // Prefetch failed — client will fetch on mount

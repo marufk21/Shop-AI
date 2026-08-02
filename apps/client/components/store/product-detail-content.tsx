@@ -25,7 +25,7 @@ import { Separator } from "@workspace/ui/components/separator"
 
 import { useStoreProduct } from "@/hooks/store/use-products"
 import { useRecentlyViewed } from "@/hooks/store/use-recently-viewed"
-import { useCart } from "@/components/store/cart-provider"
+import { useCartDispatch } from "@/components/store/cart-provider"
 import { RelatedProducts } from "@/components/store/related-products"
 import { getProductImageUrl } from "@/lib/image-url"
 import { toast } from "sonner"
@@ -39,7 +39,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
   const [activeTab, setActiveTab] = useState("features")
   const [isWishlisted, setIsWishlisted] = useState(false)
   const { data: product, isError, isLoading } = useStoreProduct(slug)
-  const { addItem } = useCart()
+  const { addItem } = useCartDispatch()
   const { addItem: addRecentlyViewed } = useRecentlyViewed()
 
   useEffect(() => {

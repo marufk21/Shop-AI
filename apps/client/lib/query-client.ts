@@ -1,8 +1,10 @@
 import { QueryClient } from "@tanstack/react-query"
 
 export const defaultQueryOptions = {
-  staleTime: 30_000,
+  staleTime: 2 * 60 * 1000,       // 2 minutes (was 30s — catalog data changes rarely)
+  gcTime: 10 * 60 * 1000,         // 10 minutes (was default 5 min)
   retry: 1,
+  refetchOnWindowFocus: false,     // catalog data doesn't need refetch on tab focus
 } as const
 
 let queryClient: QueryClient | undefined

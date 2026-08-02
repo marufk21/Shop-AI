@@ -91,7 +91,7 @@ export function ProductsSection() {
     setCurrentPage(1)
   }, [search, masterCategory, articleType, sort])
 
-  const { data, isError, isLoading, refetch } = useStoreProducts({ limit: 10000 })
+  const { data, isError, isLoading, refetch } = useStoreProducts({ limit: 200 })
   const products = React.useMemo(() => data?.items ?? [], [data?.items])
 
   // Compute max price from products

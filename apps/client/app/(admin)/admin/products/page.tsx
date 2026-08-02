@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import {
   DotsThree,
@@ -80,14 +80,21 @@ function buildCategoryTree(products: { category: string }[]) {
 }
 
 export default function ProductsPage() {
+  const [searchInput, setSearchInput] = useState("")
   const [search, setSearch] = useState("")
+
+  // Debounce search: update query param 300ms after user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => setSearch(searchInput), 300)
+    return () => clearTimeout(timer)
+  }, [searchInput])
   const [masterCategory, setMasterCategory] = useState("All")
   const [articleType, setArticleType] = useState("All")
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
   const { data, isError, isLoading } = useAdminProducts({
     search: search || undefined,
-    limit: 10000,
+    limit: 100,
   })
   const createProduct = useCreateAdminProduct()
   const updateProduct = useUpdateAdminProduct()
@@ -262,14 +269,14 @@ export default function ProductsPage() {
             <div className="relative shrink-0">
               <MagnifyingGlass className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
               <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search products..."
                 className="h-7 w-full sm:w-48 pl-7 pr-7 rounded-lg border-border bg-background text-[11px] font-medium"
               />
-              {search && (
+              {searchInput && (
                 <button
-                  onClick={() => setSearch("")}
+                  onClick={() => { setSearchInput(""); setSearch("") }}
                   aria-label="Clear search"
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >

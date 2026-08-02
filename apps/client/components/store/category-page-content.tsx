@@ -31,46 +31,45 @@ interface CategoryPageContentProps {
 }
 
 export function CategoryPageContent({ categoryName }: CategoryPageContentProps) {
+  const [searchInput, setSearchInput] = React.useState("")
   const [search, setSearch] = React.useState("")
   const [sort, setSort] = React.useState("Popular")
   const [currentPage, setCurrentPage] = React.useState(1)
+
+  // Debounce search: update query param 300ms after user stops typing
+  React.useEffect(() => {
+    const timer = setTimeout(() => setSearch(searchInput), 300)
+    return () => clearTimeout(timer)
+  }, [searchInput])
 
   React.useEffect(() => {
     setCurrentPage(1)
   }, [search, sort])
 
+  const skip = (currentPage - 1) * ITEMS_PER_PAGE
+
   const { data, isError, isLoading, refetch } = useStoreProducts({
-    limit: 10000,
+    skip,
+    limit: ITEMS_PER_PAGE,
     category: categoryName,
+    search: search || undefined,
   })
 
   const products = React.useMemo(() => data?.items ?? [], [data?.items])
 
-  const filteredAndSorted = React.useMemo(() => {
-    return products
-      .filter((p) => {
-        const q = search.toLowerCase()
-        return (
-          !q ||
-          p.name.toLowerCase().includes(q) ||
-          (p.description?.toLowerCase().includes(q) ?? false)
-        )
-      })
-      .sort((a, b) => {
-        if (sort.includes("Low")) return a.price - b.price
-        if (sort.includes("High")) return b.price - a.price
-        if (sort === "Newest")
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        return a.name.localeCompare(b.name)
-      })
-  }, [products, search, sort])
+  // Client-side sort only (backend always sorts by created_at DESC)
+  // With 12 items per page, sorting is cheap
+  const sortedProducts = React.useMemo(() => {
+    return [...products].sort((a, b) => {
+      if (sort.includes("Low")) return a.price - b.price
+      if (sort.includes("High")) return b.price - a.price
+      if (sort === "Newest")
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      return a.name.localeCompare(b.name)
+    })
+  }, [products, sort])
 
-  const paginatedProducts = React.useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE
-    return filteredAndSorted.slice(start, start + ITEMS_PER_PAGE)
-  }, [filteredAndSorted, currentPage])
-
-  const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / ITEMS_PER_PAGE))
+  const totalPages = Math.max(1, Math.ceil((data?.total ?? 0) / ITEMS_PER_PAGE))
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 md:py-10">
@@ -80,14 +79,14 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
           <div className="relative min-w-0">
             <SlidersHorizontal className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
             <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search..."
               className="h-8 w-full rounded-lg border-border bg-background pl-7 pr-7 text-xs font-medium sm:w-40"
             />
-            {search && (
+            {searchInput && (
               <button
-                onClick={() => setSearch("")}
+                onClick={() => { setSearchInput(""); setSearch("") }}
                 aria-label="Clear search"
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
@@ -110,7 +109,7 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
 
         {!isLoading && (
           <span className="inline-flex h-8 w-full items-center justify-center rounded-lg border border-border bg-muted/40 px-3 text-xs font-semibold text-muted-foreground sm:w-auto sm:justify-start">
-            {filteredAndSorted.length.toLocaleString()} products
+            {data?.total?.toLocaleString() ?? 0} products
           </span>
         )}
       </div>
@@ -134,7 +133,7 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
           </div>
         )}
 
-        {!isLoading && !isError && filteredAndSorted.length === 0 && (
+        {!isLoading && !isError && sortedProducts.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <ShoppingBag className="size-12 text-muted-foreground/20 mb-4" />
             <h3 className="font-heading text-base font-semibold">No products found</h3>
@@ -142,15 +141,14 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
           </div>
         )}
 
-        {!isLoading && !isError && filteredAndSorted.length > 0 && (
+        {!isLoading && !isError && sortedProducts.length > 0 && (
           <motion.div
-            key={sort + currentPage}
             variants={staggerContainer}
             initial="hidden"
             animate="visible"
             className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4"
           >
-            {paginatedProducts.map((product) => (
+            {sortedProducts.map((product) => (
               <motion.div key={product.id} variants={fadeInUp}>
                 <ProductCard product={product} />
               </motion.div>

@@ -16,7 +16,7 @@ export function useDocuments(skip: number = 0, limit: number = 20) {
     queryFn: () => fetchDocuments(skip, limit),
     refetchInterval: (query) => {
       const docs = query.state.data?.items
-      if (!docs) return 0
+      if (!docs) return false
       const hasPending = docs.some(
         (d) => d.status === "uploading" || d.status === "processing"
       )

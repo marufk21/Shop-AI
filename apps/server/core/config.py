@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     app_name: str = Field(default="ShopAI", validation_alias="APP_NAME")
     debug: bool = Field(default=False, validation_alias="APP_DEBUG")
     gemini_api_key: str = Field(validation_alias="GEMINI_API_KEY")
+    database_pool_size: int = Field(default=10)
+    database_max_overflow: int = Field(default=5)
+    database_pool_timeout: int = Field(default=10)
 
     model_config = {
         "env_file": ".env",

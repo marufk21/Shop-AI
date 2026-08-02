@@ -10,8 +10,8 @@ export default async function ProductsPage() {
 
   try {
     await queryClient.prefetchQuery({
-      queryKey: storeProductKeys.list({ limit: 10000 }),
-      queryFn: () => fetchStoreProducts({ limit: 10000 }),
+      queryKey: storeProductKeys.list({ limit: 200 }),
+      queryFn: () => fetchStoreProducts({ limit: 200 }),
     })
   } catch {
     // Prefetch failed

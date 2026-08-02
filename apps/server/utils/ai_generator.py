@@ -19,14 +19,18 @@ PROMPTS: dict[str, str] = {
     ),
 }
 
+# Module-level singleton — reused across requests for HTTP connection pool efficiency
+_llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    api_key=SecretStr(settings.gemini_api_key),
+    temperature=0.7,
+    timeout=30,
+    request_timeout=30,
+    max_retries=2,
+)
 
-def improve_text(text: str, field: str) -> str:
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        api_key=SecretStr(settings.gemini_api_key),
-        temperature=0.7,
-    )
 
+async def improve_text(text: str, field: str) -> str:
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", PROMPTS[field]),
@@ -34,6 +38,6 @@ def improve_text(text: str, field: str) -> str:
         ]
     )
 
-    chain = prompt | llm
-    response = chain.invoke({"text": text})
+    chain = prompt | _llm
+    response = await chain.ainvoke({"text": text})
     return str(response.content).strip()

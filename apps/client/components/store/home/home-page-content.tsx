@@ -5,6 +5,7 @@ import dynamic from "next/dynamic"
 import { useStoreProducts } from "@/hooks/store/use-products"
 import { HeroCarousel } from "./hero-carousel"
 import { ProductRowSection } from "./product-row-section"
+import { HomeSkeleton } from "./home-skeleton"
 
 const FlashDealsSection = dynamic(
   () =>
@@ -31,7 +32,7 @@ const RecentlyViewed = dynamic(
 )
 
 export function HomePageContent() {
-  const { data } = useStoreProducts({ limit: 10000 })
+  const { data, isLoading } = useStoreProducts({ limit: 24 })
   const products = React.useMemo(() => data?.items ?? [], [data?.items])
 
   const newArrivals = React.useMemo(() => {
@@ -52,6 +53,10 @@ export function HomePageContent() {
       .sort((a, b) => a.slug.localeCompare(b.slug))
       .slice(0, 8)
   }, [products])
+
+  if (isLoading) {
+    return <HomeSkeleton />
+  }
 
   return (
     <div className="w-full">

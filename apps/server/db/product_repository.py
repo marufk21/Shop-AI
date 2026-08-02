@@ -13,7 +13,6 @@ class ProductRepository:
     async def create(self, product: Product) -> Product:
         self.db.add(product)
         await self.db.flush()
-        await self.db.refresh(product)
         return product
 
     async def get_by_id(self, product_id: uuid.UUID) -> Product | None:
@@ -77,7 +76,6 @@ class ProductRepository:
         for key, value in update_data.items():
             setattr(product, key, value)
         await self.db.flush()
-        await self.db.refresh(product)
         return product
 
     async def create_batch(self, products: list[Product]) -> list[Product]:

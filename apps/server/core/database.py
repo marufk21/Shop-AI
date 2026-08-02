@@ -30,6 +30,9 @@ engine = create_async_engine(
     database_url,
     echo=settings.debug,
     connect_args=connect_args,
+    pool_size=settings.database_pool_size,
+    max_overflow=settings.database_max_overflow,
+    pool_timeout=settings.database_pool_timeout,
     # Neon closes idle connections on scale-to-zero; recycle + pre-ping avoids
     # stale sockets.
     pool_pre_ping=True,
