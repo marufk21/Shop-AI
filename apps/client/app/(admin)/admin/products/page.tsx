@@ -126,7 +126,7 @@ export default function ProductsPage() {
         <div className="flex items-center gap-3">
           {row.image_url ? (
             <Image
-              src={getProductImageUrl(row.image_url, "thumbnail")!}
+              src={getProductImageUrl(row.image_url, "micro")!}
               alt={row.name}
               width={32}
               height={32}

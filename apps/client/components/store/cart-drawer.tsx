@@ -166,7 +166,7 @@ export function CartDrawer() {
                       >
                         {item.imageUrl ? (
                           <Image
-                            src={getProductImageUrl(item.imageUrl, "thumbnail")!}
+                            src={getProductImageUrl(item.imageUrl, "thumb")!}
                             alt={item.name}
                             fill
                             sizes="80px"

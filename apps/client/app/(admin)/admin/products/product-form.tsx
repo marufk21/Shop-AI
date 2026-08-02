@@ -17,6 +17,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 
 import type { Product, ProductCreateInput, ProductStatus } from "@/types/product"
+import { getProductImageUrl } from "@/lib/image-url"
 import { fetchImprovedText } from "@/server/admin/ai-fetchers"
 
 export interface ProductFormData {
@@ -163,6 +164,10 @@ export function ProductForm({
     ? null
     : (imagePreview || existingImageUrl || null)
 
+  const optimizedImageSrc = imageToShow
+    ? (getProductImageUrl(imageToShow, "thumbnail") ?? imageToShow)
+    : undefined
+
   const resetForm = () => {
     setForm(defaultValues)
     setImageFile(null)
@@ -275,11 +280,11 @@ export function ProductForm({
             {imageToShow ? (
               <div className="relative h-48 overflow-hidden rounded-xl border">
                 <Image
-                  src={imageToShow}
+                  src={optimizedImageSrc!}
                   alt="Preview"
                   fill
                   sizes="500px"
-                  unoptimized={imageToShow.startsWith("blob:")}
+                  unoptimized={imageToShow?.startsWith("blob:")}
                   className="object-contain bg-muted"
                 />
                 <Button

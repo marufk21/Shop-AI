@@ -25,6 +25,13 @@ class CloudinaryUploader:
         upload_options: dict[str, Any] = {
             "folder": folder,
             "resource_type": "image",
+            # Generate AVIF + WebP + quality-auto variants eagerly so they're
+            # ready in CDN cache before the first product page request.
+            "eager": [
+                {"fetch_format": "avif", "quality": "auto:best"},
+                {"fetch_format": "webp", "quality": "auto:best"},
+            ],
+            "eager_async": True,
         }
         if self.upload_preset:
             upload_options["upload_preset"] = self.upload_preset
