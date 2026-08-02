@@ -26,7 +26,7 @@ export function StoreFooter() {
   const currentYear = 2026
 
   return (
-    <footer className="border-t bg-muted/20 w-full mt-auto relative overflow-hidden">
+    <footer className="border-t bg-muted/20 w-full mt-auto relative overflow-hidden pb-14 md:pb-0">
       {/* Decorative gradient overlay */}
       <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
 

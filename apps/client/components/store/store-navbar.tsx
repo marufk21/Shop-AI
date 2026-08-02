@@ -32,9 +32,10 @@ export function StoreNavbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Always render theme toggle to prevent CLS — suppress hydration warning
-  // since SSR can't know the user's theme preference.
-  const themeIcon = resolvedTheme === "dark" ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />
+  // Defer rendering the themed icon until after mount — SSR can't know
+  // the user's theme preference, so the SVG paths always mismatch.
+  const themeIcon =
+    resolvedTheme === "dark" ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />
 
   return (
     <>
@@ -80,7 +81,7 @@ export function StoreNavbar() {
 
           {/* Right: Actions - Desktop */}
           <div className="hidden md:flex flex-1 items-center justify-end gap-1">
-            {/* Theme Switcher — always rendered to prevent CLS */}
+            {/* Theme Switcher — placeholder during SSR to prevent CLS */}
             <Button
               variant="ghost"
               size="icon-sm"
@@ -88,9 +89,8 @@ export function StoreNavbar() {
                 setTheme(resolvedTheme === "dark" ? "light" : "dark")
               }
               className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
-              suppressHydrationWarning
             >
-              <span suppressHydrationWarning>{themeIcon}</span>
+              {mounted ? themeIcon : <span className="size-4.5" />}
               <span className="sr-only">Toggle theme</span>
             </Button>
 
@@ -140,7 +140,7 @@ export function StoreNavbar() {
               <span className="sr-only">View cart</span>
             </Button>
 
-            {/* Theme Switcher — always rendered to prevent CLS */}
+            {/* Theme Switcher — placeholder during SSR to prevent CLS */}
             <Button
               variant="ghost"
               size="icon-sm"
@@ -148,9 +148,8 @@ export function StoreNavbar() {
                 setTheme(resolvedTheme === "dark" ? "light" : "dark")
               }
               className="text-muted-foreground hover:text-foreground rounded-lg"
-              suppressHydrationWarning
             >
-              <span suppressHydrationWarning>{themeIcon}</span>
+              {mounted ? themeIcon : <span className="size-4.5" />}
               <span className="sr-only">Toggle theme</span>
             </Button>
           </div>

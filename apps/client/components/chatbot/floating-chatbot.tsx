@@ -57,7 +57,7 @@ export function FloatingChatbot() {
       <SheetTrigger
         render={
           <button
-            className="fixed right-4 bottom-4 z-50 flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-105 hover:shadow-xl active:scale-95 transition-all duration-200 cursor-pointer"
+            className="fixed right-4 bottom-4 z-50 hidden size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-105 hover:shadow-xl active:scale-95 transition-all duration-200 cursor-pointer md:flex"
             aria-label="Open chat"
           >
             <ChatCircle className="size-4.5" weight="fill" />

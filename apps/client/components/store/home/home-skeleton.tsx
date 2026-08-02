@@ -59,7 +59,7 @@ export function HomeSkeleton() {
             </div>
           </div>
           <div className="scrollbar-hide flex gap-4 overflow-hidden pb-1">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 8 }).map((_, i) => (
               <SkeletonCard key={`deals-${i}`} />
             ))}
           </div>
@@ -82,7 +82,7 @@ export function HomeSkeleton() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeaderSkeleton />
           <div className="scrollbar-hide flex gap-4 overflow-hidden pb-1">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 10 }).map((_, i) => (
               <SkeletonCard key={`picks-${i}`} />
             ))}
           </div>
@@ -94,7 +94,7 @@ export function HomeSkeleton() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeaderSkeleton />
           <div className="scrollbar-hide flex gap-4 overflow-hidden pb-1">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 10 }).map((_, i) => (
               <SkeletonCard key={`launched-${i}`} />
             ))}
           </div>

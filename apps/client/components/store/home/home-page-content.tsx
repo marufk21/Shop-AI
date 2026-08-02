@@ -30,7 +30,7 @@ function RecentlyViewedSkeleton() {
           <div className="h-6 w-36 rounded-lg bg-muted" />
         </div>
         <div className="scrollbar-hide flex gap-4 overflow-hidden pb-2">
-          {Array.from({ length: 3 }).map((_, i) => (
+          {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
               className="w-44 sm:w-52 lg:w-56 shrink-0 rounded-xl border border-border/50 bg-card"

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import {
   House,
   MagnifyingGlass,
-  User,
+  ChatCircle,
   ShoppingCart,
 } from "@phosphor-icons/react"
 import { useCart } from "@/components/store/cart-provider"
@@ -15,6 +15,11 @@ import { cn } from "@workspace/ui/lib/utils"
 export function MobileBottomBar() {
   const pathname = usePathname()
   const { itemCount, openCart } = useCart()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const links = [
     {
@@ -41,10 +46,17 @@ export function MobileBottomBar() {
       },
     },
     {
-      href: "/store",
-      label: "Account",
-      icon: User,
+      href: "#",
+      label: "Chat",
+      icon: ChatCircle,
       active: false,
+      onClick: (e: React.MouseEvent) => {
+        e.preventDefault()
+        const trigger = document.querySelector<HTMLButtonElement>(
+          '[aria-label="Open chat"]'
+        )
+        trigger?.click()
+      },
     },
   ]
 
@@ -67,7 +79,7 @@ export function MobileBottomBar() {
             >
               <span className="relative">
                 <Icon className="size-5" weight={link.active ? "fill" : "regular"} />
-                {"badge" in link && link.badge != null && link.badge > 0 && (
+                {mounted && "badge" in link && link.badge != null && link.badge > 0 && (
                   <span className="absolute -top-1.5 -right-2.5 flex size-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
                     {(link.badge ?? 0) > 9 ? "9+" : (link.badge ?? 0)}
                   </span>
