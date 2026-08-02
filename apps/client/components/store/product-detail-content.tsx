@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import {
@@ -122,12 +123,14 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           transition={{ duration: 0.4 }}
           className="self-start lg:sticky lg:top-28"
         >
-          <div className="h-[320px] overflow-hidden rounded-2xl border border-border/40 bg-white sm:aspect-square sm:h-auto">
+          <div className="relative h-[320px] overflow-hidden rounded-2xl border border-border/40 bg-white sm:aspect-square sm:h-auto">
             {product.image_url ? (
-              <img
-                src={getProductImageUrl(product.image_url, "detail")}
+              <Image
+                src={getProductImageUrl(product.image_url, "detail")!}
                 alt={product.name}
-                className="h-full w-full object-contain p-6 sm:p-8"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-contain p-6 sm:p-8"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-muted/10">

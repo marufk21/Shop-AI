@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
@@ -48,9 +49,11 @@ export function StoreNavbar() {
               href="/store"
               className="flex items-center gap-2 font-heading text-lg font-bold tracking-tight select-none group shrink-0"
             >
-              <img
+              <Image
                 src="/logo.png"
                 alt="ShopAI Logo"
+                width={32}
+                height={32}
                 className="size-8 rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <span className="bg-linear-to-r from-foreground to-foreground/80 bg-clip-text hidden lg:inline">

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Heart, ShoppingBag, Plus, Star, Sparkle } from "@phosphor-icons/react"
@@ -70,11 +71,12 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Image */}
           <div className="relative aspect-square w-full overflow-hidden bg-white">
             {product.image_url ? (
-              <img
-                src={getProductImageUrl(product.image_url, "thumbnail")}
+              <Image
+                src={getProductImageUrl(product.image_url, "thumbnail")!}
                 alt={product.name}
-                className="absolute inset-0 h-full w-full object-contain p-3 transition-transform duration-500 sm:p-5 md:group-hover/card:scale-110"
-                loading="lazy"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                className="object-contain p-3 transition-transform duration-500 sm:p-5 md:group-hover/card:scale-110"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-muted/10">

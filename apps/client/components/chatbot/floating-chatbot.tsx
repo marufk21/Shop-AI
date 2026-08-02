@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import Image from "next/image"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { ScrollArea } from "@workspace/ui/components/scroll-area"
 import {
@@ -73,7 +74,7 @@ export function FloatingChatbot() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="relative">
-                <img src="/logo.png" alt="ShopAI" className="size-8 rounded-lg object-cover" />
+                <Image src="/logo.png" alt="ShopAI" width={32} height={32} className="size-8 rounded-lg object-cover" />
                 <span className="absolute -right-0.5 -bottom-0.5 flex size-2 rounded-full bg-foreground ring-[1.5px] ring-background" />
               </div>
               <div>
@@ -101,7 +102,7 @@ export function FloatingChatbot() {
               {messages.length === 0 && (
                 <div className="flex flex-col items-center pt-8 pb-4">
                   {/* Welcome icon */}
-                  <img src="/logo.png" alt="ShopAI" className="size-12 rounded-2xl object-cover mb-3" />
+                  <Image src="/logo.png" alt="ShopAI" width={48} height={48} className="size-12 rounded-2xl object-cover mb-3" />
                   <p className="text-sm font-semibold text-foreground">
                     How can I help?
                   </p>
@@ -137,7 +138,7 @@ export function FloatingChatbot() {
                   >
                     {/* Avatar */}
                     {isBot ? (
-                      <img src="/logo.png" alt="ShopAI" className="size-6 rounded-md object-cover mt-0.5 shrink-0" />
+                      <Image src="/logo.png" alt="ShopAI" width={24} height={24} className="size-6 rounded-md object-cover mt-0.5 shrink-0" />
                     ) : (
                       <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground mt-0.5">
                         <User className="size-3" weight="bold" />

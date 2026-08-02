@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
@@ -115,10 +116,12 @@ export function HeroCarousel() {
 
                 {/* Right side image with gradient mask */}
                 <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 md:block">
-                  <img
+                  <Image
                     src={slide.image}
                     alt={slide.title}
-                    className="h-full w-full object-cover object-center"
+                    fill
+                    sizes="50vw"
+                    className="object-cover object-center"
                     style={{
                       maskImage:
                         "linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 30%, rgba(0, 0, 0, 0.8) 70%, black 90%)",

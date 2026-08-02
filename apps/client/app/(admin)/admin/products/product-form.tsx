@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useRef, useState } from "react"
+import Image from "next/image"
 import { ImageSquare, Sparkle, Upload, X } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -272,11 +273,14 @@ export function ProductForm({
 
           <div className="grid gap-4 py-4">
             {imageToShow ? (
-              <div className="relative overflow-hidden rounded-xl border">
-                <img
+              <div className="relative h-48 overflow-hidden rounded-xl border">
+                <Image
                   src={imageToShow}
                   alt="Preview"
-                  className="h-48 w-full object-contain bg-muted"
+                  fill
+                  sizes="500px"
+                  unoptimized={imageToShow.startsWith("blob:")}
+                  className="object-contain bg-muted"
                 />
                 <Button
                   type="button"

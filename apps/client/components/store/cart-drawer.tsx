@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -161,13 +162,15 @@ export function CartDrawer() {
                       <Link
                         href={`/store/${item.slug}`}
                         onClick={closeCart}
-                        className="size-20 shrink-0 overflow-hidden rounded-xl bg-muted border"
+                        className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted border"
                       >
                         {item.imageUrl ? (
-                          <img
-                            src={getProductImageUrl(item.imageUrl, "thumbnail")}
+                          <Image
+                            src={getProductImageUrl(item.imageUrl, "thumbnail")!}
                             alt={item.name}
-                            className="h-full w-full object-cover"
+                            fill
+                            sizes="80px"
+                            className="object-cover"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center">

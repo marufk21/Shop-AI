@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import Image from "next/image"
 import {
   DotsThree,
   Eye,
@@ -124,9 +125,11 @@ export default function ProductsPage() {
       cell: (row: Product) => (
         <div className="flex items-center gap-3">
           {row.image_url ? (
-            <img
-              src={getProductImageUrl(row.image_url, "thumbnail")}
+            <Image
+              src={getProductImageUrl(row.image_url, "thumbnail")!}
               alt={row.name}
+              width={32}
+              height={32}
               className="size-8 rounded-lg object-cover"
             />
           ) : (
