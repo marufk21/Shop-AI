@@ -18,8 +18,8 @@ async def generate_embeddings(texts: list[str]) -> list[list[float]]:
 
 @lru_cache(maxsize=256)
 def _cached_embed_query(text: str) -> str:
-    """Cache wrapper: returns a hash -> embedding mapping is done in the async layer.
-    We use a two-level cache: the salt is the text itself (deterministic model output)."""
+    """Cache wrapper: hash -> embedding mapping is done in the async layer.
+    Two-level cache: the salt is the text itself (deterministic model output)."""
     return text  # lru_cache on text keeps the cache key; actual embedding lookup below
 
 

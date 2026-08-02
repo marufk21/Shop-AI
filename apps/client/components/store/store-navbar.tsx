@@ -32,6 +32,10 @@ export function StoreNavbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  // Always render theme toggle to prevent CLS — suppress hydration warning
+  // since SSR can't know the user's theme preference.
+  const themeIcon = resolvedTheme === "dark" ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />
+
   return (
     <>
       <header
@@ -76,24 +80,19 @@ export function StoreNavbar() {
 
           {/* Right: Actions - Desktop */}
           <div className="hidden md:flex flex-1 items-center justify-end gap-1">
-            {/* Theme Switcher */}
-            {mounted && (
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() =>
-                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                }
-                className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
-              >
-                {resolvedTheme === "dark" ? (
-                  <Sun className="size-4.5" />
-                ) : (
-                  <Moon className="size-4.5" />
-                )}
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            )}
+            {/* Theme Switcher — always rendered to prevent CLS */}
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
+              className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+              suppressHydrationWarning
+            >
+              <span suppressHydrationWarning>{themeIcon}</span>
+              <span className="sr-only">Toggle theme</span>
+            </Button>
 
             {/* Cart Button */}
             <Button
@@ -141,23 +140,19 @@ export function StoreNavbar() {
               <span className="sr-only">View cart</span>
             </Button>
 
-            {mounted && (
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() =>
-                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                }
-                className="text-muted-foreground hover:text-foreground rounded-lg"
-              >
-                {resolvedTheme === "dark" ? (
-                  <Sun className="size-4.5" />
-                ) : (
-                  <Moon className="size-4.5" />
-                )}
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            )}
+            {/* Theme Switcher — always rendered to prevent CLS */}
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
+              className="text-muted-foreground hover:text-foreground rounded-lg"
+              suppressHydrationWarning
+            >
+              <span suppressHydrationWarning>{themeIcon}</span>
+              <span className="sr-only">Toggle theme</span>
+            </Button>
           </div>
         </div>
       </header>

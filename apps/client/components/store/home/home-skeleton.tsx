@@ -5,7 +5,7 @@ function SkeletonCard() {
   return (
     <div className="w-44 sm:w-52 lg:w-56 shrink-0 rounded-xl border border-border/50 bg-card p-0">
       <div className="aspect-square w-full rounded-t-xl bg-muted" />
-      <div className="space-y-2 p-2.5 sm:p-3">
+      <div className="space-y-2 p-3 sm:p-3.5">
         <Skeleton className="h-3 w-16 rounded-md" />
         <Skeleton className="h-4 w-full rounded-md" />
         <div className="flex items-center justify-between pt-1">

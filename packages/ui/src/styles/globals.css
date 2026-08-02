@@ -130,6 +130,7 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 4.5rem;
+    scrollbar-gutter: stable;
     }
   body {
     @apply bg-background text-foreground;

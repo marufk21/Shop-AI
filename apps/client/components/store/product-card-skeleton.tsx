@@ -15,7 +15,7 @@ export function ProductCardSkeleton() {
       </div>
 
       {/* Details Skeletons */}
-      <div className="flex flex-1 flex-col space-y-2.5 p-2.5 sm:space-y-3.5 sm:p-4">
+      <div className="flex flex-1 flex-col space-y-2 p-3 sm:space-y-3 sm:p-3.5">
         {/* Name Title */}
         <Skeleton className="h-4.5 w-3/4 rounded-lg" />
 
