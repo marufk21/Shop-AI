@@ -108,8 +108,6 @@ export function StickyCategoryBar() {
       .slice(0, 8)
   }, [products])
 
-  if (categories.length === 0) return null
-
   const isHome = pathname === "/store"
 
   return (

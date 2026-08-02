@@ -79,7 +79,7 @@ export function HeroCarousel() {
         setApi={setApi}
       >
         <CarouselContent>
-          {SLIDES.map((slide) => (
+          {SLIDES.map((slide, index) => (
             <CarouselItem key={slide.title}>
               <div
                 className={`relative h-[260px] bg-linear-to-br sm:h-[340px] ${slide.gradient}`}
@@ -121,6 +121,7 @@ export function HeroCarousel() {
                     alt={slide.title}
                     fill
                     sizes="50vw"
+                    priority={index === 0}
                     className="object-cover object-center"
                     style={{
                       maskImage:

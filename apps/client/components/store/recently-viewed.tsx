@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { ClockCounterClockwise } from "@phosphor-icons/react"
 import { useRecentlyViewed } from "@/hooks/store/use-recently-viewed"
 import { useStoreProducts } from "@/hooks/store/use-products"
@@ -27,11 +27,9 @@ export function RecentlyViewed() {
   if (recentlyViewedProducts.length === 0) return null
 
   return (
-    <AnimatePresence>
-      <motion.section
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: "auto" }}
-        exit={{ opacity: 0, height: 0 }}
+    <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         className="py-6 sm:py-8"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -68,6 +66,5 @@ export function RecentlyViewed() {
           </div>
         </div>
       </motion.section>
-    </AnimatePresence>
   )
 }
