@@ -88,10 +88,6 @@ function CategoryIcon({ name, className }: { name: string; className?: string })
   return <IconComponent className={className} />
 }
 
-function parseMaster(category: string): string {
-  return category.split(">")[0]?.trim() ?? category
-}
-
 export function StickyCategoryBar() {
   const pathname = usePathname()
   const { data: categories = [] } = useStoreCategories()

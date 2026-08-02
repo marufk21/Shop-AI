@@ -1,4 +1,4 @@
-import { axiosClient, axiosMultipart } from "@/server/axios-client"
+import { apiClient } from "@/server/api-client"
 import type {
   Product,
   ProductCreateInput,
@@ -7,20 +7,13 @@ import type {
 } from "@/types/product"
 
 export async function fetchAdminProducts(params: ProductListParams = {}) {
-  const { data } = await axiosClient.get<ProductListResponse>(
-    "/api/v1/products",
-    { params }
-  )
-
-  return data
+  return apiClient.get<ProductListResponse>("/api/v1/products", {
+    params: params as Record<string, string | number | boolean | undefined>,
+  })
 }
 
 export async function fetchAdminProduct(productId: string) {
-  const { data } = await axiosClient.get<Product>(
-    `/api/v1/products/${productId}`
-  )
-
-  return data
+  return apiClient.get<Product>(`/api/v1/products/${productId}`)
 }
 
 export function buildProductFormData(
@@ -40,23 +33,16 @@ export function buildProductFormData(
 }
 
 export async function createAdminProduct(payload: FormData) {
-  const client = axiosMultipart()
-  const { data } = await client.post<Product>("/api/v1/products", payload)
-  return data
+  return apiClient.post<Product>("/api/v1/products", payload)
 }
 
 export async function updateAdminProduct(
   productId: string,
   payload: FormData
 ) {
-  const client = axiosMultipart()
-  const { data } = await client.put<Product>(
-    `/api/v1/products/${productId}`,
-    payload
-  )
-  return data
+  return apiClient.put<Product>(`/api/v1/products/${productId}`, payload)
 }
 
 export async function deleteAdminProduct(productId: string) {
-  await axiosClient.delete(`/api/v1/products/${productId}`)
+  await apiClient.delete(`/api/v1/products/${productId}`)
 }

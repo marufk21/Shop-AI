@@ -1,5 +1,6 @@
 {
   "ui": "tui",
+  "globalEnv": ["ANALYZE"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

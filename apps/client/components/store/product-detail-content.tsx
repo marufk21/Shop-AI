@@ -20,14 +20,6 @@ import {
   Check,
 } from "@phosphor-icons/react"
 import { Badge } from "@workspace/ui/components/badge"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@workspace/ui/components/breadcrumb"
 import { Button } from "@workspace/ui/components/button"
 import { Separator } from "@workspace/ui/components/separator"
 
@@ -213,6 +205,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
               <div className="flex items-center gap-0.5 rounded-md border bg-muted/30 p-0.5">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  aria-label="Decrease quantity"
                   className="flex size-9 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-background"
                 >
                   <Minus className="size-3.5" />
@@ -225,6 +218,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                     setQuantity((q) => Math.min(product.inventory, q + 1))
                   }
                   disabled={quantity >= product.inventory}
+                  aria-label="Increase quantity"
                   className="flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-background disabled:opacity-40"
                 >
                   <Plus className="size-3.5" />
@@ -246,6 +240,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                 variant="outline"
                 size="icon-lg"
                 onClick={() => setIsWishlisted((prev) => !prev)}
+                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                 className="h-12 w-12 shrink-0 cursor-pointer rounded-lg"
               >
                 <Heart

@@ -10,7 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@workspace/ui/components/breadcrumb"
-import { CommandMenu } from "@/components/shared/command-menu"
+import { CommandMenu } from "@/components/shared/command-menu-loader"
 
 type BreadcrumbSegment = {
   label: string
@@ -25,7 +25,7 @@ export function AppHeader({ breadcrumbs }: AppHeaderProps) {
   return (
     <header className="flex h-12 shrink-0 items-center gap-2 border-b">
       <div className="flex items-center gap-2 px-3">
-        <SidebarTrigger />
+        <SidebarTrigger aria-label="Toggle sidebar" />
         <Separator orientation="vertical" className="mr-1 h-4" />
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumb>

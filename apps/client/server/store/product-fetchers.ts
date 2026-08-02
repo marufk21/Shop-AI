@@ -1,4 +1,4 @@
-import { axiosClient } from "@/server/axios-client"
+import { apiClient } from "@/server/api-client"
 import type {
   Product,
   ProductListParams,
@@ -15,24 +15,17 @@ interface CategoryListResponse {
 }
 
 export async function fetchStoreProducts(params: ProductListParams = {}) {
-  const { data } = await axiosClient.get<ProductListResponse>(
-    "/api/v1/store/products",
-    { params }
-  )
-
-  return data
+  return apiClient.get<ProductListResponse>("/api/v1/store/products", {
+    params: params as Record<string, string | number | boolean | undefined>,
+  })
 }
 
 export async function fetchStoreProduct(slug: string) {
-  const { data } = await axiosClient.get<Product>(
-    `/api/v1/store/products/${slug}`
-  )
-
-  return data
+  return apiClient.get<Product>(`/api/v1/store/products/${slug}`)
 }
 
 export async function fetchStoreCategories() {
-  const { data } = await axiosClient.get<CategoryListResponse>(
+  const data = await apiClient.get<CategoryListResponse>(
     "/api/v1/store/categories"
   )
 

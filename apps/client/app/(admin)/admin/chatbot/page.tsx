@@ -195,6 +195,7 @@ export default function ChatbotPage() {
                   size="icon"
                   onClick={handleSend}
                   disabled={!input.trim() || isStreaming}
+                  aria-label="Send message"
                 >
                   <PaperPlaneTilt className="size-4" />
                 </Button>

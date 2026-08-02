@@ -137,6 +137,7 @@ export function StoreNavbar() {
                   {itemCount > 9 ? "9+" : itemCount}
                 </span>
               )}
+              <span className="sr-only">View cart</span>
             </Button>
 
             {mounted && (

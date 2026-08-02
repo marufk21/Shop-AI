@@ -1,4 +1,4 @@
-import { axiosClient } from "@/server/axios-client"
+import { apiClient } from "@/server/api-client"
 
 interface ImproveRequest {
   text: string
@@ -13,7 +13,7 @@ export async function fetchImprovedText(
   text: string,
   field: "name" | "description"
 ): Promise<string> {
-  const { data } = await axiosClient.post<ImproveResponse>(
+  const data = await apiClient.post<ImproveResponse>(
     "/api/v1/ai/improve",
     { text, field } satisfies ImproveRequest
   )

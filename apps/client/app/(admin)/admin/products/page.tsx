@@ -32,7 +32,7 @@ import {
 } from "@/hooks/admin/use-products"
 import type { Product, ProductStatus } from "@/types/product"
 
-import { ProductForm, type ProductFormData } from "./product-form"
+import { ProductForm, type ProductFormData } from "./product-form-loader"
 
 const statusVariant: Record<
   ProductStatus,
@@ -270,6 +270,7 @@ export default function ProductsPage() {
               {search && (
                 <button
                   onClick={() => setSearch("")}
+                  aria-label="Clear search"
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
                   <X className="size-3" />
@@ -350,7 +351,7 @@ export default function ProductsPage() {
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button variant="ghost" size="icon-xs">
+                <Button variant="ghost" size="icon-xs" aria-label="Product actions">
                   <DotsThree className="size-4" />
                 </Button>
               }

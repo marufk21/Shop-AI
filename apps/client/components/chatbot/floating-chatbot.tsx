@@ -58,6 +58,7 @@ export function FloatingChatbot() {
         render={
           <button
             className="fixed right-4 bottom-4 z-50 flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-105 hover:shadow-xl active:scale-95 transition-all duration-200 cursor-pointer"
+            aria-label="Open chat"
           >
             <ChatCircle className="size-4.5" weight="fill" />
           </button>
@@ -88,6 +89,7 @@ export function FloatingChatbot() {
             </div>
             <button
               onClick={() => setOpen(false)}
+              aria-label="Close chat"
               className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
             >
               <X className="size-3.5" />
@@ -226,17 +228,18 @@ export function FloatingChatbot() {
                   }
                 }}
                 rows={1}
-                className="min-h-0 flex-1 resize-none border-0 bg-transparent text-[13px] shadow-none ring-0 focus-visible:ring-0 py-1.5 px-2 placeholder:text-muted-foreground/40"
+                className="min-h-0 flex-1 resize-none border-0 bg-transparent text-[13px] shadow-none ring-0 focus-visible:ring-0 py-1.5 px-2 placeholder:text-muted-foreground/60"
               />
               <button
                 onClick={() => handleSend()}
                 disabled={!input.trim() || isStreaming}
+                aria-label="Send message"
                 className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all duration-150 hover:opacity-90 disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
               >
                 <PaperPlaneTilt className="size-3.5" weight="fill" />
               </button>
             </div>
-            <p className="text-center text-[9px] text-muted-foreground/40 mt-1.5 font-medium">
+            <p className="text-center text-[9px] text-muted-foreground/65 mt-1.5 font-medium">
               Powered by ShopAI · May produce inaccurate info
             </p>
           </div>

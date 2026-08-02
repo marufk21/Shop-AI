@@ -5,18 +5,12 @@ import { motion } from "framer-motion"
 import { useStoreProducts } from "@/hooks/store/use-products"
 import { ProductCard } from "@/components/store/product-card"
 
-function parseMasterCategory(category: string): string {
-  const parts = category.split(">").map((s) => s.trim())
-  return parts[0] ?? category
-}
-
 interface RelatedProductsProps {
   category: string
   currentSlug: string
 }
 
 export function RelatedProducts({ category, currentSlug }: RelatedProductsProps) {
-  const masterCategory = parseMasterCategory(category)
   const { data } = useStoreProducts({ category, limit: 24 })
 
   const related = React.useMemo(() => {

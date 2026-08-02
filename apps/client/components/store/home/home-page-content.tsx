@@ -1,12 +1,34 @@
 "use client"
 
 import * as React from "react"
+import dynamic from "next/dynamic"
 import { useStoreProducts } from "@/hooks/store/use-products"
 import { HeroCarousel } from "./hero-carousel"
-import { FlashDealsSection } from "./flash-deals-section"
-import { OfferCardsStrip } from "./offer-cards-strip"
 import { ProductRowSection } from "./product-row-section"
-import { RecentlyViewed } from "@/components/store/recently-viewed"
+
+const FlashDealsSection = dynamic(
+  () =>
+    import("./flash-deals-section").then((mod) => ({
+      default: mod.FlashDealsSection,
+    })),
+  { ssr: false }
+)
+
+const OfferCardsStrip = dynamic(
+  () =>
+    import("./offer-cards-strip").then((mod) => ({
+      default: mod.OfferCardsStrip,
+    })),
+  { ssr: false }
+)
+
+const RecentlyViewed = dynamic(
+  () =>
+    import("@/components/store/recently-viewed").then((mod) => ({
+      default: mod.RecentlyViewed,
+    })),
+  { ssr: false }
+)
 
 export function HomePageContent() {
   const { data } = useStoreProducts({ limit: 10000 })

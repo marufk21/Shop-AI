@@ -50,7 +50,7 @@ export function OfferCardsStrip() {
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Bank Offers
           </p>
-          <span className="text-[10px] text-muted-foreground/60 ml-auto">T&C Apply</span>
+          <span className="text-[10px] text-muted-foreground/75 ml-auto">T&C Apply</span>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

@@ -294,6 +294,7 @@ export function ProductForm({
                   className="absolute top-2 right-2"
                   onClick={removeImage}
                   disabled={isSubmitting}
+                  aria-label="Remove image"
                 >
                   <X className="size-3.5" />
                 </Button>

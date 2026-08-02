@@ -182,6 +182,7 @@ export function DataTable<T extends Record<string, unknown>>({
               size="icon-xs"
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={safePage === 0}
+              aria-label="Previous page"
             >
               <CaretLeft className="size-3.5" />
             </Button>
@@ -227,6 +228,7 @@ export function DataTable<T extends Record<string, unknown>>({
               size="icon-xs"
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={safePage >= totalPages - 1}
+              aria-label="Next page"
             >
               <CaretRight className="size-3.5" />
             </Button>

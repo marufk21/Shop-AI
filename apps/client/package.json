@@ -16,18 +16,17 @@
     "@phosphor-icons/react": "^2.1.10",
     "@tanstack/react-query": "^5.100.14",
     "@workspace/ui": "workspace:*",
-    "axios": "^1.16.1",
     "framer-motion": "^12.40.0",
     "next": "16.1.6",
     "next-themes": "^0.4.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.76.1",
-
     "sonner": "^2.0.7",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.12",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",

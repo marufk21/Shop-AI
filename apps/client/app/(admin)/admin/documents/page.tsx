@@ -253,6 +253,7 @@ export default function DocumentsPage() {
                       size="icon-xs"
                       disabled={deleteMutation.isPending}
                       onClick={() => handleDelete(doc.id)}
+                      aria-label={`Delete ${doc.name}`}
                     >
                       <Trash className="size-3.5 text-muted-foreground" />
                     </Button>

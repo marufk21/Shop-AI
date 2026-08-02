@@ -1,0 +1,67 @@
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+
+interface RequestOptions {
+  params?: Record<string, string | number | boolean | undefined>
+}
+
+async function handleResponse<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    const body = await response.text()
+    let message: string
+    try {
+      message = (JSON.parse(body) as { detail?: string }).detail ?? body
+    } catch {
+      message = body || response.statusText
+    }
+    throw new Error(message)
+  }
+
+  if (response.status === 204) return undefined as T
+
+  return response.json() as Promise<T>
+}
+
+function buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
+  const url = new URL(path, BASE_URL)
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        url.searchParams.set(key, String(value))
+      }
+    }
+  }
+  return url.toString()
+}
+
+export const apiClient = {
+  async get<T>(path: string, options?: RequestOptions): Promise<T> {
+    const url = buildUrl(path, options?.params)
+    const response = await fetch(url)
+    return handleResponse<T>(response)
+  },
+
+  async post<T>(path: string, body?: unknown): Promise<T> {
+    const response = await fetch(`${BASE_URL}${path}`, {
+      method: "POST",
+      headers: body instanceof FormData ? undefined : { "Content-Type": "application/json" },
+      body: body instanceof FormData ? body : JSON.stringify(body),
+    })
+    return handleResponse<T>(response)
+  },
+
+  async put<T>(path: string, body?: unknown): Promise<T> {
+    const response = await fetch(`${BASE_URL}${path}`, {
+      method: "PUT",
+      headers: body instanceof FormData ? undefined : { "Content-Type": "application/json" },
+      body: body instanceof FormData ? body : JSON.stringify(body),
+    })
+    return handleResponse<T>(response)
+  },
+
+  async delete<T = void>(path: string): Promise<T> {
+    const response = await fetch(`${BASE_URL}${path}`, {
+      method: "DELETE",
+    })
+    return handleResponse<T>(response)
+  },
+}

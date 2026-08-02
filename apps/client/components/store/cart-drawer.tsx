@@ -88,6 +88,7 @@ export function CartDrawer() {
                 variant="ghost"
                 size="icon-sm"
                 onClick={closeCart}
+                aria-label="Close cart"
                 className="rounded-lg text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <X className="size-4.5" />
