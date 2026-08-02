@@ -12,8 +12,3 @@ class SourceCitation(BaseModel):
     document_name: str
     excerpt: str
     relevance_score: float | None = None
-
-
-class ChatResponse(BaseModel):
-    answer: str
-    sources: list[SourceCitation]

@@ -4,11 +4,31 @@ import * as React from "react"
 import dynamic from "next/dynamic"
 import { useStoreProducts } from "@/hooks/store/use-products"
 import { HeroCarousel } from "./hero-carousel"
-import { ProductRowSection } from "./product-row-section"
-import { HomeSkeleton } from "./home-skeleton"
-
 import { FlashDealsSection } from "./flash-deals-section"
 import { OfferCardsStrip } from "./offer-cards-strip"
+import { BrandMarquee } from "./brand-marquee"
+import { ProductRowSection } from "./product-row-section"
+import { PromoBanners } from "./promo-banners"
+import { HomeSkeleton } from "./home-skeleton"
+import type { Product } from "@/types/product"
+
+function shuffleSlice(
+  products: Product[],
+  start: number,
+  count: number
+): Product[] {
+  const shuffled = [...products]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = shuffled[i]
+    if (!temp) continue
+    const other = shuffled[j]
+    if (!other) continue
+    shuffled[i] = other
+    shuffled[j] = temp
+  }
+  return shuffled.slice(start, start + count)
+}
 
 const RecentlyViewed = dynamic(
   () =>
@@ -53,26 +73,22 @@ function RecentlyViewedSkeleton() {
 }
 
 export function HomePageContent() {
-  const { data, isLoading } = useStoreProducts({ limit: 24 })
-  const products = React.useMemo(() => data?.items ?? [], [data?.items])
+  const { data, isLoading } = useStoreProducts({ limit: 50 })
+  const products = React.useMemo(
+    () => (data?.items ?? []).filter((p) => p.status === "active"),
+    [data?.items]
+  )
 
   const newArrivals = React.useMemo(() => {
-    return [...products]
-      .sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      )
-      .slice(0, 10)
+    return shuffleSlice(products, 0, 10)
   }, [products])
 
   const featured = React.useMemo(() => {
-    return products.filter((p) => p.status === "active").slice(0, 10)
+    return shuffleSlice(products, 10, 10)
   }, [products])
 
   const deals = React.useMemo(() => {
-    return [...products]
-      .sort((a, b) => a.slug.localeCompare(b.slug))
-      .slice(0, 8)
+    return shuffleSlice(products, 20, 8)
   }, [products])
 
   if (isLoading) {
@@ -83,9 +99,11 @@ export function HomePageContent() {
     <div className="w-full">
       <HeroCarousel />
       <FlashDealsSection products={deals} />
-      <OfferCardsStrip />
+      <BrandMarquee />
       <ProductRowSection title="Top Picks for You" products={featured} />
+      <PromoBanners />
       <ProductRowSection title="Just Launched" products={newArrivals} />
+      <OfferCardsStrip />
       <RecentlyViewed />
     </div>
   )

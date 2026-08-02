@@ -25,6 +25,7 @@ import {
 } from "@phosphor-icons/react"
 
 import { useChat } from "@/hooks/admin/use-chat"
+import { MarkdownRenderer } from "@/components/shared/markdown-renderer"
 
 export default function ChatbotPage() {
   const { messages, isStreaming, sendMessage, clearMessages } = useChat()
@@ -137,8 +138,8 @@ export default function ChatbotPage() {
                               : "bg-primary text-primary-foreground"
                           }`}
                         >
-                          <div className="leading-relaxed whitespace-pre-wrap">
-                            {msg.content}
+                          <div className="leading-relaxed">
+                            <MarkdownRenderer content={msg.content} />
                             {msg.role === "assistant" && isStreaming && (
                               <span className="ml-0.5 inline-block size-1.5 animate-pulse rounded-full bg-current align-middle" />
                             )}

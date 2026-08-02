@@ -1,5 +1,5 @@
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { Lightning } from "@phosphor-icons/react"
+import { Lightning, Storefront } from "@phosphor-icons/react"
 
 function SkeletonCard() {
   return (
@@ -32,7 +32,7 @@ function SectionHeaderSkeleton() {
 export function HomeSkeleton() {
   return (
     <div className="w-full">
-      {/* Hero carousel is static — it always renders, so we show a simplified hero skeleton */}
+      {/* Hero carousel skeleton */}
       <section className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6">
         <div className="relative h-[260px] w-full overflow-hidden rounded-xl bg-muted/40 sm:h-[340px]">
           <div className="flex h-full flex-col justify-end px-6 pb-14 sm:justify-center sm:px-12 sm:pb-0 md:px-16">
@@ -66,12 +66,18 @@ export function HomeSkeleton() {
         </div>
       </section>
 
-      {/* Offer cards strip is static — brief skeleton */}
-      <section className="py-4 sm:py-6">
+      {/* Brand Marquee skeleton */}
+      <section className="py-6 sm:py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={`offer-${i}`} className="h-20 rounded-xl" />
+          <div className="flex items-center gap-2 mb-4">
+            <Storefront className="size-4 text-muted-foreground/40" />
+            <Skeleton className="h-6 w-32 rounded-lg" />
+          </div>
+        </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="flex gap-4 sm:gap-5 overflow-hidden">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Skeleton key={`brand-${i}`} className="min-w-[100px] sm:min-w-[120px] h-12 sm:h-14 rounded-xl shrink-0" />
             ))}
           </div>
         </div>
@@ -89,6 +95,17 @@ export function HomeSkeleton() {
         </div>
       </section>
 
+      {/* Promo Banners skeleton */}
+      <section className="py-6 sm:py-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <Skeleton key={`promo-${i}`} className="h-48 sm:h-56 md:h-72 w-full rounded-xl" />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Just Launched section skeleton */}
       <section className="py-6 sm:py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -96,6 +113,17 @@ export function HomeSkeleton() {
           <div className="scrollbar-hide flex gap-4 overflow-hidden pb-1">
             {Array.from({ length: 10 }).map((_, i) => (
               <SkeletonCard key={`launched-${i}`} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Offer cards strip skeleton */}
+      <section className="py-4 sm:py-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={`offer-${i}`} className="h-20 rounded-xl" />
             ))}
           </div>
         </div>

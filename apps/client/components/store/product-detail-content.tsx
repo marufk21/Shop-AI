@@ -58,7 +58,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="h-[320px] animate-pulse rounded-xl bg-muted sm:aspect-square sm:h-auto" />
+          <div className="h-80 animate-pulse rounded-xl bg-muted sm:aspect-square sm:h-auto" />
           <div className="space-y-4 pt-4">
             <div className="h-4 w-20 animate-pulse rounded-lg bg-muted" />
             <div className="h-8 w-80 animate-pulse rounded-lg bg-muted" />
@@ -115,7 +115,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           transition={{ duration: 0.4 }}
           className="self-start lg:sticky lg:top-28"
         >
-          <div className="relative h-[320px] overflow-hidden rounded-xl border border-border/40 bg-white sm:aspect-square sm:h-auto">
+          <div className="relative h-80 overflow-hidden rounded-xl border border-border/40 bg-white sm:aspect-square sm:h-auto">
             {product.image_url ? (
               <Image
                 src={getProductImageUrl(product.image_url, "detail")!}

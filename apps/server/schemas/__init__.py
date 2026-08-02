@@ -16,7 +16,6 @@ DocumentListResponse = _document_schema.DocumentListResponse
 
 _chat_schema = import_module("schemas.chat_schema")
 ChatRequest = _chat_schema.ChatRequest
-ChatResponse = _chat_schema.ChatResponse
 SourceCitation = _chat_schema.SourceCitation
 
 __all__ = [
@@ -30,6 +29,5 @@ __all__ = [
     "DocumentResponse",
     "DocumentListResponse",
     "ChatRequest",
-    "ChatResponse",
     "SourceCitation",
 ]

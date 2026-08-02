@@ -53,7 +53,7 @@ export function OfferCardsStrip() {
           <span className="text-[10px] text-muted-foreground/75 ml-auto">T&C Apply</span>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {OFFERS.map((offer, i) => {
             const Icon = offer.icon
             return (

@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
+import { useLenis } from "lenis/react"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { ScrollArea } from "@workspace/ui/components/scroll-area"
 import {
   Sheet,
   SheetContent,
@@ -23,6 +23,7 @@ import {
 } from "@phosphor-icons/react"
 
 import { useChat } from "@/hooks/admin/use-chat"
+import { MarkdownRenderer } from "@/components/shared/markdown-renderer"
 
 const quickReplies = [
   { icon: Truck, label: "Shipping", prompt: "What's your shipping policy?" },
@@ -35,14 +36,28 @@ export function FloatingChatbot() {
   const { messages, isStreaming, sendMessage } = useChat()
   const [input, setInput] = useState("")
   const [open, setOpen] = useState(false)
-  const scrollViewportRef = useRef<HTMLDivElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (scrollViewportRef.current) {
-      scrollViewportRef.current.scrollTop =
-        scrollViewportRef.current.scrollHeight
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  const lenis = useLenis()
+
+  // Lock background scroll when chatbot is open (Lenis + native fallback)
+  useEffect(() => {
+    if (open) {
+      lenis?.stop()
+      document.body.style.overflow = "hidden"
+    } else {
+      lenis?.start()
+      document.body.style.overflow = ""
+    }
+    return () => {
+      lenis?.start()
+      document.body.style.overflow = ""
+    }
+  }, [open, lenis])
 
   const handleSend = (text?: string) => {
     const msg = text ?? input
@@ -98,9 +113,8 @@ export function FloatingChatbot() {
         </div>
 
         {/* ── Messages area ── */}
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <ScrollArea className="min-h-0 flex-1 overflow-hidden" viewportRef={scrollViewportRef}>
-            <div className="space-y-3 px-4 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
+          <div className="space-y-3">
               {messages.length === 0 && (
                 <div className="flex flex-col items-center pt-8 pb-4">
                   {/* Welcome icon */}
@@ -156,8 +170,8 @@ export function FloatingChatbot() {
                             : "rounded-tr-sm bg-primary text-primary-foreground"
                         }`}
                       >
-                        <div className="whitespace-pre-wrap wrap-break-word">
-                          {msg.content}
+                        <div className="wrap-break-word text-[13px] leading-relaxed">
+                          <MarkdownRenderer content={msg.content} />
                           {isLastBot && isStreaming && (
                             <span className="ml-1 inline-flex gap-0.5 align-middle">
                               <span className="size-1 rounded-full bg-current animate-bounce [animation-delay:0ms]" />
@@ -212,7 +226,8 @@ export function FloatingChatbot() {
                 </div>
               )}
             </div>
-          </ScrollArea>
+            <div ref={messagesEndRef} />
+          </div>
 
           {/* ── Input area ── */}
           <div className="shrink-0 border-t px-3 py-2.5">
@@ -243,7 +258,6 @@ export function FloatingChatbot() {
               Powered by ShopAI · May produce inaccurate info
             </p>
           </div>
-        </div>
       </SheetContent>
     </Sheet>
   )

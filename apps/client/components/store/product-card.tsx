@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Heart, ShoppingBag, Plus } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
@@ -17,9 +17,14 @@ interface ProductCardProps {
 }
 
 export const ProductCard = React.memo(function ProductCard({ product }: ProductCardProps) {
+  const router = useRouter()
   const { addItem } = useCartDispatch()
   const [isWishlisted, setIsWishlisted] = React.useState(false)
   const inStock = product.inventory > 0
+
+  const handleCardClick = () => {
+    router.push(`/store/${product.slug}`)
+  }
 
   const categoryLabel = React.useMemo(() => {
     return product.category.split(">")[0]?.trim() ?? product.category
@@ -51,9 +56,17 @@ export const ProductCard = React.memo(function ProductCard({ product }: ProductC
   }
 
   return (
-    <Link
-      href={`/store/${product.slug}`}
-      className="block w-full h-full group/card"
+    <div
+      onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          handleCardClick()
+        }
+      }}
+      role="link"
+      tabIndex={0}
+      className="block w-full h-full group/card cursor-pointer outline-none"
     >
       <motion.div
         initial={{ opacity: 0, y: 16 }}
@@ -124,6 +137,6 @@ export const ProductCard = React.memo(function ProductCard({ product }: ProductC
           </div>
         </div>
       </motion.div>
-    </Link>
+    </div>
   )
 })

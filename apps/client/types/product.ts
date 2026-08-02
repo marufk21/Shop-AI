@@ -1,6 +1,6 @@
 export type ProductStatus = "active" | "draft" | "archived"
 
-export interface Product extends Record<string, unknown> {
+export interface Product {
   id: string
   name: string
   slug: string
@@ -28,7 +28,6 @@ export interface ProductCreateInput {
   status: ProductStatus
 }
 
-export type ProductUpdateInput = Partial<ProductCreateInput>
 
 export interface ProductListParams {
   status?: ProductStatus

@@ -81,15 +81,3 @@ def _build_description_lines(
         lines.append(f"Perfect for {season} wear.")
 
     return lines
-
-
-def build_short_description(row: CSVRow) -> str:
-    """Build a single-line short description for preview cards."""
-    colour = row.base_colour if row.base_colour else ""
-    usage = row.usage if row.usage else "Versatile"
-    gender = row.gender if row.gender else "Unisex"
-
-    return (
-        f"{usage} {colour} {row.article_type} "
-        f"for {gender} — {row.season} collection."
-    )

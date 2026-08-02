@@ -183,6 +183,15 @@
   }
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -204,6 +213,9 @@
   }
   .animate-slide-in-right {
     animation: slide-in-right 0.2s ease-out both;
+  }
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
   }
   .animation-delay-100 { animation-delay: 100ms; }
   .animation-delay-200 { animation-delay: 200ms; }

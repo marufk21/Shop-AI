@@ -5,7 +5,7 @@ import * as React from "react"
 const STORAGE_KEY = "shopai-recently-viewed"
 const MAX_ITEMS = 8
 
-export interface RecentlyViewedItem {
+interface RecentlyViewedItem {
   slug: string
   name: string
   category: string

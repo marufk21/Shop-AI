@@ -24,7 +24,6 @@ import {
   ChartBar,
   Storefront,
   Gear,
-  Question,
 } from "@phosphor-icons/react"
 
 const adminGroups = [
@@ -53,7 +52,6 @@ const adminGroups = [
 const footerItems = [
   { title: "Storefront", url: "/store", icon: Storefront },
   { title: "Settings", url: "/admin/settings", icon: Gear },
-  { title: "Help", url: "/admin/help", icon: Question },
 ]
 
 export function AppSidebar() {

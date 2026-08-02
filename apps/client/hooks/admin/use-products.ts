@@ -4,7 +4,6 @@ import {
   buildProductFormData,
   createAdminProduct,
   deleteAdminProduct,
-  fetchAdminProduct,
   fetchAdminProducts,
   updateAdminProduct,
 } from "@/server/admin/product-fetchers"
@@ -13,7 +12,7 @@ import type {
   ProductListParams,
 } from "@/types/product"
 
-export const adminProductKeys = {
+const adminProductKeys = {
   all: ["admin-products"] as const,
   lists: () => [...adminProductKeys.all, "list"] as const,
   list: (params: ProductListParams) =>
@@ -26,14 +25,6 @@ export function useAdminProducts(params: ProductListParams = {}) {
   return useQuery({
     queryKey: adminProductKeys.list(params),
     queryFn: () => fetchAdminProducts(params),
-  })
-}
-
-export function useAdminProduct(productId: string) {
-  return useQuery({
-    queryKey: adminProductKeys.detail(productId),
-    queryFn: () => fetchAdminProduct(productId),
-    enabled: productId.length > 0,
   })
 }
 

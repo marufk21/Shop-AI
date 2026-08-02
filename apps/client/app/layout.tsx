@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 // Ignore missing type declarations for this side-effect CSS import
 // @ts-ignore: Cannot find module or type declarations for side-effect import of CSS
 import "@workspace/ui/globals.css"
-import { Providers } from "@/components/providers"
+import { Providers } from "@/lib/providers"
 import { cn } from "@workspace/ui/lib/utils"
 
 export const metadata: Metadata = {

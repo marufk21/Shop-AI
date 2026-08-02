@@ -41,7 +41,7 @@ type DataTableProps<T> = {
   actions?: (row: T) => React.ReactNode
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T>({
   columns,
   data,
   searchPlaceholder = "Search...",
@@ -74,8 +74,8 @@ export function DataTable<T extends Record<string, unknown>>({
 
   const sorted = sortKey
     ? [...data].sort((a, b) => {
-        const aVal = a[sortKey]
-        const bVal = b[sortKey]
+        const aVal = (a as Record<string, unknown>)[sortKey]
+        const bVal = (b as Record<string, unknown>)[sortKey]
         if (aVal == null) return 1
         if (bVal == null) return -1
         const cmp = String(aVal).localeCompare(String(bVal))
@@ -153,13 +153,13 @@ export function DataTable<T extends Record<string, unknown>>({
             ) : (
               paged.map((row, rowIndex) => (
                 <TableRow
-                  key={rowKey ? rowKey(row) : String(row.id ?? rowIndex)}
+                  key={rowKey ? rowKey(row) : String(rowIndex)}
                 >
                   {columns.map((col) => (
                     <TableCell key={col.key} className={col.className}>
                       {col.cell
                         ? col.cell(row)
-                        : (row[col.key] as React.ReactNode)}
+                        : ((row as Record<string, unknown>)[col.key] as React.ReactNode)}
                     </TableCell>
                   ))}
                   {actions && <TableCell>{actions(row)}</TableCell>}
