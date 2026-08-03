@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -18,7 +19,6 @@ import {
 import {
   House,
   SquaresFour,
-  Sparkle,
   ChatCircle,
   Files,
   ChartBar,
@@ -66,8 +66,8 @@ export function AppSidebar() {
               size="lg"
               render={
                 <Link href="/admin">
-                  <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
-                    <Sparkle className="size-4" weight="fill" />
+                  <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0 overflow-hidden">
+                    <Image src="/logo.png" alt="ShopAI" width={28} height={28} className="size-7 object-cover" />
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none overflow-hidden group-data-[collapsible=icon]:hidden">
                     <span className="font-heading font-semibold truncate">ShopAI</span>

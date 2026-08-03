@@ -70,6 +70,7 @@ export function MobileBottomBar() {
               key={link.label}
               href={link.href}
               onClick={link.onClick}
+              aria-current={link.active ? "page" : undefined}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 h-full transition-colors",
                 link.active
@@ -80,7 +81,7 @@ export function MobileBottomBar() {
               <span className="relative">
                 <Icon className="size-5" weight={link.active ? "fill" : "regular"} />
                 {mounted && "badge" in link && link.badge != null && link.badge > 0 && (
-                  <span className="absolute -top-1.5 -right-2.5 flex size-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
+                  <span aria-live="polite" className="absolute -top-1.5 -right-2.5 flex size-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
                     {(link.badge ?? 0) > 9 ? "9+" : (link.badge ?? 0)}
                   </span>
                 )}

@@ -1,102 +1,221 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
-import { Storefront, ShieldCheck, Truck, Users } from "@phosphor-icons/react"
+import Link from "next/link"
+import { motion, useReducedMotion } from "framer-motion"
+import {
+  ShoppingBagOpen,
+  TShirt,
+  DeviceMobile,
+  House,
+  Heartbeat,
+  GameController,
+  BookOpen,
+  Sparkle,
+  ShieldCheck,
+  Truck,
+  Users,
+} from "@phosphor-icons/react"
+import { useStoreCategories } from "@/hooks/store/use-products"
 
-interface Brand {
-  name: string
-  bgClass: string
-  textClass: string
+// ---------------------------------------------------------------------------
+// Icon resolver — matches category names to relevant Phosphor icons
+// ---------------------------------------------------------------------------
+const CATEGORY_ICON_MAP: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
+  electronic: DeviceMobile,
+  gadget: DeviceMobile,
+  phone: DeviceMobile,
+  cloth: TShirt,
+  fashion: TShirt,
+  apparel: TShirt,
+  home: House,
+  furniture: House,
+  decor: House,
+  health: Heartbeat,
+  beauty: Heartbeat,
+  wellness: Heartbeat,
+  gaming: GameController,
+  game: GameController,
+  book: BookOpen,
+  accessor: Sparkle,
+  jewel: Sparkle,
 }
 
-const BRANDS: Brand[] = [
-  { name: "Nike", bgClass: "bg-zinc-900 dark:bg-zinc-100", textClass: "text-zinc-100 dark:text-zinc-900" },
-  { name: "Apple", bgClass: "bg-zinc-800 dark:bg-zinc-200", textClass: "text-zinc-100 dark:text-zinc-900" },
-  { name: "Samsung", bgClass: "bg-blue-600 dark:bg-blue-500", textClass: "text-white" },
-  { name: "Sony", bgClass: "bg-zinc-900 dark:bg-zinc-100", textClass: "text-zinc-100 dark:text-zinc-900" },
-  { name: "Adidas", bgClass: "bg-zinc-100 dark:bg-zinc-800", textClass: "text-zinc-900 dark:text-zinc-100" },
-  { name: "Puma", bgClass: "bg-zinc-800 dark:bg-zinc-200", textClass: "text-zinc-100 dark:text-zinc-900" },
-  { name: "Zara", bgClass: "bg-zinc-900 dark:bg-zinc-100", textClass: "text-zinc-100 dark:text-zinc-900" },
-  { name: "H&M", bgClass: "bg-red-600 dark:bg-red-500", textClass: "text-white" },
-  { name: "Levi's", bgClass: "bg-blue-700 dark:bg-blue-400", textClass: "text-white dark:text-blue-950" },
-  { name: "Ray-Ban", bgClass: "bg-emerald-700 dark:bg-emerald-600", textClass: "text-white" },
-]
+function resolveIcon(
+  name: string,
+): React.ComponentType<{ className?: string }> {
+  const lower = name.toLowerCase()
+  for (const [key, icon] of Object.entries(CATEGORY_ICON_MAP)) {
+    if (lower.includes(key)) return icon
+  }
+  return ShoppingBagOpen
+}
 
-export function BrandMarquee() {
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+const TRUST_ITEMS = [
+  { icon: ShieldCheck, label: "Authentic Products" },
+  { icon: Truck, label: "Free Shipping" },
+  { icon: Users, label: "50K+ Customers" },
+] as const
+
+const MARQUEE_SPEED_S = 30
+
+// ---------------------------------------------------------------------------
+// Brand card
+// ---------------------------------------------------------------------------
+function BrandCard({ name }: { name: string }) {
+  const Icon = resolveIcon(name)
+
   return (
-    <section className="py-6 sm:py-8">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-center gap-2 mb-4"
-        >
-          <Storefront className="size-4 text-muted-foreground" />
-          <h2 className="font-heading text-xl sm:text-2xl font-bold text-foreground">
-            Top Brands
-          </h2>
-        </motion.div>
-      </div>
+    <Link
+      href={`/store/category/${encodeURIComponent(name.toLowerCase())}`}
+      className="group/card relative flex shrink-0 select-none items-center gap-3 rounded-2xl border border-border/20 bg-card/60 px-5 py-3.5 backdrop-blur-sm transition-all duration-300 ease-out hover:z-10 hover:-translate-y-1 hover:border-border/50 hover:bg-card hover:shadow-lg min-w-37.5 sm:min-w-42.5"
+    >
+      {/* Icon */}
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-muted/50 transition-colors duration-300 group-hover/card:bg-primary/10">
+        <Icon className="size-4.5 text-foreground/55 transition-colors duration-300 group-hover/card:text-primary" />
+      </span>
 
-      {/* Marquee container */}
-      <div className="relative mx-auto max-w-7xl overflow-hidden group/marquee">
-        {/* Left gradient mask */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 sm:w-20 bg-gradient-to-r from-background to-transparent" />
-
-        {/* Right gradient mask */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 sm:w-20 bg-gradient-to-l from-background to-transparent" />
-
-        {/* Scrolling track */}
-        <div className="flex animate-marquee gap-4 sm:gap-5 px-4 sm:px-6 group-hover/marquee:[animation-play-state:paused]">
-          {/* First set */}
-          {BRANDS.map((brand) => (
-            <BrandChip key={brand.name} brand={brand} />
-          ))}
-          {/* Duplicate for seamless loop */}
-          {BRANDS.map((brand) => (
-            <BrandChip key={`dup-${brand.name}`} brand={brand} />
-          ))}
-        </div>
-      </div>
-
-      {/* Trust indicators row */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.35, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto max-w-7xl px-4 sm:px-6 mt-5 flex items-center justify-center gap-6 sm:gap-10 flex-wrap"
-      >
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <ShieldCheck className="size-3.5" />
-          <span>Authentic Products</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Truck className="size-3.5" />
-          <span>Free Shipping Over $50</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Users className="size-3.5" />
-          <span>50K+ Happy Customers</span>
-        </div>
-      </motion.div>
-    </section>
+      {/* Label */}
+      <span className="text-sm font-semibold text-foreground/65 transition-colors duration-300 group-hover/card:text-foreground">
+        {name}
+      </span>
+    </Link>
   )
 }
 
-function BrandChip({ brand }: { brand: Brand }) {
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
+export function BrandMarquee() {
+  const { data: categories = [] } = useStoreCategories()
+  const prefersReducedMotion = useReducedMotion()
+
+  const displayCategories = React.useMemo(
+    () => categories.slice(0, 10),
+    [categories],
+  )
+
+  const doubled = React.useMemo(
+    () => [...displayCategories, ...displayCategories],
+    [displayCategories],
+  )
+
+  if (displayCategories.length === 0) return null
+
   return (
-    <div
-      className={`flex shrink-0 items-center justify-center rounded-xl border border-border/40 px-5 py-3 sm:px-6 sm:py-4 min-w-[100px] sm:min-w-[120px] ${brand.bgClass} transition-all duration-300 hover:scale-105 hover:shadow-md`}
+    <section
+      className="relative overflow-hidden py-14 sm:py-20"
+      aria-labelledby="brand-marquee-heading"
     >
-      <span
-        className={`text-xs sm:text-sm font-bold tracking-wide ${brand.textClass}`}
-      >
-        {brand.name}
-      </span>
-    </div>
+      {/* Subtle radial glow behind the section */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 50% at 50% 40%, oklch(0.48 0.2 265 / 0.035), transparent 60%)",
+        }}
+      />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        {/* ---- Header ---- */}
+        <motion.header
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center"
+        >
+          <h2
+            id="brand-marquee-heading"
+            className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
+          >
+            Trusted by Top Brands
+          </h2>
+          <p className="mx-auto mt-2.5 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
+            Premium quality products from the brands you know and love
+          </p>
+        </motion.header>
+
+        {/* ---- Marquee track ---- */}
+        <motion.div
+          initial={prefersReducedMotion ? {} : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="group/marquee relative mt-10 sm:mt-12"
+          role="marquee"
+          aria-label="Featured brands"
+        >
+          {/* Edge fades — mask the cards as they scroll out of view */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 z-10 w-14 bg-linear-to-r from-background to-transparent sm:w-24"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-linear-to-r from-transparent to-background sm:w-24"
+          />
+
+          {/* Overflow container — scrollable fallback when motion is reduced */}
+          <div
+            className={
+              prefersReducedMotion
+                ? "overflow-x-auto scrollbar-hide"
+                : "overflow-hidden"
+            }
+          >
+            <div
+              className="flex gap-4"
+              style={{
+                width: prefersReducedMotion ? "auto" : "max-content",
+                animation: prefersReducedMotion
+                  ? "none"
+                  : `marquee ${MARQUEE_SPEED_S}s linear infinite`,
+              }}
+              onMouseEnter={(e) => {
+                if (prefersReducedMotion) return
+                ;(e.currentTarget as HTMLElement).style.animationPlayState =
+                  "paused"
+              }}
+              onMouseLeave={(e) => {
+                if (prefersReducedMotion) return
+                ;(e.currentTarget as HTMLElement).style.animationPlayState =
+                  "running"
+              }}
+            >
+              {doubled.map(({ name }, i) => (
+                <BrandCard key={`${name}-${i}`} name={name} />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ---- Trust indicators ---- */}
+        <motion.div
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
+        >
+          {TRUST_ITEMS.map(({ icon: Icon, label }) => (
+            <span
+              key={label}
+              className="inline-flex items-center gap-2 rounded-full border border-border/25 bg-card/50 px-4 py-2 text-xs font-medium text-muted-foreground backdrop-blur-sm sm:text-sm"
+            >
+              <Icon className="size-3.5 shrink-0 text-foreground/40 sm:size-4" />
+              {label}
+            </span>
+          ))}
+        </motion.div>
+      </div>
+    </section>
   )
 }

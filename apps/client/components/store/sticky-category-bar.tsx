@@ -102,10 +102,11 @@ export function StickyCategoryBar() {
         {/* For You */}
         <Link
           href="/store"
+          aria-current={isHome ? "page" : undefined}
           className={cn(
             "flex h-8 shrink-0 items-center gap-1.5 rounded-lg transition-colors",
             isHome
-              ? "bg-primary px-3 font-semibold text-primary-foreground"
+              ? "bg-primary/10 px-3 font-semibold text-primary"
               : "px-[11px] font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground sm:px-3"
           )}
         >
@@ -125,10 +126,11 @@ export function StickyCategoryBar() {
             <Link
               key={name}
               href={`/store/category/${catSlug}`}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "flex h-8 shrink-0 items-center gap-1.5 rounded-lg transition-colors",
                 isActive
-                  ? "bg-primary px-3 font-semibold text-primary-foreground"
+                  ? "bg-primary/10 px-3 font-semibold text-primary"
                   : "px-[11px] font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground sm:px-3"
               )}
             >

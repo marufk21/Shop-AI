@@ -3,24 +3,24 @@ import Link from "next/link"
 
 export function StoreFooter() {
   const shopLinks = [
-    { href: "#products", label: "All Products" },
-    { href: "#products", label: "New Arrivals" },
-    { href: "#products", label: "Electronics" },
-    { href: "#products", label: "Home & Office" },
+    { href: "/store/products", label: "All Products" },
+    { href: "/store/products", label: "New Arrivals" },
+    { href: "/store/category/electronics", label: "Electronics" },
+    { href: "/store/category/home%20%26%20living", label: "Home & Living" },
   ]
 
   const companyLinks = [
     { href: "/store", label: "About Us" },
     { href: "/store", label: "Careers" },
-    { href: "/store", label: "Store Blog" },
-    { href: "/store", label: "Press Kit" },
+    { href: "/store", label: "Blog" },
+    { href: "/store", label: "Press" },
   ]
 
   const supportLinks = [
     { href: "/store", label: "Help Center" },
-    { href: "/store", label: "Shipping Policy" },
+    { href: "/store", label: "Shipping Info" },
     { href: "/store", label: "Returns & Exchanges" },
-    { href: "/store", label: "Contact Support" },
+    { href: "/store", label: "Contact Us" },
   ]
 
   const currentYear = 2026
@@ -145,6 +145,12 @@ export function StoreFooter() {
             © {currentYear} ShopAI Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
+            <Link
+              href="/sitemap.xml"
+              className="text-[11px] text-muted-foreground hover:text-foreground transition-colors duration-150"
+            >
+              Sitemap
+            </Link>
             <Link
               href="/store"
               className="text-[11px] text-muted-foreground hover:text-foreground transition-colors duration-150"

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { Heart, ShoppingBag, Plus } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
@@ -16,15 +16,12 @@ interface ProductCardProps {
   product: Product
 }
 
-export const ProductCard = React.memo(function ProductCard({ product }: ProductCardProps) {
-  const router = useRouter()
+export const ProductCard = React.memo(function ProductCard({
+  product,
+}: ProductCardProps) {
   const { addItem } = useCartDispatch()
   const [isWishlisted, setIsWishlisted] = React.useState(false)
   const inStock = product.inventory > 0
-
-  const handleCardClick = () => {
-    router.push(`/store/${product.slug}`)
-  }
 
   const categoryLabel = React.useMemo(() => {
     return product.category.split(">")[0]?.trim() ?? product.category
@@ -56,16 +53,8 @@ export const ProductCard = React.memo(function ProductCard({ product }: ProductC
   }
 
   return (
-    <div
-      onClick={handleCardClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault()
-          handleCardClick()
-        }
-      }}
-      role="link"
-      tabIndex={0}
+    <Link
+      href={`/store/${product.slug}`}
       className="block w-full h-full group/card cursor-pointer outline-none"
     >
       <motion.div
@@ -95,7 +84,9 @@ export const ProductCard = React.memo(function ProductCard({ product }: ProductC
           <button
             onClick={handleWishlistToggle}
             className="absolute right-2.5 top-2.5 z-10 flex size-7 items-center justify-center rounded-full border border-border/50 bg-white text-muted-foreground shadow-sm transition-all hover:border-rose-200 hover:bg-rose-50 hover:text-rose-500 sm:right-3 sm:top-3 sm:size-8"
-            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            aria-label={
+              isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+            }
           >
             <Heart
               className={`size-3.5 transition-colors ${isWishlisted ? "fill-rose-500 text-rose-500" : ""}`}
@@ -137,6 +128,6 @@ export const ProductCard = React.memo(function ProductCard({ product }: ProductC
           </div>
         </div>
       </motion.div>
-    </div>
+    </Link>
   )
 })

@@ -27,6 +27,7 @@ import { useStoreProduct } from "@/hooks/store/use-products"
 import { useRecentlyViewed } from "@/hooks/store/use-recently-viewed"
 import { useCartDispatch } from "@/components/store/cart-provider"
 import { RelatedProducts } from "@/components/store/related-products"
+
 import { getProductImageUrl } from "@/lib/image-url"
 import { toast } from "sonner"
 
@@ -106,8 +107,9 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8">
-      <div className="grid gap-5 lg:grid-cols-2 lg:gap-12">
+    <>
+      <div className="mx-auto max-w-7xl px-4 pt-6 md:pt-8 pb-6 sm:px-6 md:pb-8">
+        <div className="grid gap-5 lg:grid-cols-2 lg:gap-12">
         {/* Left: Image */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -167,13 +169,13 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className="size-4 fill-foreground text-foreground"
-                  weight="fill"
+                  className="size-4 text-muted-foreground/30"
+                  weight="regular"
                 />
               ))}
             </div>
             <span className="text-xs font-medium text-muted-foreground">
-              5.0 (24 reviews)
+              No reviews yet
             </span>
           </div>
 
@@ -374,124 +376,16 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
           )}
 
           {activeTab === "reviews" && (
-            <div className="space-y-5">
-              {/* Rating summary */}
-              <div className="flex items-center gap-6 rounded-xl border border-border/40 bg-card p-6">
-                <div className="shrink-0 text-center">
-                  <p className="text-5xl font-bold tracking-tight text-foreground">
-                    5.0
-                  </p>
-                  <div className="mt-1.5 flex items-center justify-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="size-4 fill-foreground text-foreground"
-                        weight="fill"
-                      />
-                    ))}
-                  </div>
-                  <p className="mt-1.5 text-xs font-medium text-muted-foreground">
-                    24 reviews
-                  </p>
-                </div>
-                <Separator orientation="vertical" className="h-24" />
-                <div className="flex-1 space-y-2">
-                  {[
-                    { stars: 5, pct: 70 },
-                    { stars: 4, pct: 20 },
-                    { stars: 3, pct: 7 },
-                    { stars: 2, pct: 3 },
-                    { stars: 1, pct: 0 },
-                  ].map(({ stars, pct }) => (
-                    <div key={stars} className="flex items-center gap-3">
-                      <span className="w-8 text-right text-xs font-semibold text-muted-foreground">
-                        {stars} ★
-                      </span>
-                      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-foreground"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <span className="w-8 text-right text-xs font-medium text-muted-foreground tabular-nums">
-                        {pct}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-muted ring-1 ring-border/50">
+                <Star className="size-8 text-muted-foreground/30" weight="regular" />
               </div>
-
-              {/* Review cards */}
-              {[
-                {
-                  author: "Alex M.",
-                  rating: 5,
-                  text: "Exceptional quality. Exceeded expectations and fast delivery.",
-                  date: "2 weeks ago",
-                  verified: true,
-                },
-                {
-                  author: "Jamie L.",
-                  rating: 5,
-                  text: "Beautiful design and build quality. Will purchase again.",
-                  date: "1 month ago",
-                  verified: true,
-                },
-              ].map((review) => (
-                <div
-                  key={review.author}
-                  className="rounded-xl border border-border/40 bg-card p-5"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary ring-2 ring-primary/20">
-                      <span className="text-sm font-bold">
-                        {review.author.charAt(0)}
-                      </span>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex min-w-0 items-center gap-2">
-                          <span className="text-sm font-semibold text-foreground">
-                            {review.author}
-                          </span>
-                          {review.verified && (
-                            <Badge
-                              variant="secondary"
-                              className="h-4 shrink-0 rounded-full bg-muted px-1.5 text-[9px] font-semibold text-foreground"
-                            >
-                              Verified
-                            </Badge>
-                          )}
-                        </div>
-                        <span className="shrink-0 text-xs text-muted-foreground">
-                          {review.date}
-                        </span>
-                      </div>
-                      <div className="mt-1 flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`size-3 ${i < review.rating ? "fill-foreground text-foreground" : "text-muted-foreground/25"}`}
-                            weight={i < review.rating ? "fill" : "regular"}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                    {review.text}
-                  </p>
-                </div>
-              ))}
-
-              {/* Write a review */}
-              <Button
-                variant="outline"
-                size="lg"
-                className="h-11 w-full cursor-pointer rounded-lg text-sm font-semibold"
-              >
-                Write a Review
-              </Button>
+              <h4 className="font-heading text-base font-semibold text-foreground">
+                No reviews yet
+              </h4>
+              <p className="mt-1 max-w-xs text-xs text-muted-foreground">
+                Be the first to review this product and share your experience with other shoppers.
+              </p>
             </div>
           )}
         </div>
@@ -500,5 +394,6 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
       {/* Related Products */}
       <RelatedProducts category={product.category} currentSlug={product.slug} />
     </div>
+    </>
   )
 }

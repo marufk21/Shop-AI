@@ -69,15 +69,26 @@ export function StoreNavbar() {
           </div>
 
           {/* Center: Search Bar */}
-          <div className="hidden sm:flex flex-1 max-w-xl items-center gap-2.5 rounded-lg border border-border/60 bg-muted/30 px-4 h-9">
+          <form
+            action="/store/products"
+            role="search"
+            className="hidden sm:flex flex-1 max-w-xl items-center gap-2.5 rounded-lg border border-border/60 bg-muted/30 px-4 h-9 transition-colors focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30"
+          >
+            <label htmlFor="store-search" className="sr-only">
+              Search products
+            </label>
             <MagnifyingGlass className="size-4 text-muted-foreground shrink-0" />
-            <span className="text-xs text-muted-foreground/70 flex-1 truncate">
-              Search for products, brands and more...
-            </span>
+            <input
+              id="store-search"
+              name="q"
+              type="search"
+              placeholder="Search for products, brands and more..."
+              className="flex-1 bg-transparent text-xs text-foreground placeholder:text-muted-foreground/70 outline-none"
+            />
             <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded-lg border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
               <span className="text-[9px]">⌘</span>K
             </kbd>
-          </div>
+          </form>
 
           {/* Right: Actions - Desktop */}
           <div className="hidden md:flex flex-1 items-center justify-end gap-1">
@@ -103,7 +114,7 @@ export function StoreNavbar() {
             >
               <ShoppingCart className="size-4.5" />
               {mounted && itemCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
+                <span aria-live="polite" className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
                   {itemCount > 9 ? "9+" : itemCount}
                 </span>
               )}
@@ -133,7 +144,7 @@ export function StoreNavbar() {
             >
               <ShoppingCart className="size-4.5" />
               {mounted && itemCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
+                <span aria-live="polite" className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
                   {itemCount > 9 ? "9+" : itemCount}
                 </span>
               )}

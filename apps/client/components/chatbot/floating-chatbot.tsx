@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
 import { useLenis } from "lenis/react"
 import { Textarea } from "@workspace/ui/components/textarea"
 import {
@@ -68,14 +67,14 @@ export function FloatingChatbot() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {/* ── Floating trigger — compact pill ── */}
+      {/* ── Floating trigger ── */}
       <SheetTrigger
         render={
           <button
-            className="fixed right-4 bottom-4 z-50 hidden size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-105 hover:shadow-xl active:scale-95 transition-all duration-200 cursor-pointer md:flex"
+            className="fixed right-4 bottom-4 z-50 hidden size-10 items-center justify-center rounded-full border border-border/60 bg-background/90 backdrop-blur-md shadow-sm text-foreground hover:shadow-md hover:border-border hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer md:flex"
             aria-label="Open chat"
           >
-            <ChatCircle className="size-4.5" weight="fill" />
+            <ChatCircle className="size-4.5" weight="duotone" />
           </button>
         }
       />
@@ -89,17 +88,19 @@ export function FloatingChatbot() {
         <div className="shrink-0 border-b px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="relative">
-                <Image src="/logo.png" alt="ShopAI" width={32} height={32} className="size-8 rounded-md object-cover" />
-                <span className="absolute -right-0.5 -bottom-0.5 flex size-2 rounded-full bg-foreground ring-[1.5px] ring-background" />
+              <div className="relative flex size-9 items-center justify-center rounded-xl bg-primary/10">
+                <Sparkle className="size-4.5 text-primary" weight="fill" />
               </div>
               <div>
-                <p className="text-[13px] font-semibold tracking-tight leading-tight">
-                  ShopAI Assistant
+                <p className="text-[13px] font-heading font-semibold tracking-tight leading-tight">
+                  Assistant
                 </p>
-                <p className="text-[10px] text-muted-foreground font-medium leading-tight">
-                  Online · Replies instantly
-                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="flex size-1.5 rounded-full bg-emerald-500" />
+                  <p className="text-[10px] text-muted-foreground font-medium leading-tight">
+                    Ready to help
+                  </p>
+                </div>
               </div>
             </div>
             <button
@@ -116,18 +117,20 @@ export function FloatingChatbot() {
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
           <div className="space-y-3">
               {messages.length === 0 && (
-                <div className="flex flex-col items-center pt-8 pb-4">
+                <div className="flex flex-col items-center pt-6 pb-4">
                   {/* Welcome icon */}
-                  <Image src="/logo.png" alt="ShopAI" width={48} height={48} className="size-12 rounded-lg object-cover mb-3" />
-                  <p className="text-sm font-semibold text-foreground">
+                  <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/20">
+                    <Sparkle className="size-5 text-primary" weight="fill" />
+                  </div>
+                  <p className="font-heading text-sm font-semibold text-foreground">
                     How can I help?
                   </p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5 text-center max-w-55 leading-relaxed">
-                    Ask me about products, orders, shipping, or anything else.
+                  <p className="text-[11px] text-muted-foreground mt-1 text-center max-w-55 leading-relaxed">
+                    Ask about products, shipping, returns, or anything else.
                   </p>
 
                   {/* Quick reply grid */}
-                  <div className="grid grid-cols-2 gap-1.5 mt-5 w-full max-w-70">
+                  <div className="grid grid-cols-2 gap-1.5 mt-4 w-full max-w-70">
                     {quickReplies.map(({ icon: Icon, label, prompt }) => (
                       <button
                         key={label}
@@ -154,7 +157,9 @@ export function FloatingChatbot() {
                   >
                     {/* Avatar */}
                     {isBot ? (
-                      <Image src="/logo.png" alt="ShopAI" width={24} height={24} className="size-6 rounded-md object-cover mt-0.5 shrink-0" />
+                      <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary mt-0.5">
+                        <Sparkle className="size-3.5" weight="fill" />
+                      </div>
                     ) : (
                       <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground mt-0.5">
                         <User className="size-3" weight="bold" />

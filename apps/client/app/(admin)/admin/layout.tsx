@@ -12,7 +12,7 @@ export default function AdminLayout({
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <main className="flex flex-1 flex-col gap-6 p-6 min-w-0">{children}</main>
+        <main id="main-content" className="flex flex-1 flex-col gap-6 p-6 min-w-0">{children}</main>
       </SidebarInset>
     </>
   )

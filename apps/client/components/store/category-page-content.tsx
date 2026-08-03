@@ -21,6 +21,7 @@ import {
 
 import { useStoreProducts } from "@/hooks/store/use-products"
 import { ProductCard } from "@/components/store/product-card"
+
 import { ProductCardSkeleton } from "@/components/store/product-card-skeleton"
 import { staggerContainer, fadeInUp } from "@/lib/animation-variants"
 
@@ -72,8 +73,10 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
   const totalPages = Math.max(1, Math.ceil((data?.total ?? 0) / ITEMS_PER_PAGE))
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 md:py-10">
-      {/* Toolbar */}
+    <>
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-6 md:pt-8 pb-6 md:pb-10">
+        {/* Toolbar */}
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="grid grid-cols-[minmax(0,1fr)_8.5rem] items-center gap-2 sm:flex">
           <div className="relative min-w-0">
@@ -218,5 +221,6 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
         </p>
       )}
     </div>
+    </>
   )
 }
