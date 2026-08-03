@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import {
   MagnifyingGlass,
   SlidersHorizontal,
@@ -82,6 +82,8 @@ function buildCategoryTree(products: { category: string }[]): {
 }
 
 export function ProductsSection() {
+  const prefersReducedMotion = useReducedMotion()
+
   const [search, setSearch] = React.useState("")
   const [masterCategory, setMasterCategory] = React.useState("All")
   const [articleType, setArticleType] = React.useState("All")
@@ -162,7 +164,7 @@ export function ProductsSection() {
 
         {/* ── Header ── */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -233,7 +235,7 @@ export function ProductsSection() {
           {/* ── Secondary row: Article types (visible when a master is selected) ── */}
           {masterCategory !== "All" && visibleArticleTypes.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
+              initial={prefersReducedMotion ? {} : { opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -374,7 +376,7 @@ export function ProductsSection() {
 
           {!isLoading && !isError && filteredAndSortedProducts.length === 0 && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
+              initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               className="flex flex-col items-center justify-center text-center py-24 border border-dashed border-border/60 rounded-xl"
             >
@@ -405,7 +407,7 @@ export function ProductsSection() {
             <motion.div
               key={masterCategory + articleType + sort + currentPage}
               variants={staggerContainer}
-              initial="hidden"
+              initial={prefersReducedMotion ? "visible" : "hidden"}
               animate="visible"
               className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4"
             >

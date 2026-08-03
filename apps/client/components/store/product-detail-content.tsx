@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import {
   Heart,
   Minus,
@@ -41,6 +41,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
   const [isWishlisted, setIsWishlisted] = useState(false)
   const { data: product, isError, isLoading } = useStoreProduct(slug)
   const { addItem } = useCartDispatch()
+  const prefersReducedMotion = useReducedMotion()
   const { addItem: addRecentlyViewed } = useRecentlyViewed()
 
   useEffect(() => {
@@ -112,7 +113,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
         <div className="grid gap-5 lg:grid-cols-2 lg:gap-12">
         {/* Left: Image */}
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
           className="self-start lg:sticky lg:top-28"
@@ -136,7 +137,7 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
 
         {/* Right: Details */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >

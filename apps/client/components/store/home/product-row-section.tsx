@@ -1,5 +1,6 @@
 import * as React from "react"
 import Link from "next/link"
+import { motion, useReducedMotion } from "framer-motion"
 import { ArrowRight } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/store/product-card"
 import type { Product } from "@/types/product"
@@ -19,12 +20,20 @@ export function ProductRowSection({
   className,
   href = "/store/products",
 }: ProductRowSectionProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   if (products.length === 0) return null
 
   return (
     <section className={cn("py-6 sm:py-8", className)}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex items-end justify-between mb-4">
+        <motion.div
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-end justify-between mb-4"
+        >
           <h2 className="font-heading text-xl sm:text-2xl font-bold text-foreground">
             {title}
           </h2>
@@ -35,16 +44,24 @@ export function ProductRowSection({
             View All
             <ArrowRight className="size-3.5" />
           </Link>
-        </div>
+        </motion.div>
 
         <div className="scrollbar-hide flex gap-4 overflow-x-auto overflow-y-hidden pb-1">
-          {products.slice(0, 10).map((product) => (
-            <div
+          {products.slice(0, 10).map((product, i) => (
+            <motion.div
               key={product.id}
+              initial={prefersReducedMotion ? {} : { opacity: 0, x: 16 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.35,
+                delay: i * 0.04,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="w-44 sm:w-52 lg:w-56 shrink-0"
             >
               <ProductCard product={product} />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -10,11 +10,11 @@ import {
 } from "@workspace/ui/components/sheet"
 import {
   ChatCircle,
-  PaperPlaneTilt,
-  Sparkle,
-  User,
+  ArrowUp,
+  Brain,
+  UserCircle,
   X,
-  FileText,
+  Article,
   Truck,
   Package,
   ArrowBendUpLeft,
@@ -67,14 +67,14 @@ export function FloatingChatbot() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {/* ── Floating trigger ── */}
+      {/* Floating trigger */}
       <SheetTrigger
         render={
           <button
             className="fixed right-4 bottom-4 z-50 hidden size-10 items-center justify-center rounded-full border border-border/60 bg-background/90 backdrop-blur-md shadow-sm text-foreground hover:shadow-md hover:border-border hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer md:flex"
             aria-label="Open chat"
           >
-            <ChatCircle className="size-4.5" weight="duotone" />
+            <ChatCircle className="size-4.5" weight="regular" />
           </button>
         }
       />
@@ -84,12 +84,12 @@ export function FloatingChatbot() {
         showCloseButton={false}
         className="flex w-full max-w-95 flex-col p-0 sm:max-w-95 border-l"
       >
-        {/* ── Header ── */}
+        {/* Header */}
         <div className="shrink-0 border-b px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="relative flex size-9 items-center justify-center rounded-xl bg-primary/10">
-                <Sparkle className="size-4.5 text-primary" weight="fill" />
+              <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10">
+                <Brain className="size-4.5 text-primary" weight="fill" />
               </div>
               <div>
                 <p className="text-[13px] font-heading font-semibold tracking-tight leading-tight">
@@ -113,14 +113,14 @@ export function FloatingChatbot() {
           </div>
         </div>
 
-        {/* ── Messages area ── */}
+        {/* Messages area */}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
           <div className="space-y-3">
               {messages.length === 0 && (
                 <div className="flex flex-col items-center pt-6 pb-4">
                   {/* Welcome icon */}
                   <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/20">
-                    <Sparkle className="size-5 text-primary" weight="fill" />
+                    <Brain className="size-5 text-primary" weight="fill" />
                   </div>
                   <p className="font-heading text-sm font-semibold text-foreground">
                     How can I help?
@@ -129,16 +129,16 @@ export function FloatingChatbot() {
                     Ask about products, shipping, returns, or anything else.
                   </p>
 
-                  {/* Quick reply grid */}
-                  <div className="grid grid-cols-2 gap-1.5 mt-4 w-full max-w-70">
+                  {/* Quick reply chips */}
+                  <div className="flex flex-wrap justify-center gap-1.5 mt-4 max-w-70">
                     {quickReplies.map(({ icon: Icon, label, prompt }) => (
                       <button
                         key={label}
                         onClick={() => handleSend(prompt)}
-                        className="flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-[11px] font-medium text-muted-foreground transition-all duration-150 hover:text-foreground hover:border-foreground/20 hover:bg-muted/30 cursor-pointer text-left"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-background px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-all duration-150 hover:text-foreground hover:border-border hover:bg-muted/30 cursor-pointer"
                       >
-                        <Icon className="size-3.5 shrink-0" />
-                        <span className="truncate">{label}</span>
+                        <Icon className="size-3 shrink-0" />
+                        {label}
                       </button>
                     ))}
                   </div>
@@ -158,11 +158,11 @@ export function FloatingChatbot() {
                     {/* Avatar */}
                     {isBot ? (
                       <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary mt-0.5">
-                        <Sparkle className="size-3.5" weight="fill" />
+                        <Brain className="size-3.5" weight="fill" />
                       </div>
                     ) : (
-                      <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground mt-0.5">
-                        <User className="size-3" weight="bold" />
+                      <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-foreground/70 mt-0.5">
+                        <UserCircle className="size-3.5" weight="fill" />
                       </div>
                     )}
 
@@ -178,10 +178,10 @@ export function FloatingChatbot() {
                         <div className="wrap-break-word text-[13px] leading-relaxed">
                           <MarkdownRenderer content={msg.content} />
                           {isLastBot && isStreaming && (
-                            <span className="ml-1 inline-flex gap-0.5 align-middle">
-                              <span className="size-1 rounded-full bg-current animate-bounce [animation-delay:0ms]" />
-                              <span className="size-1 rounded-full bg-current animate-bounce [animation-delay:150ms]" />
-                              <span className="size-1 rounded-full bg-current animate-bounce [animation-delay:300ms]" />
+                            <span className="ml-1 inline-flex items-center gap-[3px] align-middle">
+                              <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse" />
+                              <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse [animation-delay:150ms]" />
+                              <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse [animation-delay:300ms]" />
                             </span>
                           )}
                         </div>
@@ -196,7 +196,7 @@ export function FloatingChatbot() {
                               className="flex items-start gap-2 rounded-lg border bg-background px-2.5 py-1.5 text-[10px]"
                             >
                               <div className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded bg-muted">
-                                <FileText className="size-2.5 text-muted-foreground" />
+                                <Article className="size-2.5 text-muted-foreground" />
                               </div>
                               <div className="min-w-0">
                                 <p className="font-semibold text-foreground truncate">
@@ -215,17 +215,17 @@ export function FloatingChatbot() {
                 )
               })}
 
-              {/* Streaming indicator when no content yet */}
+              {/* Streaming placeholder */}
               {isStreaming && messages.length > 0 && messages[messages.length - 1]?.role !== "assistant" && (
                 <div className="flex gap-2">
-                  <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground mt-0.5">
-                    <Sparkle className="size-3" weight="fill" />
+                  <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary mt-0.5">
+                    <Brain className="size-3" weight="fill" />
                   </div>
                   <div className="rounded-xl rounded-tl-sm bg-muted/50 px-3 py-2.5">
-                    <span className="inline-flex gap-0.5">
-                      <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:0ms]" />
-                      <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:150ms]" />
-                      <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:300ms]" />
+                    <span className="inline-flex items-center gap-[3px]">
+                      <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse" />
+                      <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse [animation-delay:150ms]" />
+                      <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse [animation-delay:300ms]" />
                     </span>
                   </div>
                 </div>
@@ -234,7 +234,7 @@ export function FloatingChatbot() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* ── Input area ── */}
+          {/* Input area */}
           <div className="shrink-0 border-t px-3 py-2.5">
             <div className="flex items-end gap-1.5 rounded-xl border bg-muted/20 p-1 transition-all duration-150 focus-within:border-foreground/20 focus-within:bg-background">
               <Textarea
@@ -256,7 +256,7 @@ export function FloatingChatbot() {
                 aria-label="Send message"
                 className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all duration-150 hover:opacity-90 disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
               >
-                <PaperPlaneTilt className="size-3.5" weight="fill" />
+                <ArrowUp className="size-3.5" weight="bold" />
               </button>
             </div>
             <p className="text-center text-[9px] text-muted-foreground/65 mt-1.5 font-medium">

@@ -15,6 +15,7 @@ AI-first e-commerce SaaS platform with an admin dashboard, AI-powered product to
 | **Forms** | react-hook-form + Zod |
 | **Charts** | Recharts |
 | **Motion** | Framer Motion |
+| **Smooth Scroll** | Lenis |
 | **Icons** | Phosphor Icons |
 | **Backend** | FastAPI (Python 3.12) |
 | **ORM** | SQLAlchemy 2.0 (async) |
@@ -44,6 +45,12 @@ pnpm install
 
 ### Environment Variables
 
+**Client** — create `apps/client/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL="http://localhost:8000/api/v1"
+```
+
 **Server** — create `apps/server/.env`:
 
 ```env
@@ -56,6 +63,8 @@ CLOUDINARY_API_KEY="your-api-key"
 CLOUDINARY_UPLOAD_PRESET="your-upload-preset"
 CLOUDINARY_API_SECRET="your-api-secret"
 FRONTEND_URL="http://localhost:3000"   # optional — for CORS
+KEEP_ALIVE_URLS="http://localhost:8000/health"   # optional — comma-separated URLs to keep warm
+KEEP_ALIVE_INTERVAL_SECONDS="600"      # optional — ping interval (default: 600)
 ```
 
 ### Develop
@@ -81,16 +90,24 @@ shopai/
 │   ├── client/                       Next.js 16 (Turbopack)
 │   │   ├── app/
 │   │   │   ├── (admin)/admin/        dashboard, products, documents, chatbot, analytics, settings
-│   │   │   └── (store)/store/        storefront home, product listing/detail, category, cart
+│   │   │   ├── (store)/store/        storefront home, product detail, category, all products, cart
+│   │   │   ├── error.tsx             route-level error boundary
+│   │   │   ├── global-error.tsx      global error fallback
+│   │   │   ├── not-found.tsx         404 page
+│   │   │   ├── robots.ts             SEO robots.txt
+│   │   │   └── sitemap.ts            SEO sitemap
 │   │   ├── components/
 │   │   │   ├── store/                storefront: cart, navbar, product cards, home sections, footer
+│   │   │   ├── store/home/           hero, categories, deals, offers, promos, brand marquee
 │   │   │   ├── layout/               app-sidebar, app-header
-│   │   │   ├── shared/               data-table, command-menu, theme-provider
+│   │   │   ├── shared/               data-table, command-menu, theme-provider, back-to-top, cookie-consent,
+│   │   │   │                         lenis-provider, markdown-renderer
 │   │   │   └── chatbot/              chatbot-wrapper, floating-chatbot (SSE streaming)
 │   │   ├── hooks/
 │   │   │   ├── admin/                use-products, use-documents, use-chat
 │   │   │   └── store/                use-products, use-recently-viewed
 │   │   ├── server/                   axios client + API fetchers
+│   │   ├── lib/                      image-url, format-currency, query-client, animation-variants
 │   │   └── types/                    product.ts, document.ts, chat.ts
 │   │
 │   └── server/                       FastAPI
@@ -101,7 +118,9 @@ shopai/
 │       ├── models/                   SQLAlchemy + pgvector models
 │       ├── schemas/                  Pydantic request/response schemas
 │       ├── core/                     config, database, DI
-│       └── utils/                    ai_generator, chunker, cloudinary, document_parser, embedding, slug
+│       ├── utils/                    ai_generator, chunker, cloudinary, document_parser, embedding, slug, keep_alive
+│       └── scripts/                  price_generator, image_handler, batch_importer, csv_reader,
+│                                     import_fashion_dataset, description_builder, report
 │
 └── packages/
     ├── ui/                           shadcn/ui components (33 components on @base-ui/react)
@@ -126,22 +145,30 @@ shopai/
 
 ### Storefront
 
-- **Home page** — hero carousel, category icon grid, flash deals section, offer cards strip, promo banner, newsletter signup, product rows by category
-- **Product listing** — grid layout with category filter
-- **Product detail** — image gallery, quantity selector, add-to-cart, wishlist, trust badges, bank offers, tabbed specs/reviews
+- **Home page** — hero carousel, category icon grid, flash deals section, offer cards strip, promo banners, brand marquee, product rows by category
+- **Product listing** — grid layout with category filter, loading skeletons
+- **Product detail** — image gallery, quantity selector, add-to-cart, tabbed specs/reviews, trust badges, bank offers
 - **Category pages** — slug-based routing with filtered product grids
 - **All products** — paginated browse-all page
-- **Cart** — slide-out drawer with quantity controls, persistent across sessions
+- **Cart** — slide-out drawer with quantity controls, persistent across sessions (lazy loaded)
 - **Quick view** — modal product preview from listing cards
 - **Recently viewed** — localStorage-backed product history
 - **Related products** — category-based suggestions on detail pages
 - **Responsive** — announcement bar, sticky category bar, mobile bottom nav bar, store footer with search
+- **UX polish** — cookie consent banner, back-to-top button, Lenis smooth scrolling, loading skeletons
 
 ### AI Pipeline
 
 1. **Document ingestion:** Upload → parse text → split into chunks → generate embeddings (Gemini `embedding-001`) → store in pgvector
 2. **RAG chat:** Embed user query → cosine similarity search (`<=>`) → build context from matching chunks → stream Gemini 2.5 Flash response via SSE (`text/event-stream`) → emit `token` events, `sources` citations, then `[DONE]`
 3. **Text improvement:** AI-powered product name and description enhancer (Gemini 2.5 Flash)
+
+### Platform
+
+- **SEO** — dynamic `robots.ts` + `sitemap.ts`, semantic HTML
+- **Error handling** — global error boundary (`global-error.tsx`), route-level error boundary (`error.tsx`), custom 404 page
+- **Keep-alive** — configurable periodic health-check pings to prevent free-tier hosting spin-down
+- **Data seeding** — scripts for batch importing products, generating prices/descriptions from CSVs
 
 ---
 
@@ -221,6 +248,7 @@ pnpm dlx shadcn@latest add <component> -c packages/ui
 - **Colors:** OKLCH semantic tokens (Taupe/Mira theme), dark mode via `next-themes`
 - **Fonts:** Lora (headings), Raleway (body), Geist Mono (code)
 - **Motion:** Framer Motion for transitions, hovers, streaming, loading states
+- **Smooth scrolling:** Lenis for butter-smooth scroll experience
 - **Layout:** Fixed collapsible sidebar + card-driven responsive grid
 
 ---

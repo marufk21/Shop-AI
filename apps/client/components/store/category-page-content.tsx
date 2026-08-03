@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import {
   ShoppingBag,
   SlidersHorizontal,
@@ -32,6 +32,8 @@ interface CategoryPageContentProps {
 }
 
 export function CategoryPageContent({ categoryName }: CategoryPageContentProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   const [searchInput, setSearchInput] = React.useState("")
   const [search, setSearch] = React.useState("")
   const [sort, setSort] = React.useState("Popular")
@@ -147,7 +149,7 @@ export function CategoryPageContent({ categoryName }: CategoryPageContentProps) 
         {!isLoading && !isError && sortedProducts.length > 0 && (
           <motion.div
             variants={staggerContainer}
-            initial="hidden"
+            initial={prefersReducedMotion ? "visible" : "hidden"}
             animate="visible"
             className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4"
           >

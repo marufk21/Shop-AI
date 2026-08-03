@@ -3,7 +3,7 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import {
   X,
   ShoppingBag,
@@ -29,6 +29,8 @@ export function CartDrawer() {
     updateQuantity,
   } = useCart()
 
+  const prefersReducedMotion = useReducedMotion()
+
   const shippingThreshold = 50
   const standardShippingFee = 5.99
   const shippingProgress = Math.min((subtotal / shippingThreshold) * 100, 100)
@@ -53,7 +55,7 @@ export function CartDrawer() {
         <>
           {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
@@ -63,7 +65,7 @@ export function CartDrawer() {
 
           {/* Drawer */}
           <motion.div
-            initial={{ x: "100%" }}
+            initial={prefersReducedMotion ? {} : { x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
@@ -117,7 +119,7 @@ export function CartDrawer() {
                   <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                     <motion.div
                       className="h-full rounded-full bg-primary"
-                      initial={{ width: 0 }}
+                      initial={prefersReducedMotion ? {} : { width: 0 }}
                       animate={{ width: `${shippingProgress}%` }}
                       transition={{ duration: 0.5, ease: "easeOut" }}
                     />
@@ -154,9 +156,9 @@ export function CartDrawer() {
                     <motion.div
                       key={item.productId}
                       layout
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: 30 }}
+                      exit={{ opacity: 0, y: 10 }}
                       className="flex gap-4 rounded-xl border bg-card p-3"
                     >
                       {/* Product image */}

@@ -10,7 +10,7 @@ AI-first e-commerce SaaS with admin dashboard, AI product generator, RAG chatbot
 
 ## Project State
 
-**Done:** Next.js 16 scaffold, TypeScript strict, Tailwind v4, shadcn/ui (taupe/Mira theme, OKLCH tokens), `next-themes` dark mode (toggle: `d`), fonts (Lora headings, Raleway body, Geist Mono code), `cn()` utility, admin product CRUD with Cloudinary image upload, store product listing/detail/category pages, store home page (hero carousel, category icon grid, flash deals, offer cards, promo banner, newsletter), cart drawer with persistent state, product quick view, recently viewed, related products, responsive store layout (announcement bar, sticky category bar, mobile bottom nav, store footer), RAG chatbot with SSE streaming + source citations, AI product name/description improver, document upload with parsing/chunking/embedding pipeline, admin analytics page, admin settings page, backend admin/store separation (routes + controllers), Neon PostgreSQL + pgvector connected.
+**Done:** Next.js 16 scaffold, TypeScript strict, Tailwind v4, shadcn/ui (taupe/Mira theme, OKLCH tokens), `next-themes` dark mode (toggle: `d`), fonts (Lora headings, Raleway body, Geist Mono code), `cn()` utility, admin product CRUD with Cloudinary image upload, store product listing/detail/category/all-products pages, store home page (hero carousel, category icon grid, flash deals, offer cards, promo banners, brand marquee), cart drawer with persistent state, product quick view, recently viewed, related products, responsive store layout (announcement bar, sticky category bar, mobile bottom nav, store footer), RAG chatbot with SSE streaming + source citations, AI product name/description improver, document upload with parsing/chunking/embedding pipeline, admin analytics page, admin settings page, backend admin/store separation (routes + controllers), Neon PostgreSQL + pgvector connected, TanStack Query SSR hydration with prefetch + loading skeletons, global error/not-found pages, SEO (robots.txt, sitemap), cookie consent banner, back-to-top button, Lenis smooth scrolling, markdown renderer, animation variants, keep-alive service, data seeding/import scripts.
 
 **Backlog:** Checkout, auth, search, deployment.
 
@@ -51,18 +51,27 @@ shopai/
 │   │   ├── app/
 │   │   │   ├── (admin)/admin/        → dashboard, products, documents, chatbot, analytics, settings
 │   │   │   │   └── products/product-form.tsx  (shared dialog component, not a route)
-│   │   │   └── (store)/store/        → storefront: home, product detail [slug], category [slug], all products
-│   │   │       └── layout.tsx        → store layout (navbar, mobile bottom bar, footer)
+│   │   │   ├── (store)/store/        → storefront: home, product detail [slug], category [slug], all products
+│   │   │   │   ├── layout.tsx        → store layout (navbar, cart, cookie consent, mobile bottom bar, footer)
+│   │   │   │   ├── page.tsx          → home page (SSR with TanStack Query hydration)
+│   │   │   │   └── loading.tsx        → loading skeleton fallback
+│   │   │   ├── layout.tsx            → root layout (fonts, providers, Lenis)
+│   │   │   ├── error.tsx             → route-level error boundary
+│   │   │   ├── global-error.tsx      → global error fallback
+│   │   │   ├── not-found.tsx         → 404 page
+│   │   │   ├── robots.ts             → SEO robots.txt generator
+│   │   │   └── sitemap.ts            → SEO sitemap generator
 │   │   ├── components/
-│   │   │   ├── store/                → storefront UI: cart-provider, cart-drawer, store-navbar, store-footer,
-│   │   │   │     store-search, product-card, product-card-skeleton, product-detail-content,
-│   │   │   │     product-quick-view, related-products, recently-viewed,
+│   │   │   ├── store/                → storefront UI: cart-provider, cart-drawer, cart-drawer-loader,
+│   │   │   │     store-navbar, store-footer, store-search, product-card, product-card-skeleton,
+│   │   │   │     product-detail-content, product-quick-view, related-products, recently-viewed,
 │   │   │   │     sticky-category-bar, mobile-bottom-bar, category-page-content, all-products-content
 │   │   │   ├── store/home/           → home-page-content, home-skeleton, hero-carousel, category-icon-grid,
 │   │   │   │     flash-deals-section, offer-cards-strip, product-row-section, products-section,
-│   │   │   │     promo-banner, newsletter-section
+│   │   │   │     promo-banners, brand-marquee
 │   │   │   ├── layout/               → app-sidebar, app-header
-│   │   │   ├── shared/               → data-table, command-menu, theme-provider
+│   │   │   ├── shared/               → data-table, command-menu, command-menu-loader, theme-provider,
+│   │   │   │     back-to-top, cookie-consent, lenis-provider, markdown-renderer
 │   │   │   ├── chatbot/              → chatbot-wrapper, floating-chatbot (SSE streaming)
 │   │   │   └── providers.tsx         → QueryClient, Theme, Sidebar, Tooltip, Toaster (sonner)
 │   │   ├── hooks/
@@ -70,7 +79,7 @@ shopai/
 │   │   │   └── store/                → use-products, use-recently-viewed
 │   │   ├── server/                   → axios-client + fetchers (admin: products, ai, documents, chat; store: products)
 │   │   ├── types/                    → product.ts, document.ts, chat.ts
-│   │   └── lib/                      → image-url.ts (Cloudinary URL builder)
+│   │   └── lib/                      → image-url.ts, format-currency.ts, query-client.ts, animation-variants.ts
 │   │
 │   └── server/                     → FastAPI app
 │       ├── api/
@@ -84,7 +93,9 @@ shopai/
 │       ├── schemas/                  → product_schema, document_schema, chat_schema, ai_schema
 │       ├── core/                     → config.py (Pydantic Settings), database.py (async SQLAlchemy), dependencies.py (DI)
 │       ├── utils/                    → ai_generator (Gemini 2.5 Flash), chunker, cloudinary, document_parser,
-│       │                               embedding (Gemini embedding-001), slug
+│       │                               embedding (Gemini embedding-001), slug, keep_alive
+│       ├── scripts/                  → price_generator, image_handler, batch_importer, csv_reader,
+│       │                               import_fashion_dataset, description_builder, report
 │       ├── uploads/documents/        → uploaded document files ({uuid}_{filename})
 │       └── main.py                   → app entry, CORS (localhost:3000/3001), lifespan (pgvector ext + create_all)
 
@@ -123,10 +134,13 @@ shopai/
 - **Backend document pipeline:** upload → save file → create DB record → parse text (`document_parser`) → chunk text (`chunker`) → generate embeddings (`embedding`, 768-dim) → store chunks in pgvector → mark status `indexed`.
 - **Backend chat RAG:** embed user query → cosine similarity search via `VectorRepository.search_similar` → build context from matching chunks → stream Gemini 2.5 Flash response via SSE (`text/event-stream`) → emit `token` events, then `sources` citations, then `[DONE]`.
 - **Backend image uploads:** All product images go through `CloudinaryUploader` (wraps `cloudinary` SDK). Uploaded via `asyncio.to_thread` to avoid blocking.
+- **Backend keep-alive:** `KeepAliveService` (in `utils/keep_alive.py`) periodically pings configurable URLs on an interval to prevent free-tier hosting from spinning down. Controlled via `KEEP_ALIVE_URLS` and `KEEP_ALIVE_INTERVAL_SECONDS` env vars. Starts as a background task in the FastAPI lifespan.
 - **Frontend:** server components by default, TanStack Query for all server state (staleTime 30s, retry 1).
 - **Frontend chat streaming:** uses raw `fetch` + SSE parsing (not Axios) — reads `ReadableStream`, splits on `\n\n`, parses `data: ` lines as JSON events.
 - **Frontend store cart:** `CartProvider` wraps the store layout — uses React Context + localStorage persistence. `useCart` hook exposes `addItem`, `removeItem`, `updateQuantity`, `clearCart`, and computed `itemCount`/`total`.
 - **Frontend store navigation:** `StickyCategoryBar` pins below the navbar on scroll; `MobileBottomBar` provides quick access on small screens.
+- **Frontend SSR data fetching:** Store pages use `getQueryClient()` + `prefetchQuery` inside a `try/catch` block, then `dehydrate(queryClient)` + `<HydrationBoundary>` to stream cached data to the client. If prefetch fails (e.g. backend offline), the client fetches on mount. Loading skeletons (`loading.tsx`) provide the Suspense fallback while the page streams.
+- **Frontend lazy loading:** Heavy client components (cart drawer, command menu) are wrapped in loader components (`cart-drawer-loader.tsx`, `command-menu-loader.tsx`) that use `dynamic(() => import(...), { ssr: false })` with a suspense fallback — keeps the initial bundle small and avoids SSR hydration mismatches on client-only code.
 
 ---
 
@@ -278,6 +292,7 @@ Fixed collapsible sidebar (dark, icon + label) + spacious main content area (car
 
 Mobile-first. Sidebar → drawer on mobile. Tables → stacked cards. Analytics → responsive charts.
 
-### Kill Server Command
+### Styling (cont.)
 
-npx kill-port server-name
+- Lenis is used for smooth scrolling — opt-out individual elements with `data-lenis-prevent`.
+- Dark mode is applied via the `d` class on `<html>` (next-themes `attribute="d"`).

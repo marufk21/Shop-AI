@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { useStoreProducts } from "@/hooks/store/use-products"
 import { ProductCard } from "@/components/store/product-card"
 
@@ -11,6 +11,8 @@ interface RelatedProductsProps {
 }
 
 export function RelatedProducts({ category, currentSlug }: RelatedProductsProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   const { data } = useStoreProducts({ category, limit: 24 })
 
   const related = React.useMemo(() => {
@@ -25,7 +27,7 @@ export function RelatedProducts({ category, currentSlug }: RelatedProductsProps)
   return (
     <section className="mt-16">
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -39,7 +41,7 @@ export function RelatedProducts({ category, currentSlug }: RelatedProductsProps)
         {related.map((product, i) => (
           <motion.div
             key={product.id}
-            initial={{ opacity: 0, y: 16 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{

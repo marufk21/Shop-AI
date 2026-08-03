@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { ArrowRight, Cube, Star } from "@phosphor-icons/react"
 
 interface PromoCard {
@@ -66,6 +66,7 @@ function PatternOverlay({ variant }: { variant: "dots" | "lines" }) {
 }
 
 export function PromoBanners() {
+  const prefersReducedMotion = useReducedMotion()
   return (
     <section className="py-8 sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -76,7 +77,7 @@ export function PromoBanners() {
             return (
               <motion.div
                 key={promo.title}
-                initial={{ opacity: 0, y: 24 }}
+                initial={prefersReducedMotion ? {} : { opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{
@@ -87,7 +88,7 @@ export function PromoBanners() {
               >
                 <Link
                   href={promo.href}
-                  className="group/banner relative flex h-44 sm:h-60 md:h-72 flex-col justify-between overflow-hidden rounded-2xl border border-border/50 bg-card p-5 sm:p-7 transition-all duration-400 hover:border-border hover:shadow-lg hover:-translate-y-0.5"
+                  className="group/banner relative flex h-44 sm:h-60 md:h-72 flex-col justify-between overflow-hidden rounded-2xl border border-border/50 bg-card p-5 sm:p-7 transition-all duration-300 hover:border-border hover:shadow-lg hover:-translate-y-0.5"
                 >
                   {/* Texture overlay */}
                   <PatternOverlay variant={promo.pattern} />

@@ -1,11 +1,12 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { useLenis } from "lenis/react"
 import { ArrowUp } from "@phosphor-icons/react"
 
 export function BackToTop() {
+  const prefersReducedMotion = useReducedMotion()
   const [visible, setVisible] = useState(false)
   const lenis = useLenis()
 
@@ -41,7 +42,7 @@ export function BackToTop() {
     <AnimatePresence>
       {visible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.2, ease: "easeOut" }}

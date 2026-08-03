@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { ClockCounterClockwise } from "@phosphor-icons/react"
 import { useRecentlyViewed } from "@/hooks/store/use-recently-viewed"
 import { useStoreProducts } from "@/hooks/store/use-products"
@@ -9,6 +9,8 @@ import { ProductCard } from "@/components/store/product-card"
 import type { Product } from "@/types/product"
 
 export function RecentlyViewed() {
+  const prefersReducedMotion = useReducedMotion()
+
   const { items } = useRecentlyViewed()
   const slugs = React.useMemo(
     () => items.map((item) => item.slug).join(","),
@@ -35,13 +37,13 @@ export function RecentlyViewed() {
 
   return (
     <motion.section
-        initial={{ opacity: 0 }}
+        initial={prefersReducedMotion ? {} : { opacity: 0 }}
         animate={{ opacity: 1 }}
         className="py-6 sm:py-8"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -57,7 +59,7 @@ export function RecentlyViewed() {
             {recentlyViewedProducts.map((product, i) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, x: 20 }}
+                initial={prefersReducedMotion ? {} : { opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{

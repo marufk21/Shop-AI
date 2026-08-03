@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Cookie, X } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
 
 const STORAGE_KEY = "shopai-cookie-consent"
 
 export function CookieConsent() {
+  const prefersReducedMotion = useReducedMotion()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export function CookieConsent() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ y: 24, opacity: 0 }}
+          initial={prefersReducedMotion ? {} : { y: 24, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 24, opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}

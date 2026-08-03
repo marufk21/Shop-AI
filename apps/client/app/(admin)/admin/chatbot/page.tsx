@@ -16,10 +16,9 @@ import { Switch } from "@workspace/ui/components/switch"
 import { Label } from "@workspace/ui/components/label"
 import { Separator } from "@workspace/ui/components/separator"
 import {
-  PaperPlaneTilt,
-  Sparkle,
+  ArrowUp,
   UserCircle,
-  FileText,
+  Article,
   Gear,
   Brain,
 } from "@phosphor-icons/react"
@@ -77,7 +76,7 @@ export default function ChatbotPage() {
         <Card className="flex h-[calc(100vh-9rem)] flex-col overflow-hidden lg:col-span-3">
           <CardHeader className="shrink-0 border-b pb-3">
             <CardTitle className="flex items-center gap-2 text-sm font-medium">
-              <Sparkle className="size-4 text-primary" />
+              <Brain className="size-4 text-primary" />
               Test Conversation
             </CardTitle>
           </CardHeader>
@@ -86,7 +85,7 @@ export default function ChatbotPage() {
               <div className="space-y-4 p-4">
                 {messages.length === 0 ? (
                   <div className="py-16 text-center">
-                    <Sparkle className="mx-auto size-8 text-muted-foreground" />
+                    <Brain className="mx-auto size-8 text-muted-foreground" />
                     <p className="mt-3 text-sm text-muted-foreground">
                       Start a conversation to test the chatbot.
                     </p>
@@ -118,7 +117,7 @@ export default function ChatbotPage() {
                       <Avatar className="size-7 shrink-0">
                         <AvatarFallback className="text-xs">
                           {msg.role === "assistant" ? (
-                            <Sparkle className="size-3" />
+                            <Brain className="size-3" />
                           ) : (
                             <UserCircle className="size-3" />
                           )}
@@ -141,7 +140,11 @@ export default function ChatbotPage() {
                           <div className="leading-relaxed">
                             <MarkdownRenderer content={msg.content} />
                             {msg.role === "assistant" && isStreaming && (
-                              <span className="ml-0.5 inline-block size-1.5 animate-pulse rounded-full bg-current align-middle" />
+                              <span className="ml-1 inline-flex items-center gap-[3px] align-middle">
+                                <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse" />
+                                <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse [animation-delay:150ms]" />
+                                <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse [animation-delay:300ms]" />
+                              </span>
                             )}
                           </div>
                         </div>
@@ -153,7 +156,7 @@ export default function ChatbotPage() {
                                 key={i}
                                 className="flex items-start gap-2 rounded-lg border bg-muted/50 px-3 py-2 text-xs"
                               >
-                                <FileText className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
+                                <Article className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
                                 <div>
                                   <p className="font-medium">
                                     {src.document_name}
@@ -198,7 +201,7 @@ export default function ChatbotPage() {
                   disabled={!input.trim() || isStreaming}
                   aria-label="Send message"
                 >
-                  <PaperPlaneTilt className="size-4" />
+                  <ArrowUp className="size-4" />
                 </Button>
               </div>
             </div>

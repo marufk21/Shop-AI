@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { Lightning } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/store/product-card"
 import type { Product } from "@/types/product"
@@ -27,6 +27,7 @@ function useCountdown() {
 }
 
 export function FlashDealsSection({ products }: { products: Product[] }) {
+  const prefersReducedMotion = useReducedMotion()
   const timeLeft = useCountdown()
 
   if (products.length === 0) return null
@@ -56,7 +57,7 @@ export function FlashDealsSection({ products }: { products: Product[] }) {
           {dealsProducts.map((product, i) => (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, x: 16 }}
+              initial={prefersReducedMotion ? {} : { opacity: 0, x: 16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}

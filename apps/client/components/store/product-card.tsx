@@ -3,7 +3,7 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { Heart, ShoppingBag, Plus } from "@phosphor-icons/react"
 import { Button } from "@workspace/ui/components/button"
 import type { Product } from "@/types/product"
@@ -20,6 +20,7 @@ export const ProductCard = React.memo(function ProductCard({
   product,
 }: ProductCardProps) {
   const { addItem } = useCartDispatch()
+  const prefersReducedMotion = useReducedMotion()
   const [isWishlisted, setIsWishlisted] = React.useState(false)
   const inStock = product.inventory > 0
 
@@ -58,7 +59,7 @@ export const ProductCard = React.memo(function ProductCard({
       className="block w-full h-full group/card cursor-pointer outline-none"
     >
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={prefersReducedMotion ? {} : { opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
