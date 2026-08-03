@@ -58,5 +58,26 @@ class CloudinarySettings(BaseSettings):
     }
 
 
+class KeepAliveSettings(BaseSettings):
+    keep_alive_urls: str = Field(
+        default="",
+        validation_alias="KEEP_ALIVE_URLS",
+        description="Comma-separated list of URLs to periodically ping",
+    )
+    keep_alive_interval_seconds: int = Field(
+        default=600,
+        validation_alias="KEEP_ALIVE_INTERVAL_SECONDS",
+        description="Interval in seconds between keep-alive pings",
+    )
+
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": False,
+        "extra": "ignore",
+    }
+
+
 settings = Settings()  # type: ignore[call-arg]
 cloudinary_settings = CloudinarySettings()  # type: ignore[call-arg]
+keep_alive_settings = KeepAliveSettings()

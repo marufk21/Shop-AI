@@ -15,6 +15,7 @@ from api import (
     upload_routes,
 )
 from core.database import Base, engine
+from utils.keep_alive import start_keep_alive, stop_keep_alive
 
 
 @asynccontextmanager
@@ -22,7 +23,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     async with engine.begin() as conn:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await conn.run_sync(Base.metadata.create_all)
+    start_keep_alive()
     yield
+    await stop_keep_alive()
     await engine.dispose()
 
 
