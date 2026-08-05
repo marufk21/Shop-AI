@@ -1,115 +1,87 @@
+"""Multi-agent chat controller.
+
+Streams responses from a LangGraph multi-agent graph via Server-Sent
+Events (SSE). Each event is a JSON object with a ``type`` field:
+
+- ``agent``  — which specialist is handling the request
+- ``token``  — a streaming text token
+- ``sources`` — RAG source citations (from the support agent)
+- ``[DONE]``  — stream complete
+"""
+
 import json
 from collections.abc import AsyncGenerator
 
 from fastapi.responses import StreamingResponse
-from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
-from pydantic import SecretStr
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.config import settings
-from db.vector_repository import VectorRepository
+from agents.graph import build_agent_graph
+from agents.state import AgentState
 from schemas.chat_schema import ChatRequest, SourceCitation
-from utils.embedding import generate_embedding
 
-SYSTEM_PROMPT = (
-    "You are a helpful AI customer support assistant for ShopAI. "
-    "Answer customer questions based on the provided context from "
-    "store documents (policies, product manuals, FAQs). "
-    "Be concise, friendly, and accurate. If the context doesn't "
-    "contain the answer, say so honestly and suggest contacting "
-    "support. Never make up information that isn't in the provided context.\n\n"
-    "Formatting rules:\n"
-    "- Write in clean, well-structured plain text. Never use Markdown syntax "
-    "like **bold**, *italic*, or `code`.\n"
-    "- Use line breaks to separate paragraphs for readability.\n"
-    "- When listing items, use a dash (-) at the start of each line followed "
-    "by a space. Put each list item on its own line with a blank line before "
-    "and after the list.\n"
-    "- For emphasis, use SHOPAI-style labels like [Important], [Note], or "
-    "[Tip] at the start of a paragraph — never use asterisks or underscores.\n"
-    "- Keep headers or section titles on their own line, followed by a blank "
-    "line before the content."
-)
-
-RAG_SYSTEM_PROMPT = (
-    "You are a helpful AI customer support assistant for ShopAI. "
-    "Use the following context from store documents to answer the "
-    "customer's question. Be concise, friendly, and accurate. "
-    "If the context doesn't contain the answer, say so honestly "
-    "and suggest contacting support. Never make up information "
-    "that isn't in the provided context.\n\n"
-    "Formatting rules:\n"
-    "- Write in clean, well-structured plain text. Never use Markdown syntax "
-    "like **bold**, *italic*, or `code`.\n"
-    "- Use line breaks to separate paragraphs for readability.\n"
-    "- When listing items, use a dash (-) at the start of each line followed "
-    "by a space. Put each list item on its own line with a blank line before "
-    "and after the list.\n"
-    "- For emphasis, use SHOPAI-style labels like [Important], [Note], or "
-    "[Tip] at the start of a paragraph — never use asterisks or underscores.\n"
-    "- Keep headers or section titles on their own line, followed by a blank "
-    "line before the content.\n\n"
-    "Relevant context:\n{context}"
-)
+# Nodes whose tokens should be streamed to the client (skip supervisor)
+_STREAMING_NODES = frozenset({"product", "support"})
 
 
 class ChatController:
-    def __init__(self, vector_repo: VectorRepository):
-        self.vector_repo = vector_repo
+    def __init__(self, db: AsyncSession) -> None:
+        self.db = db
 
     async def stream_response(self, request: ChatRequest) -> StreamingResponse:
         async def event_generator() -> AsyncGenerator[str, None]:
-            sources: list[SourceCitation] = []
-            context = ""
+            graph = build_agent_graph(self.db)
 
-            if request.use_rag:
-                query_embedding = await generate_embedding(request.message)
-                results = await self.vector_repo.search_similar(
-                    query_embedding, request.top_k
-                )
+            # Build conversation messages from request + history
+            messages: list[BaseMessage] = []
+            for msg in request.history:
+                if msg.role == "user":
+                    messages.append(HumanMessage(content=msg.content))
+                else:
+                    messages.append(AIMessage(content=msg.content))
+            messages.append(HumanMessage(content=request.message))
 
-                seen = set()
-                for chunk, doc, score in results:
-                    context += f"--- {doc.name} ---\n{chunk.content}\n\n"
-                    if doc.name not in seen:
-                        sources.append(
-                            SourceCitation(
-                                document_name=doc.name,
-                                excerpt=chunk.content[:200],
-                                relevance_score=round(score, 4),
+            initial_state: AgentState = {
+                "messages": messages,
+                "current_agent": None,
+                "sources": [],
+                "temperature": request.temperature,
+                "use_rag": request.use_rag,
+            }
+
+            collected_sources: list[SourceCitation] = []
+
+            async for stream_mode, data in graph.astream(
+                initial_state,
+                stream_mode=["messages", "updates"],
+            ):
+                if stream_mode == "updates":
+                    node_name = next(iter(data.keys())) if data else None
+                    if node_name:
+                        yield _sse_event("agent", {"agent": node_name})
+
+                    node_update = data.get(node_name, {}) if node_name else {}
+                    if isinstance(node_update, dict) and node_update.get("sources"):
+                        for src in node_update["sources"]:
+                            collected_sources.append(
+                                SourceCitation(**src)
                             )
-                        )
-                        seen.add(doc.name)
 
-            system_content = (
-                RAG_SYSTEM_PROMPT.format(context=context) if context else SYSTEM_PROMPT
-            )
+                elif stream_mode == "messages":
+                    chunk, metadata = data
+                    node = metadata.get("langgraph_node", "")
+                    if node not in _STREAMING_NODES:
+                        continue
 
-            llm = ChatGoogleGenerativeAI(
-                model="gemini-2.5-flash",
-                api_key=SecretStr(settings.gemini_api_key),
-                temperature=request.temperature,
-                streaming=True,
-            )
+                    content = chunk.content
+                    if isinstance(content, str) and content:
+                        yield _sse_event("token", {"content": content})
 
-            messages = [
-                SystemMessage(content=system_content),
-                HumanMessage(content=request.message),
-            ]
-
-            async for token_chunk in llm.astream(messages):
-                token = token_chunk.content
-                if isinstance(token, str) and token:
-                    yield f"data: {json.dumps({'type': 'token', 'content': token})}\n\n"
-
-            if sources:
-                payload = json.dumps(
-                    {
-                        "type": "sources",
-                        "sources": [s.model_dump() for s in sources],
-                    }
+            if collected_sources:
+                yield _sse_event(
+                    "sources",
+                    {"sources": [s.model_dump() for s in collected_sources]},
                 )
-                yield f"data: {payload}\n\n"
 
             yield "data: [DONE]\n\n"
 
@@ -122,3 +94,10 @@ class ChatController:
                 "X-Accel-Buffering": "no",
             },
         )
+
+
+def _sse_event(event_type: str, payload: dict[str, object]) -> str:
+    """Format a single SSE data line."""
+
+    data = json.dumps({"type": event_type, **payload})
+    return f"data: {data}\n\n"

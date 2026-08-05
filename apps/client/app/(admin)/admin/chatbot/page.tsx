@@ -21,13 +21,25 @@ import {
   Article,
   Gear,
   Brain,
+  Storefront,
+  Headset,
+  Cpu,
+  Spinner,
 } from "@phosphor-icons/react"
 
 import { useChat } from "@/hooks/admin/use-chat"
 import { MarkdownRenderer } from "@/components/shared/markdown-renderer"
 
+const AGENT_META: Record<
+  string,
+  { icon: typeof Brain; label: string; color: string }
+> = {
+  product: { icon: Storefront, label: "Product Agent", color: "text-blue-500" },
+  support: { icon: Headset, label: "Support Agent", color: "text-emerald-500" },
+}
+
 export default function ChatbotPage() {
-  const { messages, isStreaming, sendMessage, clearMessages } = useChat()
+  const { messages, isStreaming, sendMessage, clearMessages, activeAgent } = useChat()
   const [input, setInput] = useState("")
   const [ragEnabled, setRagEnabled] = useState(true)
   const [modelTemp, setModelTemp] = useState(0.7)
@@ -55,13 +67,33 @@ export default function ChatbotPage() {
         <div>
           <h1 className="font-heading text-2xl font-semibold">Chatbot</h1>
           <p className="text-sm text-muted-foreground">
-            Test and configure your AI customer support chatbot.
+            Multi-agent system powered by LangGraph.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={clearMessages}>
             Clear Chat
           </Button>
+          {isStreaming && (
+            <Badge variant="secondary" className="gap-1.5">
+              {activeAgent && AGENT_META[activeAgent] ? (
+                <>
+                  {(() => {
+                    const meta = AGENT_META[activeAgent]
+                    return (
+                      <meta.icon className={`size-3 ${meta.color}`} weight="fill" />
+                    )
+                  })()}
+                  {AGENT_META[activeAgent].label}
+                </>
+              ) : (
+                <>
+                  <Spinner className="size-3 animate-spin" />
+                  Routing...
+                </>
+              )}
+            </Badge>
+          )}
           <Badge
             variant={ragEnabled ? "default" : "secondary"}
             className="gap-1.5"
@@ -77,7 +109,11 @@ export default function ChatbotPage() {
           <CardHeader className="shrink-0 border-b pb-3">
             <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Brain className="size-4 text-primary" />
-              Test Conversation
+              Multi-Agent Chat
+              <Badge variant="outline" className="gap-1 text-[10px] px-1.5 py-0 font-normal">
+                <Cpu className="size-2.5" />
+                LangGraph
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex min-h-0 flex-1 flex-col p-0">
@@ -87,13 +123,17 @@ export default function ChatbotPage() {
                   <div className="py-16 text-center">
                     <Brain className="mx-auto size-8 text-muted-foreground" />
                     <p className="mt-3 text-sm text-muted-foreground">
-                      Start a conversation to test the chatbot.
+                      Start a conversation to test the multi-agent chatbot.
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground/70">
+                      A supervisor agent routes queries to the right specialist.
                     </p>
                     <div className="mt-4 flex flex-wrap justify-center gap-2">
                       {[
-                        "What's your shipping policy?",
                         "Recommend some products",
+                        "What's your shipping policy?",
                         "How do I return an item?",
+                        "Show me products under $50",
                       ].map((q) => (
                         <Button
                           key={q}
@@ -107,7 +147,9 @@ export default function ChatbotPage() {
                     </div>
                   </div>
                 ) : (
-                  messages.map((msg) => (
+                  messages.map((msg) => {
+                    const meta = msg.agent ? AGENT_META[msg.agent] : undefined
+                    return (
                     <div
                       key={msg.id}
                       className={`flex gap-3 ${
@@ -117,7 +159,11 @@ export default function ChatbotPage() {
                       <Avatar className="size-7 shrink-0">
                         <AvatarFallback className="text-xs">
                           {msg.role === "assistant" ? (
-                            <Brain className="size-3" />
+                            meta ? (
+                              <meta.icon className={`size-3 ${meta.color}`} weight="fill" />
+                            ) : (
+                              <Brain className="size-3" />
+                            )
                           ) : (
                             <UserCircle className="size-3" />
                           )}
@@ -130,6 +176,16 @@ export default function ChatbotPage() {
                             : "max-w-[80%] flex flex-col items-end space-y-2"
                         }
                       >
+                        {/* Agent badge */}
+                        {msg.role === "assistant" && meta && (
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted/60 w-fit">
+                            <meta.icon className={`size-2.5 ${meta.color}`} weight="fill" />
+                            <span className={`text-[10px] font-semibold ${meta.color}`}>
+                              {meta.label}
+                            </span>
+                          </div>
+                        )}
+
                         <div
                           className={`rounded-xl px-3.5 py-2.5 text-sm ${
                             msg.role === "assistant"
@@ -175,7 +231,8 @@ export default function ChatbotPage() {
                         </span>
                       </div>
                     </div>
-                  ))
+                    )
+                  })
                 )}
               </div>
             </ScrollArea>

@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react"
 
 import { streamChatMessage } from "@/server/admin/chat-fetchers"
-import type { ChatMessage } from "@/types/chat"
+import type { ChatMessage, ChatMessageInput } from "@/types/chat"
 
 type SendOptions = {
   temperature?: number
@@ -12,6 +12,7 @@ type SendOptions = {
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
+  const [activeAgent, setActiveAgent] = useState<string | null>(null)
 
   const sendMessage = useCallback(
     (content: string, options: SendOptions = {}) => {
@@ -34,10 +35,32 @@ export function useChat() {
 
       setMessages((prev) => [...prev, userMsg, assistantMsg])
       setIsStreaming(true)
+      setActiveAgent(null)
+
+      // Build conversation history from existing messages (excluding the
+      // just-added user message and empty assistant placeholder)
+      const history: ChatMessageInput[] = messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      }))
 
       streamChatMessage(
-        { message: content, temperature, use_rag: useRag, top_k: topK },
         {
+          message: content,
+          history,
+          temperature,
+          use_rag: useRag,
+          top_k: topK,
+        },
+        {
+          onAgent: (agent) => {
+            setActiveAgent(agent)
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId ? { ...m, agent } : m
+              )
+            )
+          },
           onToken: (token) => {
             setMessages((prev) =>
               prev.map((m) =>
@@ -56,6 +79,7 @@ export function useChat() {
           },
           onDone: () => {
             setIsStreaming(false)
+            setActiveAgent(null)
           },
           onError: () => {
             setMessages((prev) =>
@@ -66,16 +90,17 @@ export function useChat() {
               )
             )
             setIsStreaming(false)
+            setActiveAgent(null)
           },
         }
       )
     },
-    []
+    [messages]
   )
 
   const clearMessages = useCallback(() => {
     setMessages([])
   }, [])
 
-  return { messages, isStreaming, sendMessage, clearMessages }
+  return { messages, isStreaming, sendMessage, clearMessages, activeAgent }
 }

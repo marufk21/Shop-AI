@@ -16,23 +16,32 @@ import {
   X,
   Article,
   Truck,
-  Package,
   ArrowBendUpLeft,
   Gift,
+  Storefront,
+  Headset,
 } from "@phosphor-icons/react"
 
 import { useChat } from "@/hooks/admin/use-chat"
 import { MarkdownRenderer } from "@/components/shared/markdown-renderer"
 
+const AGENT_META: Record<
+  string,
+  { icon: typeof Brain; label: string; color: string }
+> = {
+  product: { icon: Storefront, label: "Product Agent", color: "text-blue-500" },
+  support: { icon: Headset, label: "Support Agent", color: "text-emerald-500" },
+}
+
 const quickReplies = [
+  { icon: Storefront, label: "Products", prompt: "Show me some products" },
   { icon: Truck, label: "Shipping", prompt: "What's your shipping policy?" },
-  { icon: Package, label: "Track order", prompt: "How do I track my order?" },
   { icon: ArrowBendUpLeft, label: "Returns", prompt: "What's your return policy?" },
   { icon: Gift, label: "Gift wrap", prompt: "Do you offer gift wrapping?" },
 ]
 
 export function FloatingChatbot() {
-  const { messages, isStreaming, sendMessage } = useChat()
+  const { messages, isStreaming, sendMessage, activeAgent } = useChat()
   const [input, setInput] = useState("")
   const [open, setOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -96,9 +105,17 @@ export function FloatingChatbot() {
                   Assistant
                 </p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="flex size-1.5 rounded-full bg-emerald-500" />
-                  <p className="text-[10px] text-muted-foreground font-medium leading-tight">
-                    Ready to help
+                  <span
+                    className={`flex size-1.5 rounded-full ${
+                      isStreaming ? "bg-amber-500 animate-pulse" : "bg-emerald-500"
+                    }`}
+                  />
+                  <p className="text-[10px] text-muted-foreground font-medium leading-tight capitalize">
+                    {isStreaming
+                      ? activeAgent
+                        ? `${activeAgent} agent`
+                        : "Routing..."
+                      : "Ready to help"}
                   </p>
                 </div>
               </div>
@@ -149,6 +166,9 @@ export function FloatingChatbot() {
                 const isBot = msg.role === "assistant"
                 const isLastBot =
                   isBot && messages[messages.length - 1]?.id === msg.id
+                const agentKey =
+                  isLastBot && isStreaming ? activeAgent : msg.agent
+                const meta = agentKey ? AGENT_META[agentKey] : undefined
 
                 return (
                   <div
@@ -158,7 +178,11 @@ export function FloatingChatbot() {
                     {/* Avatar */}
                     {isBot ? (
                       <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary mt-0.5">
-                        <Brain className="size-3.5" weight="fill" />
+                        {meta ? (
+                          <meta.icon className="size-3.5" weight="fill" />
+                        ) : (
+                          <Brain className="size-3.5" weight="fill" />
+                        )}
                       </div>
                     ) : (
                       <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-foreground/70 mt-0.5">
@@ -168,6 +192,16 @@ export function FloatingChatbot() {
 
                     {/* Bubble */}
                     <div className={`min-w-0 max-w-[82%] ${isBot ? "" : "flex flex-col items-end"}`}>
+                      {/* Agent badge */}
+                      {isBot && meta && (
+                        <div className="flex items-center gap-1 mb-1 px-1.5 py-0.5 rounded-full bg-muted/60 w-fit">
+                          <meta.icon className={`size-2.5 ${meta.color}`} weight="fill" />
+                          <span className={`text-[9px] font-semibold ${meta.color}`}>
+                            {meta.label}
+                          </span>
+                        </div>
+                      )}
+
                       <div
                         className={`rounded-xl px-3 py-2 text-[13px] leading-relaxed ${
                           isBot
@@ -222,6 +256,9 @@ export function FloatingChatbot() {
                     <Brain className="size-3" weight="fill" />
                   </div>
                   <div className="rounded-xl rounded-tl-sm bg-muted/50 px-3 py-2.5">
+                    <span className="text-[9px] text-muted-foreground font-medium block mb-1">
+                      {activeAgent ? `${activeAgent} agent` : "Routing..."}
+                    </span>
                     <span className="inline-flex items-center gap-[3px]">
                       <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse" />
                       <span className="h-3 w-0.5 rounded-full bg-primary/60 animate-pulse [animation-delay:150ms]" />

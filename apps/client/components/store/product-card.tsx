@@ -43,7 +43,6 @@ export const ProductCard = React.memo(function ProductCard({
       slug: product.slug,
       quantity: 1,
     })
-    toast.success(`${product.name} added to cart`)
   }
 
   const handleWishlistToggle = (e: React.MouseEvent) => {

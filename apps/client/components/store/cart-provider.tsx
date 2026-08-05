@@ -140,6 +140,13 @@ export function useCartDispatch() {
   return ctx
 }
 
+const CartIsOpenContext = React.createContext<boolean>(false)
+
+/** Granular selector – only re-renders when isOpen flips. */
+export function useCartIsOpen() {
+  return React.useContext(CartIsOpenContext)
+}
+
 /** Convenience hook — reads both contexts. Prefer useCartState / useCartDispatch for granular re-renders. */
 export function useCart(): CartStateValue & CartDispatchValue {
   const state = React.useContext(CartStateContext)
@@ -193,7 +200,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   return (
     <CartStateContext.Provider value={stateValue}>
       <CartDispatchContext.Provider value={dispatchValue}>
-        {children}
+        <CartIsOpenContext.Provider value={state.isOpen}>
+          {children}
+        </CartIsOpenContext.Provider>
       </CartDispatchContext.Provider>
     </CartStateContext.Provider>
   )

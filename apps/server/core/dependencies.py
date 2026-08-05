@@ -54,6 +54,6 @@ async def get_document_controller(
 
 
 async def get_chat_controller(
-    vector_repo: VectorRepository = Depends(get_vector_repository),
+    db: AsyncSession = Depends(get_db),
 ) -> AsyncGenerator[ChatController, None]:
-    yield ChatController(vector_repo)
+    yield ChatController(db)

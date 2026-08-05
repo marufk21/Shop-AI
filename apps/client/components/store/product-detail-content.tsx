@@ -29,7 +29,6 @@ import { useCartDispatch } from "@/components/store/cart-provider"
 import { RelatedProducts } from "@/components/store/related-products"
 
 import { getProductImageUrl } from "@/lib/image-url"
-import { toast } from "sonner"
 
 interface ProductDetailContentProps {
   slug: string
@@ -104,7 +103,6 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
       slug: product.slug,
       quantity,
     })
-    toast.success(`${product.name} added to cart`)
   }
 
   return (

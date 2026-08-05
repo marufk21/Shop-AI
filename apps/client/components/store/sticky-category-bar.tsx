@@ -98,7 +98,7 @@ export function StickyCategoryBar() {
 
   return (
     <div className="sticky top-16 z-30 w-full bg-background/95 backdrop-blur-xl">
-      <div className="scrollbar-hide mx-auto flex h-11 max-w-7xl items-center gap-[7px] overflow-x-auto px-4 sm:gap-1 sm:px-6">
+      <div className="scrollbar-hide mx-auto flex h-11 max-w-7xl items-center justify-center gap-[7px] overflow-x-auto px-4 sm:justify-start sm:gap-1 sm:px-6">
         {isLoading
           ? Array.from({ length: 7 }).map((_, i) => (
               <div

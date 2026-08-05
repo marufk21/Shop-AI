@@ -5,6 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 export type StreamCallbacks = {
   onToken: (token: string) => void
   onSources: (sources: SourceCitation[]) => void
+  onAgent: (agent: string) => void
   onDone: () => void
   onError: (error: Error) => void
 }
@@ -56,6 +57,8 @@ export async function streamChatMessage(
             callbacks.onToken(event.content as string)
           } else if (event.type === "sources") {
             callbacks.onSources(event.sources as SourceCitation[])
+          } else if (event.type === "agent") {
+            callbacks.onAgent(event.agent as string)
           }
         } catch {
           // skip unparseable events
