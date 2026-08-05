@@ -20,7 +20,7 @@ export function RelatedProducts({ category, currentSlug }: RelatedProductsProps)
     return data.items
       .filter((p) => p.slug !== currentSlug)
       .slice(0, 6)
-  }, [data?.items, currentSlug])
+  }, [data, currentSlug])
 
   if (related.length === 0) return null
 

@@ -2,7 +2,10 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 
 import { getQueryClient } from "@/lib/query-client"
 import { storeProductKeys } from "@/hooks/store/use-products"
-import { fetchStoreProduct } from "@/server/store/product-fetchers"
+import {
+  fetchStoreProduct,
+  fetchStoreProducts,
+} from "@/server/store/product-fetchers"
 import { ProductDetailContent } from "@/components/store/product-detail-content"
 
 export default async function ProductDetailPage({
@@ -14,12 +17,23 @@ export default async function ProductDetailPage({
   const queryClient = getQueryClient()
 
   try {
-    await queryClient.prefetchQuery({
+    const product = await queryClient.fetchQuery({
       queryKey: storeProductKeys.detail(slug),
       queryFn: () => fetchStoreProduct(slug),
     })
+
+    if (product?.category) {
+      await queryClient.prefetchQuery({
+        queryKey: storeProductKeys.list({
+          category: product.category,
+          limit: 24,
+        }),
+        queryFn: () =>
+          fetchStoreProducts({ category: product.category, limit: 24 }),
+      })
+    }
   } catch {
-    // Prefetch failed — client will fetch on mount
+    // Prefetch failed — client hooks will fetch on mount.
   }
 
   return (

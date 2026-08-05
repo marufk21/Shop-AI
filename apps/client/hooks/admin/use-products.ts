@@ -12,7 +12,7 @@ import type {
   ProductListParams,
 } from "@/types/product"
 
-const adminProductKeys = {
+export const adminProductKeys = {
   all: ["admin-products"] as const,
   lists: () => [...adminProductKeys.all, "list"] as const,
   list: (params: ProductListParams) =>

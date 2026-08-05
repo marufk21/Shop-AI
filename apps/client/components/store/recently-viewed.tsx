@@ -31,7 +31,7 @@ export function RecentlyViewed() {
       .map((item) => productMap.get(item.slug))
       .filter((p): p is Product => p != null)
       .slice(0, 6)
-  }, [data?.items, items])
+  }, [data, items])
 
   if (recentlyViewedProducts.length === 0) return null
 

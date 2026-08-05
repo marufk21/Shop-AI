@@ -123,6 +123,8 @@ export function ProductDetailContent({ slug }: ProductDetailContentProps) {
                 alt={product.name}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+                fetchPriority="high"
                 className="object-contain p-6 sm:p-8"
               />
             ) : (

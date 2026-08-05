@@ -44,14 +44,12 @@ const CATEGORY_ICON_MAP: Record<
   jewel: Sparkle,
 }
 
-function resolveIcon(
-  name: string,
-): React.ComponentType<{ className?: string }> {
+function resolveIcon(name: string, className: string): React.ReactElement {
   const lower = name.toLowerCase()
-  for (const [key, icon] of Object.entries(CATEGORY_ICON_MAP)) {
-    if (lower.includes(key)) return icon
+  for (const [key, Icon] of Object.entries(CATEGORY_ICON_MAP)) {
+    if (lower.includes(key)) return <Icon className={className} />
   }
-  return ShoppingBagOpen
+  return <ShoppingBagOpen className={className} />
 }
 
 // ---------------------------------------------------------------------------
@@ -69,8 +67,6 @@ const MARQUEE_SPEED_S = 30
 // Brand card
 // ---------------------------------------------------------------------------
 function BrandCard({ name }: { name: string }) {
-  const Icon = resolveIcon(name)
-
   return (
     <Link
       href={`/store/category/${encodeURIComponent(name.toLowerCase())}`}
@@ -78,7 +74,10 @@ function BrandCard({ name }: { name: string }) {
     >
       {/* Icon */}
       <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-muted/50 transition-colors duration-300 group-hover/card:bg-primary/10">
-        <Icon className="size-4.5 text-foreground/55 transition-colors duration-300 group-hover/card:text-primary" />
+        {resolveIcon(
+          name,
+          "size-4.5 text-foreground/55 transition-colors duration-300 group-hover/card:text-primary",
+        )}
       </span>
 
       {/* Label */}

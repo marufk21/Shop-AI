@@ -1,8 +1,6 @@
 import type { Metadata } from "next"
 import { Lora, Raleway, Geist_Mono } from "next/font/google"
 
-// Ignore missing type declarations for this side-effect CSS import
-// @ts-ignore: Cannot find module or type declarations for side-effect import of CSS
 import "@workspace/ui/globals.css"
 import { Providers } from "@/lib/providers"
 import { cn } from "@workspace/ui/lib/utils"

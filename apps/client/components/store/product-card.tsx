@@ -72,6 +72,7 @@ export const ProductCard = React.memo(function ProductCard({
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              fetchPriority="auto"
               className="object-contain p-3 transition-transform duration-500 sm:p-5 md:group-hover/card:scale-110"
             />
           ) : (
