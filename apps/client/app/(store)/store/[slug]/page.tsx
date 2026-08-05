@@ -1,7 +1,9 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
+import { notFound } from "next/navigation"
 
 import { getQueryClient } from "@/lib/query-client"
 import { storeProductKeys } from "@/hooks/store/use-products"
+import { ApiError } from "@/server/api-client"
 import {
   fetchStoreProduct,
   fetchStoreProducts,
@@ -32,8 +34,12 @@ export default async function ProductDetailPage({
           fetchStoreProducts({ category: product.category, limit: 24 }),
       })
     }
-  } catch {
-    // Prefetch failed — client hooks will fetch on mount.
+  } catch (error) {
+    // Unknown slug — render the 404 page instead of a shell that refetches.
+    if (error instanceof ApiError && error.status === 404) {
+      notFound()
+    }
+    // Other failures — client hooks will fetch on mount.
   }
 
   return (

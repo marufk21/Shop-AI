@@ -1,7 +1,19 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 
+export class ApiError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = "ApiError"
+    this.status = status
+  }
+}
+
 interface RequestOptions {
   params?: Record<string, string | number | boolean | undefined>
+  /** Next.js fetch options (server-side only, e.g. revalidate caching) */
+  next?: { revalidate?: number }
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
@@ -13,7 +25,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
     } catch {
       message = body || response.statusText
     }
-    throw new Error(message)
+    throw new ApiError(message, response.status)
   }
 
   if (response.status === 204) return undefined as T
@@ -36,7 +48,7 @@ function buildUrl(path: string, params?: Record<string, string | number | boolea
 export const apiClient = {
   async get<T>(path: string, options?: RequestOptions): Promise<T> {
     const url = buildUrl(path, options?.params)
-    const response = await fetch(url)
+    const response = await fetch(url, options?.next ? { next: options.next } : undefined)
     return handleResponse<T>(response)
   },
 
